@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "module": "es6",
+    "target": "es6",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "reorder.js": [
+        "node_modules/reorder.js/dist/reorder"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
