@@ -1,8 +1,7 @@
 import * as reorder from "reorder.js";
 import {Equatable, Range, shuffled, sumOfArithmeticSequence} from "./Utils";
 import {ObjectSet} from "./ObjectSet";
-
-export type Vertex = string
+import {Vertex} from "./Animations/GenerateLabels";
 
 
 export class Edge implements Equatable<Edge> {

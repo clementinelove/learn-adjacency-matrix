@@ -132,7 +132,7 @@ export class PointTransitionScale {
 export interface CanvasAnimation {
     started: boolean
     duration?: number
-    ticker?: Ticker
+    ticker: Ticker
 
     /**
      * Prepare will be called before the animation plays to get the data ready
@@ -150,7 +150,7 @@ export interface CanvasAnimation {
     play: (context: CanvasRenderingContext2D) => void
 }
 
-class KeyedDataStore {
+export class KeyedDataStore {
     keyToData = new Map<string, any>()
 
     constructor(init: object = null)
@@ -162,6 +162,14 @@ class KeyedDataStore {
                 this.keyToData.set(key, value)
             }
         }
+    }
+
+    get object() {
+        let o = {}
+        for (const [key, value] of this.keyToData.entries()) {
+            o[key] = value
+        }
+        return o
     }
 
     get = <T>(key: string): T => {
@@ -256,7 +264,12 @@ export class CanvasAnimationPlayer {
         const loop = () => {
             // canvas redraw function here
             context.clearRect(0, 0, width, height)
-            this.animations[this.animationState].play(context)
+            const animation = this.animations[this.animationState]
+            animation.play(context)
+            if (animation.ticker.tick < animation.duration)
+            {
+                animation.ticker.increment()
+            }
             window.requestAnimationFrame(loop)
         }
 

@@ -14,6 +14,7 @@ export interface MatrixStyle {
     fontName?: string
     matrixMargin?: number
     padding?: number
+    cellStrokeColor?: string
     cellSizeToFontSize?: (number) => number
 }
 

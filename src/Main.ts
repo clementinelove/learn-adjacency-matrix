@@ -2,12 +2,14 @@ import * as d3 from "d3";
 import {cliqueEdges, UndirectedGraph, vertexArray, VertexNameStyle} from "./UndirectedGraph";
 import {flatten} from "./FP";
 import {
-    ForceDirectedAnimation,
-    GenerateLabels,
-    initNetworkAnimationData,
-    TransformAnimation
+    initNetworkAnimationData
 } from "./NodeLinkCanvasAnimation";
-import {CanvasAnimationPlayer} from "./CanvasUtils";
+import {CanvasAnimationPlayer, KeyedDataStore} from "./CanvasUtils";
+import {NodeLinkDiagram} from "./NodeLinkDiagram";
+import {MergeNodes} from "./Animations/MergeNodes";
+import {GenerateLabels} from "./Animations/GenerateLabels";
+import {ForceDirectedAnimation} from "./Animations/ForceDirectedAnimation";
+import {NodeTrixAnimation} from "./Animations/NodeTrixAnimation";
 
 let drawingContext = d3.select('body');
 
@@ -91,9 +93,13 @@ const networkData = initNetworkAnimationData(
     },
     {
         padding: 10,
-        matrixMargin: 10
+        matrixMargin: 10,
+        cellStrokeColor: "lightgray"
     }
 )
+
+const keyedStore = new KeyedDataStore()
+keyedStore.set("NETWORK_DATA", networkData)
 //
 // const nodeLinkSVG = new NodeLinkDiagram(graph)
 // nodeLinkSVG.draw(drawingContext)
@@ -101,8 +107,9 @@ const networkData = initNetworkAnimationData(
 const nodeLinkCanvas = new CanvasAnimationPlayer(
     {x: 0, y: 0, width: 500, height: 500},
     new ForceDirectedAnimation(networkData),
-    new TransformAnimation(networkData, 100),
-    new GenerateLabels(networkData, 100)
+    new NodeTrixAnimation(networkData, 100),
+    new GenerateLabels(networkData, 100),
+    new MergeNodes(networkData, 100)
 )
 
 nodeLinkCanvas.draw(drawingContext)
