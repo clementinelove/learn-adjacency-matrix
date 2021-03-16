@@ -1,13 +1,12 @@
 import * as d3 from "d3";
 import {Point, Rect} from "./Geometry";
 
-export function createCanvas(width, height): CanvasRenderingContext2D
+export function createCanvas(selection, width, height): CanvasRenderingContext2D
 {
-    let canvas: HTMLCanvasElement = d3.select('body')
-                                      .append('canvas')
-                                      .attr('width', width)
-                                      .attr('height', height)
-                                      .node()
+    let canvas: HTMLCanvasElement = selection.append('canvas')
+                                             .attr('width', width)
+                                             .attr('height', height)
+                                             .node()
     const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
     return ctx
 }
@@ -164,9 +163,11 @@ export class KeyedDataStore {
         }
     }
 
-    get object() {
+    get object()
+    {
         let o = {}
-        for (const [key, value] of this.keyToData.entries()) {
+        for (const [key, value] of this.keyToData.entries())
+        {
             o[key] = value
         }
         return o
@@ -242,7 +243,7 @@ export class CanvasAnimationPlayer {
 
     draw = (parent) => {
         const {width, height} = this.frame
-        const context = createCanvas(width, height)
+        const context = createCanvas(parent, width, height)
         scaleCanvas(context, width, height)
         this.animationState = 0
         window.requestAnimationFrame(this.redraw(context))

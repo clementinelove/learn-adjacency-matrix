@@ -55,13 +55,13 @@ export class GenerateLabels extends NetworkAnimation {
     {
 
         const {nodeRadius} = this.networkDiagramStyle
-        const {matrixMargin, padding} = this.matrixStyle
+        const {spaceBetweenLabels, padding} = this.matrixStyle
         const nodeDiameter = nodeRadius * 2
 
         const diagonalNodePosition = (vertex): Point => {
             const nodeIndex = this.graph.vertices.indexOf(vertex)
-            const diagonalX = padding + nodeDiameter + matrixMargin + nodeIndex * nodeDiameter + nodeRadius
-            const diagonalY = padding + nodeDiameter + matrixMargin + nodeDiameter * nodeIndex + nodeRadius
+            const diagonalX = padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
+            const diagonalY = padding + nodeDiameter + spaceBetweenLabels + nodeDiameter * nodeIndex + nodeRadius
             return new Point(diagonalX, diagonalY)
         }
 

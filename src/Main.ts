@@ -1,17 +1,16 @@
 import * as d3 from "d3";
 import {cliqueEdges, UndirectedGraph, vertexArray, VertexNameStyle} from "./UndirectedGraph";
 import {flatten} from "./FP";
-import {
-    initNetworkAnimationData
-} from "./NodeLinkCanvasAnimation";
-import {CanvasAnimationPlayer, KeyedDataStore} from "./CanvasUtils";
-import {NodeLinkDiagram} from "./NodeLinkDiagram";
-import {MergeNodes} from "./Animations/MergeNodes";
-import {GenerateLabels} from "./Animations/GenerateLabels";
+import {initNetworkAnimationData} from "./NodeLinkCanvasAnimation";
+import "./styles/main.css"
+import {AdjacencyMatrix, MatrixStyle} from "./AdjacencyMatrix";
+import {CanvasAnimationPlayer} from "./CanvasUtils";
 import {ForceDirectedAnimation} from "./Animations/ForceDirectedAnimation";
 import {NodeTrixAnimation} from "./Animations/NodeTrixAnimation";
+import {GenerateLabels} from "./Animations/GenerateLabels";
+import {MergeNodes} from "./Animations/MergeNodes";
 
-let drawingContext = d3.select('body');
+let body = d3.select('body');
 
 let graph = UndirectedGraph.fromRelationshipMatrix(
     UndirectedGraph.numbersToVertexArray([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]), [
@@ -69,11 +68,9 @@ let clique = UndirectedGraph
                           ...flatten(vArrays.map((arr) => cliqueEdges(arr, false).toArray())))
 
 // let wikiVertices = vertexArray(5)
-// let am = new AdjacencyMatrix(friendship);
-// am.draw(drawingContext);
-//
+
 // let nodeLink = new NodeLinkDiagram(friendship)
-// nodeLink.draw(drawingContext)
+// nodeLink.draw(body)
 const networkData = initNetworkAnimationData(
     graph,
     {
@@ -98,12 +95,25 @@ const networkData = initNetworkAnimationData(
     }
 )
 
-const keyedStore = new KeyedDataStore()
-keyedStore.set("NETWORK_DATA", networkData)
-//
-// const nodeLinkSVG = new NodeLinkDiagram(graph)
-// nodeLinkSVG.draw(drawingContext)
+const coverMatrixStyle: MatrixStyle = {
+    frame: {
+        x: 0,
+        y: 0,
+        width: 300,
+        height: 300
+    },
+    fontName: 'monospace',
+    spaceBetweenLabels: 10,
+    padding: 0,
+    hideLabel: true,
+    cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
+}
 
+let am = new AdjacencyMatrix(friendship, coverMatrixStyle);
+am.draw(d3.select('#cover-matrix'));
+
+
+//
 const nodeLinkCanvas = new CanvasAnimationPlayer(
     {x: 0, y: 0, width: 500, height: 500},
     new ForceDirectedAnimation(networkData),
@@ -112,5 +122,5 @@ const nodeLinkCanvas = new CanvasAnimationPlayer(
     new MergeNodes(networkData, 100)
 )
 
-nodeLinkCanvas.draw(drawingContext)
-nodeLinkCanvas.createAnimationStateButtons(drawingContext)
+nodeLinkCanvas.draw(d3.select('#vis-box'))
+// nodeLinkCanvas.createAnimationStateButtons(body)

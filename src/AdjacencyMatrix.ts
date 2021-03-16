@@ -12,10 +12,11 @@ export interface IndexedLabel {
 export interface MatrixStyle {
     frame?: Rect
     fontName?: string
-    matrixMargin?: number
+    spaceBetweenLabels?: number
     padding?: number
     cellStrokeColor?: string
     cellSizeToFontSize?: (number) => number
+    hideLabel?: boolean
 }
 
 
@@ -72,8 +73,9 @@ export class AdjacencyMatrix {
                         height: 500
                     },
                     fontName: 'monospace',
-                    matrixMargin: 10,
+                    spaceBetweenLabels: 10,
                     padding: 36,
+                    hideLabel: false,
                     cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
                 },
                 transitionTime = 400)
@@ -86,8 +88,11 @@ export class AdjacencyMatrix {
 
     private render = () => {
         this.joinCells()
-        this.joinHLabels()
-        this.joinVLabels()
+        if (this.style.hideLabel === false)
+        {
+            this.joinHLabels()
+            this.joinVLabels()
+        }
     }
 
     private findLongestLabelWidthAndLabelHeight = (): [number, number] => {
@@ -128,7 +133,7 @@ export class AdjacencyMatrix {
         this.vLabelGroup = svg
             .append('g')
             .attr('transform',
-                  `translate(${this.style.frame.x - this.style.matrixMargin}, 
+                  `translate(${this.style.frame.x - this.style.spaceBetweenLabels}, 
                   ${this.style.frame.y})`)
         //endregion
 
@@ -138,7 +143,7 @@ export class AdjacencyMatrix {
             .append('g')
             .attr('transform',
                   `translate(${this.style.frame.x},
-                  ${this.style.frame.y - this.style.matrixMargin})`)
+                  ${this.style.frame.y - this.style.spaceBetweenLabels})`)
         //endregion
 
         // region Initialize cells

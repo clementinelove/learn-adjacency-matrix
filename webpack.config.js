@@ -3,6 +3,11 @@ const path = require('path')
 module.exports = {
     entry: './src/Main.ts',
     devtool: 'inline-source-map',
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'),
+        compress: false,
+        port: 9000
+    },
     mode: 'development',
     output: {
         filename: "main.js",
@@ -17,6 +22,15 @@ module.exports = {
                     "style-loader",
                     "css-loader",
                     "sass-loader",
+                ]
+            },
+            {
+                test: /\.css$/i,
+                use: [
+                    // Creates `style` nodes from JS strings
+                    "style-loader",
+                    "css-loader",
+                    "postcss-loader",
                 ]
             },
             {

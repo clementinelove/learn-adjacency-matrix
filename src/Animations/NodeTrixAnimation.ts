@@ -20,15 +20,15 @@ export class NodeTrixAnimation extends NetworkAnimation {
     prepare(): void
     {
         this.simNodesToTransitionScales = new Map<string, PointTransitionScale>()
-        const {padding, matrixMargin} = this.matrixStyle
+        const {padding, spaceBetweenLabels} = this.matrixStyle
         const nodeRadius = this.networkDiagramStyle.nodeRadius
         const nodeDiameter = nodeRadius * 2
 
         this.simNodes.forEach((node) => {
             const {vertex, x, y} = node
             const nodeIndex = this.graph.vertices.indexOf(vertex)
-            const destCenterX = padding + nodeDiameter + matrixMargin + nodeIndex * nodeDiameter + nodeRadius
-            const destCenterY = padding + nodeDiameter + matrixMargin + nodeDiameter * nodeIndex + nodeRadius
+            const destCenterX = padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
+            const destCenterY = padding + nodeDiameter + spaceBetweenLabels + nodeDiameter * nodeIndex + nodeRadius
             this.simNodesToTransitionScales.set(vertex, new PointTransitionScale(x, y, destCenterX, destCenterY, this.duration))
         })
 

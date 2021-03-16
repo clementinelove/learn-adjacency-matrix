@@ -90,8 +90,8 @@ export abstract class NetworkAnimation implements CanvasAnimation {
     getNodePositionInMatrix= (i : number) => {
         const {nodeRadius} = this.networkDiagramStyle
         const nodeDiameter = nodeRadius * 2
-        const {padding, matrixMargin} = this.matrixStyle
-        return padding + matrixMargin + nodeDiameter + nodeRadius + nodeDiameter * i
+        const {padding, spaceBetweenLabels} = this.matrixStyle
+        return padding + spaceBetweenLabels + nodeDiameter + nodeRadius + nodeDiameter * i
     }
 
     protected constructor(data: NetworkData, duration = 0)

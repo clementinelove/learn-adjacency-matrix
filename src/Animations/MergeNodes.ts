@@ -29,7 +29,7 @@ export class MergeNodes extends NetworkAnimation {
     prepare(): void
     {
         const {nodeRadius, nodeStrokeColor} = this.networkDiagramStyle
-        const {padding, matrixMargin, cellStrokeColor} = this.matrixStyle
+        const {padding, spaceBetweenLabels, cellStrokeColor} = this.matrixStyle
         const nodeDiameter = nodeRadius * 2
         this.VX_HY = padding + nodeRadius
         this.graph.vertices.forEach((v, i) => {
