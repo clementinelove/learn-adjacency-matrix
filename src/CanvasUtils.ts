@@ -232,6 +232,7 @@ export class CanvasAnimationPlayer {
                 .attr('type', 'button')
                 .text(`State ${i}`)
                 .on('click', () => {
+                    console.log("Called")
                     this.animationState = i
                     if (callback !== null)
                     {

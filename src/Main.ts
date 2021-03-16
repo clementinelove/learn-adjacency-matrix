@@ -109,8 +109,8 @@ const coverMatrixStyle: MatrixStyle = {
     cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
 }
 
-let am = new AdjacencyMatrix(friendship, coverMatrixStyle);
-am.draw(d3.select('#cover-matrix'));
+// let am = new AdjacencyMatrix(friendship, coverMatrixStyle);
+// am.draw(d3.select('#cover-matrix'));
 
 
 //
@@ -122,5 +122,7 @@ const nodeLinkCanvas = new CanvasAnimationPlayer(
     new MergeNodes(networkData, 100)
 )
 
-nodeLinkCanvas.draw(d3.select('#vis-box'))
-// nodeLinkCanvas.createAnimationStateButtons(body)
+// nodeLinkCanvas.draw(d3.select('#vis-box'))
+
+nodeLinkCanvas.draw(body)
+nodeLinkCanvas.createAnimationStateButtons(body)

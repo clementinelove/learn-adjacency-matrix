@@ -657,3 +657,4 @@ function calculateSwap(source: string[], target: string[], separator: string = "
 }
 
 // todo: add node, remove node
+// todo: highlight specific nodes by position
