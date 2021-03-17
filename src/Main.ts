@@ -54,8 +54,8 @@ let testGraph2x2 = UndirectedGraph.fromRelationshipMatrix(UndirectedGraph.number
 
 let testGraph4x4 = UndirectedGraph.fromRelationshipMatrix(UndirectedGraph.numbersToVertexArray([1, 2, 3, 4]),
                                                           [
-                                                              [1, 0, 0, 0],
-                                                              [0, 1, 0, 1],
+                                                              [1, 1, 0, 0],
+                                                              [1, 1, 0, 1],
                                                               [0, 0, 1, 1],
                                                               [0, 1, 1, 1]
                                                           ], true
@@ -107,9 +107,9 @@ keyedStore.set("NETWORK_DATA", networkData)
 const nodeLinkCanvas = new CanvasAnimationPlayer(
     {x: 0, y: 0, width: 500, height: 500},
     new ForceDirectedAnimation(networkData),
-    new NodeTrixAnimation(networkData, 100),
+    new NodeTrixAnimation(networkData, 200),
     new GenerateLabels(networkData, 100),
-    new MergeNodes(networkData, 100)
+    new MergeNodes(networkData, 200)
 )
 
 nodeLinkCanvas.draw(drawingContext)

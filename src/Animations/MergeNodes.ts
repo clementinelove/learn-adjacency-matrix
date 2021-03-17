@@ -39,7 +39,7 @@ export class MergeNodes extends NetworkAnimation {
         this.drawingInstructions = this.graph.toDrawingInstructionArray(this.graph.vertices)
 
         const duration = this.duration
-        const [diagonals, filledCells, emptyCells] = timelineSlices([0.3, 0.7])
+        const [emptyCells, diagonals, filledCells] = timelineSlices([0.4, 0.6])
         console.log(timelineSlices([0.3, 0.4]))
 
         this.diagonalNodeTextTransparencyScale = animationScale(diagonals, duration, [1, 0])
