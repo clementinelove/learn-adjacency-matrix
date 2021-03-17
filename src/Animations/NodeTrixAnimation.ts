@@ -31,7 +31,6 @@ export class NodeTrixAnimation extends NetworkAnimation {
             const destCenterY = padding + nodeDiameter + spaceBetweenLabels + nodeDiameter * nodeIndex + nodeRadius
             this.simNodesToTransitionScales.set(vertex, new PointTransitionScale(x, y, destCenterX, destCenterY, this.duration))
         })
-
         this.ticker.reset()
     }
 

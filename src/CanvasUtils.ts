@@ -228,12 +228,13 @@ export class CanvasAnimationPlayer {
     createAnimationStateButtons = (toSelection, callback: () => void = null): void => {
         this.animations.forEach((v, i) => {
             toSelection
-                .append('button')
-                .attr('type', 'button')
+                .append('a')
+                .attr('href', '#')
+                .attr('class', 'p-4 border border-gray-300 shadow-md rounded-md')
                 .text(`State ${i}`)
                 .on('click', () => {
-                    console.log("Called")
                     this.animationState = i
+                    console.log('Animation set to ' + i)
                     if (callback !== null)
                     {
                         callback()

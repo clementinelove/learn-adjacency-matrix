@@ -90,7 +90,7 @@ const networkData = initNetworkAnimationData(
     },
     {
         padding: 10,
-        matrixMargin: 10,
+        spaceBetweenLabels: 10,
         cellStrokeColor: "lightgray"
     }
 )
@@ -115,14 +115,13 @@ const coverMatrixStyle: MatrixStyle = {
 
 //
 const nodeLinkCanvas = new CanvasAnimationPlayer(
-    {x: 0, y: 0, width: 500, height: 500},
+    {x: 0, y: 0, width: 1000, height: 1000},
     new ForceDirectedAnimation(networkData),
     new NodeTrixAnimation(networkData, 100),
     new GenerateLabels(networkData, 100),
     new MergeNodes(networkData, 100)
 )
 
-// nodeLinkCanvas.draw(d3.select('#vis-box'))
-
-nodeLinkCanvas.draw(body)
+const visbox = d3.select('#vis-box0')
+nodeLinkCanvas.draw(visbox)
 nodeLinkCanvas.createAnimationStateButtons(body)

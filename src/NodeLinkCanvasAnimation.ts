@@ -30,7 +30,7 @@ export interface NetworkDiagramStyle {
     linkLength?: number
 }
 
-export const initNetworkAnimationData = (graph, networkStyle, matrixStyle): NetworkData => {
+export const initNetworkAnimationData = (graph: UndirectedGraph, networkStyle: NetworkDiagramStyle, matrixStyle: MatrixStyle): NetworkData => {
     const simNodesMap = new Map<string, NetworkSimulationNode>()
     graph.vertices.forEach((vertex) => {
         simNodesMap.set(vertex, {vertex: vertex, group: 1})
