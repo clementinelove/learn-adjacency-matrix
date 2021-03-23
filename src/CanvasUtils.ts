@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import {Point, Rect} from "./Geometry";
+import {Point} from "./Geometry";
 
 export function createCanvas(selection, width, height): CanvasRenderingContext2D
 {
@@ -20,6 +20,14 @@ export namespace CanvasRuler {
     {
         context.font = `${fontSizeInPX}px ${fontName}`
         return context.measureText(text)
+    }
+
+    export function TextBoundingBoxMetrics(text: string, fontName: string, fontSize: number)
+    {
+        const metrics = getTextMetrics(text, fontName, fontSize)
+        const width = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight)
+        const height = Math.abs(metrics.actualBoundingBoxAscent) + Math.abs(metrics.actualBoundingBoxDescent)
+        return [width, height]
     }
 }
 
@@ -184,98 +192,3 @@ export class KeyedDataStore {
 
 new KeyedDataStore({simNodes: new Array<number>()})
 
-export class CanvasAnimationPlayer {
-    private readonly frame: Rect
-    private _animationState: number = 0
-    private animations: CanvasAnimation[] = []
-
-    constructor(frame: Rect,
-                ...animations: CanvasAnimation[])
-    {
-        this.frame = frame
-        this.animations = animations
-    }
-
-    set animationState(number: number)
-    {
-        if (this.currentAnimation.started)
-        {
-            this.finishAnimation()
-        }
-        this._animationState = number
-        this.prepareAnimation()
-    }
-
-    get animationState(): number
-    {
-        return this._animationState
-    }
-
-    get currentAnimation(): CanvasAnimation
-    {
-        return this.animations[this.animationState]
-    }
-
-
-    createAnimationStateButton = (toSelection, state: number): void => {
-        toSelection
-            .append('button')
-            .attr('type', 'button')
-            .text(`State ${state}`)
-            .on('click', () => this.animationState = state)
-    }
-
-    createAnimationStateButtons = (toSelection, callback: () => void = null): void => {
-        this.animations.forEach((v, i) => {
-            toSelection
-                .append('a')
-                .attr('href', '#')
-                .attr('class', 'p-4 border border-gray-300 shadow-md rounded-md')
-                .text(`State ${i}`)
-                .on('click', () => {
-                    this.animationState = i
-                    console.log('Animation set to ' + i)
-                    if (callback !== null)
-                    {
-                        callback()
-                    }
-                })
-        })
-    }
-
-    draw = (parent) => {
-        const {width, height} = this.frame
-        const context = createCanvas(parent, width, height)
-        scaleCanvas(context, width, height)
-        this.animationState = 0
-        window.requestAnimationFrame(this.redraw(context))
-    }
-
-    prepareAnimation = (): void => {
-        const anime = this.animations[this.animationState]
-        anime.prepare()
-    }
-
-    finishAnimation = (): void => {
-        this.animations[this.animationState].finish()
-    }
-
-    private redraw = (context: CanvasRenderingContext2D) => {
-
-        const {width, height} = this.frame
-
-        const loop = () => {
-            // canvas redraw function here
-            context.clearRect(0, 0, width, height)
-            const animation = this.animations[this.animationState]
-            animation.play(context)
-            if (animation.ticker.tick < animation.duration)
-            {
-                animation.ticker.increment()
-            }
-            window.requestAnimationFrame(loop)
-        }
-
-        return loop
-    }
-}

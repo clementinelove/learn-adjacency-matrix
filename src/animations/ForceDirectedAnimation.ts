@@ -1,5 +1,6 @@
 import * as d3 from "d3";
-import {NetworkAnimation, NetworkData, NetworkSimulationLink, NetworkSimulationNode} from "../NodeLinkCanvasAnimation";
+import {NetworkAnimation} from "./NetworkAnimation";
+import {NetworkData, NetworkSimulationLink, NetworkSimulationNode} from "./NetworkAnimationData";
 
 function drag(simulation, enable: boolean)
 {
@@ -49,7 +50,7 @@ function drag(simulation, enable: boolean)
 
 export class ForceDirectedAnimation extends NetworkAnimation {
 
-    simulation: d3.Simulation<NetworkSimulationNode, NetworkSimulationLink>;
+    // simulation: d3.Simulation<NetworkSimulationNode, NetworkSimulationLink>;
 
     constructor(data: NetworkData = null)
     {
@@ -58,21 +59,6 @@ export class ForceDirectedAnimation extends NetworkAnimation {
 
     prepare(): void
     {
-        const {width, height} = this.networkDiagramStyle.frame
-        const createSimulation = (simNodes, simLinks): d3.Simulation<NetworkSimulationNode, NetworkSimulationLink> => {
-            return d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(simNodes)
-                     .force("charge", d3.forceManyBody())
-                     .force("link",
-                            d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(simLinks)
-                              .id((d) => d.vertex)
-                              .distance((d) => {
-                                  return 80
-                              })
-                     )
-                     .force("center", d3.forceCenter(width / 2, height / 2))
-        }
-
-        this.simulation = createSimulation(this.simNodes, this.simLinks)
     }
 
     play(context: CanvasRenderingContext2D)
@@ -98,11 +84,11 @@ export class ForceDirectedAnimation extends NetworkAnimation {
 
         // todo: remove force! otherwise make it un interactive
         d3.select(context.canvas)
-          .call(drag(this.simulation, true))
+          .call(drag(this.simulation.instance, true))
     }
 
     finish()
     {
-        this.simulation.stop()
+        this.simulation.instance.stop()
     }
 }

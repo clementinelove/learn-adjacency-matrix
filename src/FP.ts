@@ -16,5 +16,6 @@ export function flatten<T>(arr: Array<T | T[]>)
             flatten.push(arr[i] as T)
         }
     }
+    console.log(flatten)
     return flatten
 }

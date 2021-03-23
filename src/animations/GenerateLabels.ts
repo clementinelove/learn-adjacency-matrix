@@ -1,7 +1,8 @@
 import {controlPointPosition, distance, Point} from "../Geometry";
 import {PointTransitionScale} from "../CanvasUtils";
 import * as d3 from "d3";
-import {NetworkAnimation, NetworkData} from "../NodeLinkCanvasAnimation";
+import {NetworkAnimation} from "./NetworkAnimation";
+import {NetworkData} from "./NetworkAnimationData";
 
 export type Vertex = string
 
@@ -80,6 +81,10 @@ export class GenerateLabels extends NetworkAnimation {
             this.diagonalNodeMap.set(vertex, new LightWeightNode(vertex, x, y))
         })
 
+        this.graph.edges.forEach((edge) => {
+            // this.lightWeightLinks.push(new LightWeightLink(this.graph, edge.vertex1))
+        })
+
         this.ticker.reset()
     }
 
@@ -89,7 +94,7 @@ export class GenerateLabels extends NetworkAnimation {
         this.context = context
         const currentTick = this.ticker.tick
 
-        this.simLinks.forEach((link) => {
+        this.lightWeightLinks.forEach((link) => {
             const source = link.source.vertex
             const target = link.target.vertex
             const sourceNode = this.diagonalNodeMap.get(source)

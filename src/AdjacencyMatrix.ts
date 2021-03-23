@@ -3,6 +3,8 @@ import * as d3 from "d3";
 import "./styles/adjacency-matrix.sass"
 import {CanvasRuler} from "./CanvasUtils";
 import {Rect} from "./Geometry";
+import {Component} from "./UI/Component";
+import {SVGComponent} from "./UI/SVGComponent";
 
 export interface IndexedLabel {
     label: string
@@ -15,12 +17,18 @@ export interface MatrixStyle {
     spaceBetweenLabels?: number
     padding?: number
     cellStrokeColor?: string
-    cellSizeToFontSize?: (number) => number
+    cellSizeToFontSize?: (number: number) => number
     hideLabel?: boolean
+    interactiveCell?: boolean
+    fillColor?: string
 }
 
+export interface CellStyle {
 
-export class AdjacencyMatrix {
+    cursor: string
+
+}
+export class AdjacencyMatrix extends SVGComponent {
 
     static CELL_FILLED_FILL = 'black'
     static CELL_EMPTY_FILL = 'white'
@@ -80,10 +88,13 @@ export class AdjacencyMatrix {
                 },
                 transitionTime = 400)
     {
+        super(null, style.frame)
         this.style = style
         this.graph = graph
         this.orderedLabels = graph.vertices
         this.transitionTime = transitionTime
+        this.initializeView();
+        this.render()
     }
 
     private render = () => {
@@ -114,49 +125,46 @@ export class AdjacencyMatrix {
         return [longestLabelWidth, labelHeight]
     }
 
-    draw = (drawingContext) => {
+    private initializeView()
+    {
         // region Calculate drawing frame constraints
-        const labelCount = this.orderedLabels.length
-
-        this.cellSize = (this.style.frame.width - this.style.frame.x) / labelCount
-        this.fontSize = this.style.cellSizeToFontSize(this.cellSize)
+        const {x, y, width, height} = this.style.frame
 
         console.log(`cell size: ${this.cellSize}px, font size: ${this.fontSize}`)
 
-        let svg = drawingContext.append('svg')
-                                .attr('width', `${this.style.frame.x + this.style.frame.width}px`)
-                                .attr('height', `${this.style.frame.y + this.style.frame.height}px`)
+        const labelCount = this.orderedLabels.length
+        const cellSize = (width - x) / labelCount
+        const fontSize = this.style.cellSizeToFontSize(cellSize)
+        this.cellSize = cellSize
+        this.fontSize = fontSize
         // endregion
 
         //region Initialize vertical labels and setup their dragging actions
         // vertical labels' anchor is at the end of the text
-        this.vLabelGroup = svg
-            .append('g')
-            .attr('transform',
-                  `translate(${this.style.frame.x - this.style.spaceBetweenLabels}, 
+        this.vLabelGroup = this.svg
+                               .append('g')
+                               .attr('transform',
+                                     `translate(${this.style.frame.x - this.style.spaceBetweenLabels}, 
                   ${this.style.frame.y})`)
         //endregion
 
         // region Initialize horizontal labels and setup their dragging actions
         // horizontal labels' anchor is at the bottom of the text
-        this.hLabelGroup = svg
-            .append('g')
-            .attr('transform',
-                  `translate(${this.style.frame.x},
+        this.hLabelGroup = this.svg
+                               .append('g')
+                               .attr('transform',
+                                     `translate(${this.style.frame.x},
                   ${this.style.frame.y - this.style.spaceBetweenLabels})`)
         //endregion
 
         // region Initialize cells
-        this.cellsGroup = svg
-            .append('g')
-            .attr('transform',
-                  `translate(
+        this.cellsGroup = this.svg
+                              .append('g')
+                              .attr('transform',
+                                    `translate(
                       ${this.style.frame.x}, 
                       ${this.style.frame.y})`)      // y
         // endregion
-
-
-        this.render()
     }
 
     joinVLabels = (): void => {
@@ -234,7 +242,7 @@ export class AdjacencyMatrix {
                 ,
                   update => update.call(update =>
                                             update
-                                                .transition(this.transitionTime)
+                                                .transition().duration(this.transitionTime)
                                                 .attr("y", (d, i) => i * this.cellSize + this.cellSize / 2))
             )
     }
@@ -314,7 +322,7 @@ export class AdjacencyMatrix {
                           .attr('fill', (d: DrawingInstruction) => d.filling !== false ?
                               AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL)
                           .style('stroke-width', "1px")
-                          .on('click', (event, targetData: DrawingInstruction) => {
+                          .on('click', this.style.interactiveCell ? (event, targetData: DrawingInstruction) => {
                               console.log('click')
                               let v1 = targetData.position.rowLabel
                               let v2 = targetData.position.columnLabel
@@ -327,7 +335,7 @@ export class AdjacencyMatrix {
                                   this.graph.removeEdge(new Edge(v1, v2, null))
                               }
                               this.render()
-                          })
+                          } : null)
             ,
             update => update.call(update => update.transition(this.transitionTime)
                                                   .attr('y', (d: DrawingInstruction) =>
@@ -619,8 +627,6 @@ export class AdjacencyMatrix {
         }
 
     }
-
-
 }
 
 function calculateSwap(source: string[], target: string[], separator: string = "<=>")

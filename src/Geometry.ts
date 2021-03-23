@@ -7,6 +7,11 @@ export interface Rect {
     height: number
 }
 
+export interface Dimension {
+    width: number
+    height: number
+}
+
 export type PointTuple = [number, number]
 
 export class Point {

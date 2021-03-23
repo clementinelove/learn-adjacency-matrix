@@ -1,8 +1,8 @@
 import * as reorder from "reorder.js";
 import {Equatable, Range, shuffled, sumOfArithmeticSequence} from "./Utils";
 import {ObjectSet} from "./ObjectSet";
-import {Vertex} from "./Animations/GenerateLabels";
-
+import {Vertex} from "./animations/GenerateLabels";
+import {OrderedLabels} from "./OrderedLabels";
 
 export class Edge implements Equatable<Edge> {
     readonly vertex0: Vertex
@@ -85,43 +85,35 @@ export class UndirectedGraph {
         return this._edges.remove(edge)
     }
 
-    static fromRelationshipMatrix(vertexOrder: Vertex[], matrix: Relationship[][], zeroAsFalse = false)
+    static fromMatrix(matrix: Relationship[][], orderedLabels: OrderedLabels)
     {
-        const MATRIX_SIZE = vertexOrder.length
+        const MATRIX_SIZE = matrix.length
+        const orderedVertex = orderedLabels.labelArray(MATRIX_SIZE)
         const edges: Edge[] = []
         for (let row = 0; row < MATRIX_SIZE; row++)
         {
-            const currentVertex = vertexOrder[row]
+            const currentVertex = orderedVertex[row]
             const currentRow = matrix[row]
             for (let column = row; column < MATRIX_SIZE; column++)
             {
                 const relationship = currentRow[column]
-                if (zeroAsFalse)
+
+                if (relationship !== 0)
                 {
-                    if (relationship !== false && relationship !== 0)
-                    {
-                        edges.push(new Edge(currentVertex, vertexOrder[column], relationship))
-                    }
-                }
-                else
-                {
-                    if (relationship !== false)
-                    {
-                        edges.push(new Edge(currentVertex, vertexOrder[column], relationship))
-                    }
+                    edges.push(new Edge(currentVertex, orderedVertex[column], null))
                 }
             }
         }
-        return new UndirectedGraph(vertexOrder, ...edges)
+        return new UndirectedGraph(orderedVertex, ...edges)
     }
 
-    static fromVertexTuple(vertices: Vertex[], ...edges: VertexTuple[]): UndirectedGraph
+    static fromTuples(vertices: Vertex[], ...edges: VertexTuple[]): UndirectedGraph
     {
         const undirectedEdges = edges.map((edgeTuple) => new Edge(edgeTuple[0], edgeTuple[1]))
         return new UndirectedGraph(vertices, ...undirectedEdges)
     }
 
-    static fromVerticesAndEdges(vertices: Vertex[], ...edges: Edge[]): UndirectedGraph
+    static fromEdges(vertices: Vertex[], ...edges: Edge[]): UndirectedGraph
     {
         return new UndirectedGraph(vertices, ...edges)
     }
@@ -220,24 +212,6 @@ export class UndirectedGraph {
         return drawingInstructionArray
     }
 
-    static numbersToVertexArray(nodes: number[]): Vertex[]
-    {
-        const stringNodes: string[] = Array(nodes.length)
-        for (let i = 0; i < nodes.length; i++)
-        {
-            const node = nodes[i]
-            if (typeof node === "number")
-            {
-                stringNodes[i] = node.toString();
-            }
-            else
-            {
-                stringNodes[i] = node
-            }
-        }
-        return stringNodes
-    }
-
     static reorderedLabels(orderedLabels: string[], graph: UndirectedGraph): string[]
     {
         const newOrder = reorder.optimal_leaf_order()
@@ -247,7 +221,6 @@ export class UndirectedGraph {
             return orderedLabels[labelIndex]
         })
     }
-
 
 }
 
@@ -266,11 +239,14 @@ patternCount: number,
 patternSize: number
 */
 
+
 export enum VertexNameStyle {
     Numeric,
     LowercasedAlphabetic,
     UppercasedAlphabetic
 }
+
+// {styleName: "Numeric", f: }
 
 /**
  * @param style The style or styles for generating vertex names Use array if you want to use multiple name styles in the order specified by the array.

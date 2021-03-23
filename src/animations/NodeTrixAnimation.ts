@@ -2,7 +2,8 @@ import {Vertex} from "./GenerateLabels";
 import {PointTransitionScale, Ticker} from "../CanvasUtils";
 import * as d3 from "d3";
 import {controlPointPosition, distance} from "../Geometry";
-import {NetworkAnimation, NetworkData} from "../NodeLinkCanvasAnimation";
+import {NetworkAnimation} from "./NetworkAnimation";
+import {NetworkData} from "./NetworkAnimationData";
 
 export class NodeTrixAnimation extends NetworkAnimation {
 

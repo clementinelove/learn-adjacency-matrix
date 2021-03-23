@@ -1,66 +1,17 @@
-import * as d3 from "d3"
-import {UndirectedGraph} from "./UndirectedGraph"
-import {CanvasAnimation, CanvasRuler, PointTransitionScale, Ticker} from "./CanvasUtils"
-import {arc, controlPointPosition, distance, filledArc, midpoint, Point, Rect, roundedRect} from "./Geometry"
-import {MatrixStyle} from "./AdjacencyMatrix";
-import {LightWeightNode, Vertex} from "./Animations/GenerateLabels";
+import {UndirectedGraph} from "../UndirectedGraph"
+import {CanvasAnimation, CanvasRuler, PointTransitionScale, Ticker} from "../CanvasUtils"
+import {arc, controlPointPosition, distance, filledArc, midpoint, Point, roundedRect} from "../Geometry"
+import {MatrixStyle} from "../AdjacencyMatrix";
+import {Vertex} from "./GenerateLabels";
+import {
+    NetworkData,
+    NetworkDiagramStyle,
+    NetworkSimulationLink,
+    NetworkSimulationNode,
+    PositionedNode
+} from "./NetworkAnimationData";
+import {Simulation} from "../Data/Simulation";
 
-export interface NetworkSimulationNode extends d3.SimulationNodeDatum {
-    vertex: Vertex
-    group: number
-}
-
-export interface NetworkSimulationLink extends d3.SimulationLinkDatum<NetworkSimulationNode> {
-    source: NetworkSimulationNode
-    target: NetworkSimulationNode
-    value: number
-}
-
-type PositionedNode = LightWeightNode | NetworkSimulationNode
-
-export interface NetworkDiagramStyle {
-    frame: Rect
-    fontName?: string
-    fontSize?: number
-    textColor?: string
-    nodeRadius?: number
-    nodeColor?: string
-    nodeStrokeColor?: string
-    linkColor?: string
-    linkLength?: number
-}
-
-export const initNetworkAnimationData = (graph: UndirectedGraph, networkStyle: NetworkDiagramStyle, matrixStyle: MatrixStyle): NetworkData => {
-    const simNodesMap = new Map<string, NetworkSimulationNode>()
-    graph.vertices.forEach((vertex) => {
-        simNodesMap.set(vertex, {vertex: vertex, group: 1})
-    })
-    const simNodes = Array.from(simNodesMap.values())
-    const simLinks = graph.edges.map((edge) => {
-        return {
-            source: simNodesMap.get(edge.vertex0),
-            target: simNodesMap.get(edge.vertex1),
-            value: 2,
-        }
-    })
-
-    return {
-        simNodes: simNodes,
-        simLinks: simLinks,
-        networkDiagramStyle: networkStyle,
-        matrixStyle: matrixStyle,
-        graph: graph
-    }
-}
-
-
-export interface NetworkData {
-    simNodes: NetworkSimulationNode[]
-    simLinks: NetworkSimulationLink[]
-    graph: UndirectedGraph
-    networkDiagramStyle: NetworkDiagramStyle
-    matrixStyle: MatrixStyle
-}
 
 export abstract class NetworkAnimation implements CanvasAnimation {
     protected context: CanvasRenderingContext2D;
@@ -73,6 +24,7 @@ export abstract class NetworkAnimation implements CanvasAnimation {
 
     ticker: Ticker
     duration: number
+    simulation: Simulation;
 
     get currentTick() : number
     {
@@ -102,12 +54,13 @@ export abstract class NetworkAnimation implements CanvasAnimation {
     }
 
     private loadData = (d: NetworkData) => {
-        const {simNodes, simLinks, networkDiagramStyle, graph, matrixStyle} = d
+        const {simNodes, simLinks, networkDiagramStyle, graph, matrixStyle, simulation} = d
         this.simNodes = simNodes
         this.simLinks = simLinks
         this.networkDiagramStyle = networkDiagramStyle
         this.matrixStyle = matrixStyle
         this.graph = graph
+        this.simulation = simulation
     }
 
     abstract finish(): void

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,9 +13,21 @@
         integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
         crossorigin="anonymous"/>
 </head>
-<body class="font-opensans">
+<body class="font-opensans h-full">
 
-  <div id="cover-page" class="hidden flex flex-col justify-center h-full items-center">
+  <div id="menu">
+    <div id="menu-content" class="pt-20 fixed shadow-md h-full w-80 bg-white bg-opacity-80"
+         style="-webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);">
+      <!--      <a id="nodeLinkBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm-->
+      <!--                    hover:bg-gray-100" href="#">From Node-Link Diagram To Matrix</a>-->
+      <!--      <a id="matrixPatternsMixerBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm-->
+      <!--                    hover:bg-gray-100" href="#">Matrix Patterns</a>-->
+      <!--      <a class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm-->
+      <!--                    hover:bg-gray-100" href="#">Sorting Matrix</a>-->
+    </div>
+  </div>
+
+  <div id="home-page" class="hidden flex flex-col justify-center h-full items-center">
     <div class="grid grid-cols-2 justify-self-start mb-4">
       <h1 class="text-3xl font-kufam w-80">
         <span class="text-lg italic font-opensans">Learn</span><br/>
@@ -24,72 +36,81 @@
 
     <div class="grid grid-cols-2">
       <div class="justify-self-end w-80">
-        <div id="cover-matrix">
+        <div id="coverMatrix">
           <!-- Cover adjacency matrix here -->
         </div>
-        <p class="uppercase tracking-widest justify-self-center text-gray-400 text-lg">Node Clique</p>
+        <!--        <p class="uppercase tracking-widest justify-self-center text-gray-400 text-lg">Node Clique</p>-->
       </div>
 
       <div class="ml-4 justify-self-start w-80">
         <p>A <em class="font-semibold italic">visualisation technique</em>
           to help you learn more about relationships.</p>
 
-        <a class="mt-4 p-2 bg-white border border-gray-400 inline-block rounded-md shadow-md
+        <button class="mt-4 p-2 bg-white border border-gray-400 inline-block rounded-md shadow-md
                   hover:border-gray-900" href="#">
-          <div class="flex flex-row justify-center items-center mx-3">
+          <span class="flex flex-row justify-center items-center mx-3">
             <i class="text-4xl fas fa-book-reader mr-3"></i>
-            <div class="leading-3">
+            <span id="startLearningBtn" class="leading-3">
               <span class="text-2xl font-merriweather">Start Learning</span>
               <br/>
               <span class="text-xs">From Node-Link Diagram To Matrix</span>
-            </div>
-          </div>
-        </a>
+            </span>
+          </span>
+        </button>
 
         <h2 class="mt-4 pl-2.5
                    text-xs uppercase font-cantarell tracking-widest text-gray-400">Chapters</h2>
         <div class="chapter-links space-y-0.5 mt-2 w-64">
-          <a class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
+          <a id="nodeLinkBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
                     hover:bg-gray-100" href="#">From Node-Link Diagram To Matrix</a>
-          <a class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
+          <a id="matrixPatternsMixerBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
                     hover:bg-gray-100" href="#">Matrix Patterns</a>
-          <a class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
+          <a id="matrixSortingBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
                     hover:bg-gray-100" href="#">Sorting Matrix</a>
         </div>
       </div>
     </div>
 
-    <p class="mt-8 text-gray-500">Credits</p>
+    <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>
   </div>
 
-  <div id="content-reader" class="hidden flex flex-col justify-between items-center h-full max-w-2xl mx-auto max-h-96">
-    <div class="gallery my-8">
-      <div class="grid grid-cols-2 grid-rows-2 align-top w-full">
-        <div class="row-start-1 row-end-2 col-start-1 col-end-3 col-span-2">
-          <h2 class="text-3xl font-kufam">Friendship Network of Nine People</h2>
+  <div id="contentReader" class="hidden flex flex-col justify-between items-center h-full max-w-2xl mx-auto max-h-96">
+
+    <div id="slideMedia" class="gallery my-8 select-none">
+
+    </div>
+
+    <div id="messageBox" class="grid mx-auto w-full my-2">
+      <a href="#"
+         id="continueBtn"
+         class="text-2xl border border-gray-300 p-2 pl-4 pr-4 shadow-md rounded-md
+         hover:border-gray-900 justify-self-end col-start-2 col-end-3 self-start">Continue</a>
+    </div>
+  </div>
+
+  <div id="matrix-pattern-viewer" class="hidden flex flex-col items-center">
+    <p class="my-8 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
+    <div class="grid grid-cols-2 grid-rows-1">
+      <div id="matrix-pattern-example" class="justify-self-end m-8">
+
+      </div>
+
+      <div class="max-w-md">
+        <div id="pattern-list" class="flex flex-row my-4">
+
         </div>
-        <span class="row-start-2 row-end-3 col-start-1 col-end-2 justify-self-start">Node-Link Diagram</span>
-        <span class="row-start-2 row-end-3 col-start-2 col-end-3 justify-self-end">9 nodes, 11 links</span>
+        <h1 class="text-3xl font-bold">Node Clique</h1>
+        <h4 class="text-sm mt-2">Complete blocks without missing cells inside (exclude self-links)</h4>
+        <p class="text-lg mt-2">Represents set of nodes where every node is connected to every other node.</p>
+        <div id="matrix-controls">
+          <p class="my-2 uppercase tracking-widest text-gray-300">Density</p>
+
+        </div>
+        <a href="#"
+           class="inline-block border border-gray-300 my-4 py-2 px-4 shadow-md rounded-md bg-white hover:border-black active:border-black active:bg-gray-100 justify-self-start text-base">Highlight
+          Pattern In Matrix</a>
       </div>
-
-      <div id="vis-box"
-           class="col-start-1 col-span-2 border border-gray-400 rounded-md mt-4 mb-4
-                  mx-auto shadow-inner">
-      </div>
-      <p class="col-span-2" style="hyphens: auto">
-        Node-link diagram (Also known as Network Diagram) is one of the most popular and useful
-        visualisation technique for a particular relationship of things.
-      </p>
     </div>
-
-    <div class="grid grid-cols-2 align-top w-full my-8">
-      <a href="#" class="border border-gray-300 p-2 pl-4 pr-4 shadow-md rounded-md hover:border-gray-900 justify-self-start">← Back</a>
-      <a href="#" class="border border-gray-300 p-2 pl-4 pr-4 shadow-md rounded-md hover:border-gray-900 justify-self-end">Next →</a>
-    </div>
-  </div>
-
-  <div id="vis-box0">
-
   </div>
 
   <script src="main.js"></script>

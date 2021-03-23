@@ -1,7 +1,7 @@
 import {DrawingInstruction} from "../UndirectedGraph";
 import {controlPointPosition, distance, Point} from "../Geometry";
 import * as d3 from "d3";
-import {NetworkAnimation} from "../NodeLinkCanvasAnimation";
+import {NetworkAnimation} from "./NetworkAnimation";
 import {Vertex} from "./GenerateLabels";
 import {animationScale, timelineSlices} from "./AnimationUtils";
 
