@@ -1,19 +1,21 @@
 import * as d3 from "d3";
-import {cliqueEdges, UndirectedGraph, vertexArray, VertexNameStyle} from "./UndirectedGraph";
-import {flatten} from "./FP";
+import {cliqueEdges, UndirectedGraph, vertexArray, VertexNameStyle} from "./utils/structures/UndirectedGraph";
+import {flatten} from "./utils/FP";
 import "./styles/main.css"
-import {AdjacencyMatrix, MatrixStyle} from "./AdjacencyMatrix";
-import {initNetworkAnimationData} from "./animations/NetworkAnimationData";
-import {OrderedLabels} from "./OrderedLabels";
-import {MatrixPattern} from "./MatrixPattern";
+import {AdjacencyMatrix, MatrixStyle} from "./components/svg/AdjacencyMatrix";
+import {initNetworkAnimationData} from "./data/animations/NetworkAnimationData";
+import {OrderedLabels} from "./utils/structures/OrderedLabels";
 import {MatrixView} from "./components/svg/MatrixView";
 import {Slider} from "./components/svg/Slider";
 import {CanvasAnimationPlayer} from "./components/CanvasAnimationPlayer";
 import {HomeController} from "./controller/HomeController";
-import {App} from "./App";
-import {ContentReaderController} from "./controller/ContentReaderController";
+import {App} from "./UI/App";
+import {AdjacencyMatrixIntro} from "./controller/tutorials/AdjacencyMatrixIntro";
 import {NavigationMenuController} from "./controller/NavigationMenuController";
-import {pagesData} from "./Data/Pages";
+import {pagesData} from "./data/Pages";
+import {PatternViewer} from "./controller/PatternViewer";
+import {MatrixSorting} from "./controller/MatrixSorting";
+import {MatrixReorderingIntro} from "./controller/tutorials/MatrixReorderingIntro";
 
 /*
 let graph = UndirectedGraph.fromMatrix([
@@ -167,34 +169,6 @@ for (const pattern of MatrixPattern.allPatterns)
     patternButton.assignClass('opacity-40 hover:opacity-100 mr-4 cursor-pointer')
 }
 
-let cliquePattern = new MatrixView(patternExampleStyle, [
-    [1,1,1,1,1,0,0,0,0,0,0,1],
-    [1,1,1,1,1,0,0,0,0,0,0,1],
-    [1,1,1,1,0,0,0,0,0,0,0,0],
-    [1,1,1,1,0,0,0,0,0,0,0,0],
-    [1,1,0,0,1,1,1,1,1,1,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,0,0,0,0,1,1,1],
-    [0,0,0,0,0,0,0,0,0,1,1,1],
-    [1,1,0,0,0,0,0,0,0,1,1,1],
-], [
-    [1,1,1,1,0,0,0,0,0,0,0,0],
-    [1,1,1,1,0,0,0,0,0,0,0,0],
-    [1,1,1,1,0,0,0,0,0,0,0,0],
-    [1,1,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,0,0,0,0,0,0,1,1,1],
-    [0,0,0,0,0,0,0,0,0,1,1,1],
-    [0,0,0,0,0,0,0,0,0,1,1,1],
-]);
-
 cliquePattern.addTo(matrixPatternExample);
 
 cliquePattern.setHighlight(true)
@@ -203,5 +177,5 @@ let slider = new Slider()
 slider.addTo(matrixControls)
 */
 
-const app = new App(new ContentReaderController())
+const app = new App(new MatrixReorderingIntro())
 app.navigationController = new NavigationMenuController(pagesData)

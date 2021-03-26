@@ -1,6 +1,6 @@
-import {ViewController} from "./UI/ViewController";
-import {NavigationMenuController} from "./controller/NavigationMenuController";
-import {pagesData} from "./Data/Pages";
+import {ViewController} from "./ViewController";
+import {NavigationMenuController} from "../controller/NavigationMenuController";
+import {pagesData} from "../data/Pages";
 
 export class App {
 

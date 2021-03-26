@@ -1,7 +1,7 @@
 import {Component} from "../../UI/Component";
-import {Rect} from "../../Geometry";
+import {Rect} from "../../utils/structures/Geometry";
 import * as d3 from "d3";
-import {CanvasRuler} from "../../CanvasUtils";
+import {CanvasRuler} from "../../utils/CanvasUtils";
 import {SVGComponent} from "../../UI/SVGComponent";
 
 

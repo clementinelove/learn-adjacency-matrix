@@ -1,6 +1,6 @@
 import {Component} from "../../UI/Component";
-import {flatten} from "../../FP";
-import {MatrixStyle} from "../../AdjacencyMatrix";
+import {flatten} from "../../utils/FP";
+import {MatrixStyle} from "./AdjacencyMatrix";
 import anime from "../../../node_modules/animejs/lib/anime.es";
 import {SVGComponent} from "../../UI/SVGComponent";
 
@@ -12,7 +12,7 @@ export class MatrixView extends SVGComponent {
 
     constructor(style: MatrixStyle, matrix: number[][], highlightMatrix: number[][] = null)
     {
-        super(null, style.frame);
+        super(null, style.matrixFrame);
         this.matrix = matrix;
         this.style = style
         this.highlightMatrix = highlightMatrix
@@ -21,7 +21,7 @@ export class MatrixView extends SVGComponent {
 
     private initializeUI = (): void => {
         const matrixSize = this.matrix.length
-        const {width, height, x, y} = this.style.frame
+        const {width, height, x, y} = this.style.matrixFrame
         const cellSideLength = (width > height ? width : height) / matrixSize
         const highlightArray = this.highlightMatrix !== null ? flatten(this.highlightMatrix) : null
         this.svg

@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import {Point} from "./Geometry";
+import {Point} from "./structures/Geometry";
 
 export function createCanvas(selection, width, height): CanvasRenderingContext2D
 {

@@ -1,10 +1,10 @@
-import {DrawingInstruction, Edge, UndirectedGraph} from "./UndirectedGraph";
+import {DrawingInstruction, Edge, UndirectedGraph} from "../../utils/structures/UndirectedGraph";
 import * as d3 from "d3";
-import "./styles/adjacency-matrix.sass"
-import {CanvasRuler} from "./CanvasUtils";
-import {Rect} from "./Geometry";
-import {Component} from "./UI/Component";
-import {SVGComponent} from "./UI/SVGComponent";
+import "../../styles/adjacency-matrix.sass"
+import {CanvasRuler} from "../../utils/CanvasUtils";
+import {Rect} from "../../utils/structures/Geometry";
+import {Component} from "../../UI/Component";
+import {SVGComponent} from "../../UI/SVGComponent";
 
 export interface IndexedLabel {
     label: string
@@ -12,7 +12,7 @@ export interface IndexedLabel {
 }
 
 export interface MatrixStyle {
-    frame?: Rect
+    matrixFrame?: Rect
     fontName?: string
     spaceBetweenLabels?: number
     padding?: number
@@ -29,6 +29,21 @@ export interface CellStyle {
 
 }
 export class AdjacencyMatrix extends SVGComponent {
+
+    static defaultStyle : MatrixStyle = {
+        matrixFrame: {
+            x: 100,
+            y: 100,
+            width: 500,
+            height: 500
+        },
+        fontName: 'monospace',
+        spaceBetweenLabels: 10,
+        padding: 36,
+        hideLabel: false,
+        interactiveCell: true,
+        cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
+    }
 
     static CELL_FILLED_FILL = 'black'
     static CELL_EMPTY_FILL = 'white'
@@ -73,22 +88,10 @@ export class AdjacencyMatrix extends SVGComponent {
 
     // todo!!!: Make graph label and cell size based on the frame constraints
     constructor(graph: UndirectedGraph,
-                style: MatrixStyle = {
-                    frame: {
-                        x: 100,
-                        y: 100,
-                        width: 500,
-                        height: 500
-                    },
-                    fontName: 'monospace',
-                    spaceBetweenLabels: 10,
-                    padding: 36,
-                    hideLabel: false,
-                    cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
-                },
+                style: MatrixStyle = AdjacencyMatrix.defaultStyle,
                 transitionTime = 400)
     {
-        super(null, style.frame)
+        super(null, style.matrixFrame)
         this.style = style
         this.graph = graph
         this.orderedLabels = graph.vertices
@@ -128,7 +131,7 @@ export class AdjacencyMatrix extends SVGComponent {
     private initializeView()
     {
         // region Calculate drawing frame constraints
-        const {x, y, width, height} = this.style.frame
+        const {x, y, width, height} = this.style.matrixFrame
 
         console.log(`cell size: ${this.cellSize}px, font size: ${this.fontSize}`)
 
@@ -144,8 +147,8 @@ export class AdjacencyMatrix extends SVGComponent {
         this.vLabelGroup = this.svg
                                .append('g')
                                .attr('transform',
-                                     `translate(${this.style.frame.x - this.style.spaceBetweenLabels}, 
-                  ${this.style.frame.y})`)
+                                     `translate(${this.style.matrixFrame.x - this.style.spaceBetweenLabels}, 
+                  ${this.style.matrixFrame.y})`)
         //endregion
 
         // region Initialize horizontal labels and setup their dragging actions
@@ -153,8 +156,8 @@ export class AdjacencyMatrix extends SVGComponent {
         this.hLabelGroup = this.svg
                                .append('g')
                                .attr('transform',
-                                     `translate(${this.style.frame.x},
-                  ${this.style.frame.y - this.style.spaceBetweenLabels})`)
+                                     `translate(${this.style.matrixFrame.x},
+                  ${this.style.matrixFrame.y - this.style.spaceBetweenLabels})`)
         //endregion
 
         // region Initialize cells
@@ -162,8 +165,8 @@ export class AdjacencyMatrix extends SVGComponent {
                               .append('g')
                               .attr('transform',
                                     `translate(
-                      ${this.style.frame.x}, 
-                      ${this.style.frame.y})`)      // y
+                      ${this.style.matrixFrame.x}, 
+                      ${this.style.matrixFrame.y})`)      // y
         // endregion
     }
 
@@ -210,7 +213,7 @@ export class AdjacencyMatrix extends SVGComponent {
 
                                               // region todo highlight similar cells while dragging
 
-                                              //      there is some problem with transition animation to be used here.
+                                              // there is some problem with transition animation to be used here.
                                               let previousLabel = this.previousLabel(label)
                                               if (previousLabel !== null)
                                               {

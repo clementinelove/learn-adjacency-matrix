@@ -1,6 +1,6 @@
 import {ViewController} from "../UI/ViewController";
 import {MenuButton} from "../components/svg/MenuButton";
-import {Page} from "../Data/Pages";
+import {Page} from "../data/Pages";
 import {MenuItemButton} from "../components/MenuItemButton";
 import {HomeController} from "./HomeController";
 import {Component} from "../UI/Component";
@@ -22,9 +22,9 @@ export class NavigationMenuController extends ViewController {
 
         for (const page of pages)
         {
-            const menuItem = new MenuItemButton(page.name)
-            this.menuContent.add(menuItem)
-            menuItem.on('click', () => {
+            const menuItemBtn = new MenuItemButton(page.name)
+            this.menuContent.add(menuItemBtn)
+            menuItemBtn.on('click', () => {
                 this.navigation.navigateTo(page.targetController())
                 this.toggleMenu()
             })

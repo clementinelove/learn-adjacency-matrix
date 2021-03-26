@@ -1,9 +1,9 @@
-import {UndirectedGraph} from "./UndirectedGraph";
+import {UndirectedGraph} from "../../utils/structures/UndirectedGraph";
 import * as d3 from "d3";
-import {controlPointPosition, distance, midpoint, pArc} from "./Geometry";
-import {PointTransitionScale} from "./CanvasUtils";
-import {Vertex} from "./animations/GenerateLabels";
-import {NetworkDiagramStyle, NetworkSimulationLink, NetworkSimulationNode} from "./animations/NetworkAnimationData";
+import {controlPointPosition, distance, midpoint, pArc} from "../../utils/structures/Geometry";
+import {PointTransitionScale} from "../../utils/CanvasUtils";
+import {Vertex} from "../../data/animations/GenerateLabels";
+import {NetworkDiagramStyle, NetworkSimulationLink, NetworkSimulationNode} from "../../data/animations/NetworkAnimationData";
 
 
 // class GraphNode implements d3.SimulationNodeDatum {

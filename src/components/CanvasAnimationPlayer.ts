@@ -1,5 +1,5 @@
-import {Dimension, Rect} from "../Geometry";
-import {CanvasAnimation, createCanvas, scaleCanvas} from "../CanvasUtils";
+import {Dimension, Rect} from "../utils/structures/Geometry";
+import {CanvasAnimation, createCanvas, scaleCanvas} from "../utils/CanvasUtils";
 import {Component} from "../UI/Component";
 
 export class CanvasAnimationPlayer extends Component {

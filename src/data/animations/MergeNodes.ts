@@ -1,5 +1,5 @@
-import {DrawingInstruction} from "../UndirectedGraph";
-import {controlPointPosition, distance, Point} from "../Geometry";
+import {DrawingInstruction} from "../../utils/structures/UndirectedGraph";
+import {controlPointPosition, distance, Point} from "../../utils/structures/Geometry";
 import * as d3 from "d3";
 import {NetworkAnimation} from "./NetworkAnimation";
 import {Vertex} from "./GenerateLabels";
@@ -31,7 +31,7 @@ export class MergeNodes extends NetworkAnimation {
         const {nodeRadius, nodeStrokeColor} = this.networkDiagramStyle
         const {padding, spaceBetweenLabels, cellStrokeColor} = this.matrixStyle
         const nodeDiameter = nodeRadius * 2
-        this.VX_HY = padding + nodeRadius
+        this.VX_HY =  this.centerOffset[0] + padding + nodeRadius
         this.graph.vertices.forEach((v, i) => {
             const nodePosition = this.getNodePositionInMatrix(i)
             this.diagNodeMap.set(v, new Point(nodePosition, nodePosition))

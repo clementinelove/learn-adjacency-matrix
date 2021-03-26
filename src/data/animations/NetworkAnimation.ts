@@ -1,7 +1,7 @@
-import {UndirectedGraph} from "../UndirectedGraph"
-import {CanvasAnimation, CanvasRuler, PointTransitionScale, Ticker} from "../CanvasUtils"
-import {arc, controlPointPosition, distance, filledArc, midpoint, Point, roundedRect} from "../Geometry"
-import {MatrixStyle} from "../AdjacencyMatrix";
+import {UndirectedGraph} from "../../utils/structures/UndirectedGraph"
+import {CanvasAnimation, CanvasRuler, PointTransitionScale, Ticker} from "../../utils/CanvasUtils"
+import {arc, controlPointPosition, distance, filledArc, midpoint, Point, roundedRect} from "../../utils/structures/Geometry"
+import {MatrixStyle} from "../../components/svg/AdjacencyMatrix";
 import {Vertex} from "./GenerateLabels";
 import {
     NetworkData,
@@ -10,7 +10,7 @@ import {
     NetworkSimulationNode,
     PositionedNode
 } from "./NetworkAnimationData";
-import {Simulation} from "../Data/Simulation";
+import {Simulation} from "../Simulation";
 
 
 export abstract class NetworkAnimation implements CanvasAnimation {
@@ -21,6 +21,7 @@ export abstract class NetworkAnimation implements CanvasAnimation {
     matrixStyle: MatrixStyle
     graph: UndirectedGraph
     started: boolean;
+    center: Point
 
     ticker: Ticker
     duration: number
@@ -43,7 +44,7 @@ export abstract class NetworkAnimation implements CanvasAnimation {
         const {nodeRadius} = this.networkDiagramStyle
         const nodeDiameter = nodeRadius * 2
         const {padding, spaceBetweenLabels} = this.matrixStyle
-        return padding + spaceBetweenLabels + nodeDiameter + nodeRadius + nodeDiameter * i
+        return this.centerOffset[0] + padding + spaceBetweenLabels + nodeDiameter + nodeRadius + nodeDiameter * i
     }
 
     protected constructor(data: NetworkData, duration = 0)
@@ -61,6 +62,7 @@ export abstract class NetworkAnimation implements CanvasAnimation {
         this.matrixStyle = matrixStyle
         this.graph = graph
         this.simulation = simulation
+        this.center = new Point(networkDiagramStyle.frame.width / 2, networkDiagramStyle.frame.height / 2)
     }
 
     abstract finish(): void
@@ -68,6 +70,16 @@ export abstract class NetworkAnimation implements CanvasAnimation {
     abstract play(context: CanvasRenderingContext2D): void
 
     abstract prepare(): void
+
+    get centerOffset() : [number, number] {
+        const {nodeRadius} = this.networkDiagramStyle
+        const {padding, spaceBetweenLabels} = this.matrixStyle
+        const nodeDiameter = nodeRadius * 2
+
+        const matrixSideLength = nodeDiameter * (this.simNodes.length + 1) // (nodes + label)
+        return [this.center.x - matrixSideLength / 2 - padding - spaceBetweenLabels,
+            this.center.y - matrixSideLength / 2 - padding - spaceBetweenLabels]
+    }
 
     linkColor(v0: Vertex, v1: Vertex, colorScale: (t: number) => string): string
     {

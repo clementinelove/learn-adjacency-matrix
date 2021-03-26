@@ -1,5 +1,5 @@
-import {controlPointPosition, distance, Point} from "../Geometry";
-import {PointTransitionScale} from "../CanvasUtils";
+import {controlPointPosition, distance, Point} from "../../utils/structures/Geometry";
+import {PointTransitionScale} from "../../utils/CanvasUtils";
 import * as d3 from "d3";
 import {NetworkAnimation} from "./NetworkAnimation";
 import {NetworkData} from "./NetworkAnimationData";
@@ -42,7 +42,7 @@ export class GenerateLabels extends NetworkAnimation {
     private hLabelNodes: LightWeightNode[] = []
     private vLabelNodes: LightWeightNode[] = []
     private diagonalNodeMap: Map<Vertex, LightWeightNode> = new Map()
-    private lightWeightLinks: LightWeightLink[] = []
+    // private lightWeightLinks: LightWeightLink[] = []
     private hLabelToTransitionScales: Map<string, PointTransitionScale>
     private vLabelToTransitionScales: Map<string, PointTransitionScale>
 
@@ -61,8 +61,8 @@ export class GenerateLabels extends NetworkAnimation {
 
         const diagonalNodePosition = (vertex): Point => {
             const nodeIndex = this.graph.vertices.indexOf(vertex)
-            const diagonalX = padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
-            const diagonalY = padding + nodeDiameter + spaceBetweenLabels + nodeDiameter * nodeIndex + nodeRadius
+            const diagonalX = this.centerOffset[0] + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
+            const diagonalY = this.centerOffset[1] + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
             return new Point(diagonalX, diagonalY)
         }
 
@@ -71,7 +71,7 @@ export class GenerateLabels extends NetworkAnimation {
         // clone nodes
         this.graph.vertices.forEach((vertex) => {
             const {x, y} = diagonalNodePosition(vertex)
-            const labelDestination = padding + nodeRadius
+            const labelDestination = this.centerOffset[0] + padding + nodeRadius
 
             this.hLabelToTransitionScales.set(vertex, new PointTransitionScale(x, y, x, labelDestination, this.duration))
             this.vLabelToTransitionScales.set(vertex, new PointTransitionScale(x, y, labelDestination, y, this.duration))
@@ -79,10 +79,6 @@ export class GenerateLabels extends NetworkAnimation {
             this.hLabelNodes.push(new LightWeightNode(vertex, x, y))
             this.vLabelNodes.push(new LightWeightNode(vertex, x, y))
             this.diagonalNodeMap.set(vertex, new LightWeightNode(vertex, x, y))
-        })
-
-        this.graph.edges.forEach((edge) => {
-            // this.lightWeightLinks.push(new LightWeightLink(this.graph, edge.vertex1))
         })
 
         this.ticker.reset()
@@ -94,7 +90,7 @@ export class GenerateLabels extends NetworkAnimation {
         this.context = context
         const currentTick = this.ticker.tick
 
-        this.lightWeightLinks.forEach((link) => {
+        this.simLinks.forEach((link) => {
             const source = link.source.vertex
             const target = link.target.vertex
             const sourceNode = this.diagonalNodeMap.get(source)

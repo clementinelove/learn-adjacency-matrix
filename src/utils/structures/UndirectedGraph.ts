@@ -1,7 +1,7 @@
 import * as reorder from "reorder.js";
-import {Equatable, Range, shuffled, sumOfArithmeticSequence} from "./Utils";
+import {Equatable, Range, shuffled, sumOfArithmeticSequence} from "../Utils";
 import {ObjectSet} from "./ObjectSet";
-import {Vertex} from "./animations/GenerateLabels";
+import {Vertex} from "../../data/animations/GenerateLabels";
 import {OrderedLabels} from "./OrderedLabels";
 
 export class Edge implements Equatable<Edge> {
@@ -75,9 +75,14 @@ export class UndirectedGraph {
         return this._edges.toArray()
     }
 
+    addVertex(vertex: Vertex)
+    {
+        this._vertices.push(vertex)
+    }
+
     addEdge(edge: Edge)
     {
-        return this._edges.add(edge)
+        this._edges.add(edge)
     }
 
     removeEdge(edge: Edge): boolean

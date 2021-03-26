@@ -1,7 +1,7 @@
 import {Vertex} from "./GenerateLabels";
-import {PointTransitionScale, Ticker} from "../CanvasUtils";
+import {PointTransitionScale, Ticker} from "../../utils/CanvasUtils";
 import * as d3 from "d3";
-import {controlPointPosition, distance} from "../Geometry";
+import {controlPointPosition, distance} from "../../utils/structures/Geometry";
 import {NetworkAnimation} from "./NetworkAnimation";
 import {NetworkData} from "./NetworkAnimationData";
 
@@ -24,12 +24,13 @@ export class NodeTrixAnimation extends NetworkAnimation {
         const {padding, spaceBetweenLabels} = this.matrixStyle
         const nodeRadius = this.networkDiagramStyle.nodeRadius
         const nodeDiameter = nodeRadius * 2
+        const [offsetX, offsetY] = this.centerOffset
 
         this.simNodes.forEach((node) => {
             const {vertex, x, y} = node
             const nodeIndex = this.graph.vertices.indexOf(vertex)
-            const destCenterX = padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
-            const destCenterY = padding + nodeDiameter + spaceBetweenLabels + nodeDiameter * nodeIndex + nodeRadius
+            const destCenterX = offsetX + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
+            const destCenterY = offsetY + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter  + nodeRadius
             this.simNodesToTransitionScales.set(vertex, new PointTransitionScale(x, y, destCenterX, destCenterY, this.duration))
         })
         this.ticker.reset()

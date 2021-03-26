@@ -1,4 +1,4 @@
-import {Equatable} from "./Utils";
+import {Equatable} from "../Utils";
 
 export class ObjectSet<T extends Equatable<T>> implements Iterable<T> {
     private values: T[] = []

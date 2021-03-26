@@ -1,26 +1,22 @@
-import {ViewController} from "../UI/ViewController";
-import {CanvasAnimationPlayer} from "../components/CanvasAnimationPlayer";
-import {initNetworkAnimationData} from "../animations/NetworkAnimationData";
-import {exampleGraph0} from "../Data/graphs";
-import {ForceDirectedAnimation} from "../animations/ForceDirectedAnimation";
-import {NodeTrixAnimation} from "../animations/NodeTrixAnimation";
-import {GenerateLabels} from "../animations/GenerateLabels";
-import {MergeNodes} from "../animations/MergeNodes";
-import {Component} from "../UI/Component";
-import {SlideText} from "../components/dom/SlideText";
-import {TitledButton} from "../components/TitledButton";
-import {AddMoreNodes} from "../animations/AddMoreNodes";
+import {ViewController} from "../../UI/ViewController";
+import {CanvasAnimationPlayer} from "../../components/CanvasAnimationPlayer";
+import {initNetworkAnimationData} from "../../data/animations/NetworkAnimationData";
+import {ForceDirectedAnimation} from "../../data/animations/ForceDirectedAnimation";
+import {NodeTrixAnimation} from "../../data/animations/NodeTrixAnimation";
+import {GenerateLabels} from "../../data/animations/GenerateLabels";
+import {MergeNodes} from "../../data/animations/MergeNodes";
+import {Component} from "../../UI/Component";
+import {SlideText} from "../../components/SlideText";
+import {AddMoreNodes} from "../../data/animations/AddMoreNodes";
+import {intro, SlideTextIterator} from "../../data/Slides";
+import {ExampleGraphs} from "../../data/ExampleGraphs";
+import {ContentReader} from "./ContentReader";
 
-export class ContentReaderController extends ViewController {
-
-    slideMedia: Component = new Component("slideMedia")
-    slideText: SlideText = this.allocate(new SlideText())
-    messageBox: Component = new Component('messageBox')
-    continueBtn: Component = new Component('continueBtn')
+export class AdjacencyMatrixIntro extends ContentReader {
 
     constructor()
     {
-        super('contentReader');
+        super();
         const networkData = this.initializeAnimationData()
         const canvasPlayer = this.allocate(new CanvasAnimationPlayer(
             {width: 500, height: 500},
@@ -31,20 +27,25 @@ export class ContentReaderController extends ViewController {
             new MergeNodes(networkData, 100)
         ))
         this.slideMedia.add(canvasPlayer)
-        this.messageBox.add(this.slideText)
+
         canvasPlayer.play()
-        this.slideText.addLine('This is a node link diagram.')
-        this.slideText.addLine('Usually, it works just fine. ')
+
+        const slideTextData = new SlideTextIterator(intro)
+
+        this.slideText.loadLines(slideTextData.current(), true, () => this.continueBtn.hide(false))
         // canvasPlayer.createAnimationStateButtons(d3.select('body'))
+
         this.continueBtn.on('click', () => {
+            this.slideText.loadLines(slideTextData.next(), true, () => this.continueBtn.hide(false))
             canvasPlayer.playNext()
+            this.continueBtn.hide(true)
         })
     }
 
     initializeAnimationData()
     {
         const networkData = initNetworkAnimationData(
-            exampleGraph0,
+            ExampleGraphs.getExample(2),
             {
                 frame: {
                     x: 0,

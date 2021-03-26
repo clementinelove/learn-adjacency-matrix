@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import {Component} from "./Component";
-import {App} from "../App";
+import {App} from "./App";
 
 
 export class ViewController {

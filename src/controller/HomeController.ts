@@ -1,10 +1,11 @@
 import {ViewController} from "../UI/ViewController";
-import {AdjacencyMatrix, MatrixStyle} from "../AdjacencyMatrix";
-import {OrderedLabels} from "../OrderedLabels";
-import {UndirectedGraph} from "../UndirectedGraph";
-import {ContentReaderController} from "./ContentReaderController";
+import {AdjacencyMatrix, MatrixStyle} from "../components/svg/AdjacencyMatrix";
+import {OrderedLabels} from "../utils/structures/OrderedLabels";
+import {UndirectedGraph} from "../utils/structures/UndirectedGraph";
+import {AdjacencyMatrixIntro} from "./tutorials/AdjacencyMatrixIntro";
+import {Component} from "../UI/Component";
 
-// region Data
+// region data
 const coverGraph = UndirectedGraph.fromMatrix([
                                                   [0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                                   [1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -27,7 +28,7 @@ const coverGraph = UndirectedGraph.fromMatrix([
                                               ], OrderedLabels.numeric)
 
 const coverMatrixStyle: MatrixStyle = {
-    frame: {
+    matrixFrame: {
         x: 0,
         y: 0,
         width: 300,
@@ -44,28 +45,25 @@ const coverMatrixStyle: MatrixStyle = {
 
 export class HomeController extends ViewController {
 
-    coverMatrix: d3.Selection<any, any, HTMLElement, any>
-    startLearningBtn: d3.Selection<any, any, HTMLElement, any>
+    coverMatrix = new Component('coverMatrix')
+    startLearningBtn = new Component('startLearningBtn')
     nodeLinkBtn: d3.Selection<any, any, HTMLElement, any>
     matrixPatternsMixerBtn: d3.Selection<any, any, HTMLElement, any>
     matrixSortingBtn: d3.Selection<any, any, HTMLElement, any>
 
     constructor()
     {
-        super('home-page');
-        this.coverMatrix = this.find('coverMatrix')
-        this.startLearningBtn = this.find('startLearningBtn')
+        super('homePage');
         this.nodeLinkBtn = this.find('nodeLinkBtn')
         this.matrixPatternsMixerBtn = this.find('matrixPatternsMixerBtn')
         this.matrixSortingBtn = this.find('matrixSortingBtn')
-
         this.startLearningBtn.on('click', this.moveToReaderController)
 
-        this.allocate(new AdjacencyMatrix(coverGraph, coverMatrixStyle))
-            .addTo(this.coverMatrix)
+        this.coverMatrix.add(this.allocate(new AdjacencyMatrix(coverGraph, coverMatrixStyle)))
+
     }
 
     moveToReaderController = () => {
-        this.navigation.navigateTo(new ContentReaderController())
+        this.navigation.navigateTo(new AdjacencyMatrixIntro())
     }
 }

@@ -1,4 +1,4 @@
-import {PointTransitionScale} from "./CanvasUtils";
+import {PointTransitionScale} from "../CanvasUtils";
 
 export interface Rect {
     x: number

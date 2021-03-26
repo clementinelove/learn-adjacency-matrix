@@ -6,6 +6,7 @@ export class MenuItemButton extends TitledButton {
     {
         super(title);
         this.button
-            .classed("pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm hover:bg-gray-100", true)
+            .classed("px-4 pt-4 pb-2.5 hover:bg-opacity-75 block hover:bg-gray-100 " +
+                         "text-2xl text-left w-full font-comfortaa", true)
     }
 }

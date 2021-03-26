@@ -1,5 +1,5 @@
 import {SVGComponent} from "../../UI/SVGComponent";
-import {Rect} from "../../Geometry";
+import {Rect} from "../../utils/structures/Geometry";
 
 export class MenuButton extends SVGComponent {
 
@@ -40,7 +40,7 @@ export class MenuButton extends SVGComponent {
 
         const state = this.showCloseIcon ? "close" : "normal"
 
-        this.svg.classed('cursor-pointer', true)
+        this.svg.classed('cursor-pointer select-none', true)
 
         const line0 = this.line0Data[state]
         const line1 = this.line1Data[state]

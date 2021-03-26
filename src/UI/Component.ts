@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import {Dimension} from "../Geometry";
+import {Dimension} from "../utils/structures/Geometry";
 import {v4 as uuid} from 'uuid';
 
 export class Component {

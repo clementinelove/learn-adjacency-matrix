@@ -1,6 +1,7 @@
 import * as d3 from "d3";
-import {NetworkSimulationLink, NetworkSimulationNode} from "../animations/NetworkAnimationData";
-import {Dimension} from "../Geometry";
+import {NetworkSimulationLink, NetworkSimulationNode} from "./animations/NetworkAnimationData";
+import {Dimension} from "../utils/structures/Geometry";
+import {Vertex} from "./animations/GenerateLabels";
 
 export class Simulation {
 
@@ -45,7 +46,7 @@ export class Simulation {
         this.instance.alpha(1).restart()
     }
 
-    addLink(source: string, target: string, value: number = 0)
+    addLink([source, target] : [Vertex, Vertex], value: number = 0)
     {
         const sourceNode = this._simNodes.find((n) => n.vertex === source)
         const targetNode = this._simNodes.find((n) => n.vertex === target)
