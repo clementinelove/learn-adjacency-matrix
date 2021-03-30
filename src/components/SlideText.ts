@@ -7,7 +7,7 @@ export class SlideText extends Component {
     {
         super();
         this.view.style('hyphens', 'auto')
-        this.toggleClass("text-2xl justify-self-start mr-8 row-start-1 font-medium", true)
+        this.toggleClass("text-lg justify-self-start row-start-1", true)
     }
 
     addLine(str: string)
@@ -18,22 +18,32 @@ export class SlideText extends Component {
         this.view.append('p').html(str)
     }
 
-    loadLines(strs: string[], animated = true, callback: () => void = null)
+    loadLines(lines: string[], animated = true, callback: () => void = null)
     {
         this.view.selectAll('p').remove()
-        for (const str of strs)
+        for (const str of lines)
         {
             if (animated)
             {
-                this.addLine(str.replace(/\S/g, "<span class='letter'>$&</span>"))
-                d3.selectAll(`#${this.id} .letter`)
-                  .style('opacity', 0)
-                  .transition()
-                  .duration(300)
-                  .ease(d3.easeQuadInOut)
-                  .delay((d, i) => 20 * (i + 1))
-                  .style('opacity', 1)
-                  .end().then(callback)
+                this.addLine(str)
+                this.view.selectAll('p')
+                    .style('opacity', 0)
+                    .transition()
+                    .duration(300)
+                    .ease(d3.easeQuadInOut)
+                    .style('opacity', 1)
+                    .end()
+                    .then(callback)
+
+                // this.addLine(str.replace(/\S/g, "<span class='letter'>$&</span>"))
+                // d3.selectAll(`#${this.id} .letter`)
+                //   .style('opacity', 0)
+                //   .transition()
+                //   .duration(300)
+                //   .ease(d3.easeQuadInOut)
+                //   .delay((d, i) => 30 * (i + 1))
+                //   .style('opacity', 1)
+                //   .end().then(callback)
             } else {
                 this.addLine(str)
                 callback()

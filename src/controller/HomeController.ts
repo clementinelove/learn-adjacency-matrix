@@ -38,7 +38,7 @@ const coverMatrixStyle: MatrixStyle = {
     spaceBetweenLabels: 10,
     padding: 0,
     hideLabel: true,
-    interactiveCell: true,
+    toggleableCell: true,
     cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
 }
 // endregion
@@ -59,7 +59,7 @@ export class HomeController extends ViewController {
         this.matrixSortingBtn = this.find('matrixSortingBtn')
         this.startLearningBtn.on('click', this.moveToReaderController)
 
-        this.coverMatrix.add(this.allocate(new AdjacencyMatrix(coverGraph, coverMatrixStyle)))
+        this.coverMatrix.add(this.allocate(new AdjacencyMatrix(coverMatrixStyle, coverGraph)))
 
     }
 

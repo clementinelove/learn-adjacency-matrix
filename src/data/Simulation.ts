@@ -1,7 +1,7 @@
 import * as d3 from "d3";
-import {NetworkSimulationLink, NetworkSimulationNode} from "./animations/NetworkAnimationData";
+import {NetworkSimulationLink, NetworkSimulationNode} from "./animations/network/NetworkAnimationData";
 import {Dimension} from "../utils/structures/Geometry";
-import {Vertex} from "./animations/GenerateLabels";
+import {Vertex} from "./animations/network/GenerateLabels";
 
 export class Simulation {
 

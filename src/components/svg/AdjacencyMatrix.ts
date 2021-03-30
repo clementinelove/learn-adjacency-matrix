@@ -1,10 +1,23 @@
-import {DrawingInstruction, Edge, UndirectedGraph} from "../../utils/structures/UndirectedGraph";
+import {
+    DrawingInstruction,
+    drawingInstructionToPositionedCell,
+    Edge,
+    UndirectedGraph
+} from "../../utils/structures/UndirectedGraph";
 import * as d3 from "d3";
 import "../../styles/adjacency-matrix.sass"
 import {CanvasRuler} from "../../utils/CanvasUtils";
 import {Rect} from "../../utils/structures/Geometry";
-import {Component} from "../../UI/Component";
 import {SVGComponent} from "../../UI/SVGComponent";
+import {Vertex} from "../../data/animations/network/GenerateLabels";
+import {replaceUndefinedWithDefaultValues} from "../../utils/Utils";
+import {ObjectSet} from "../../utils/structures/ObjectSet";
+import {ormap} from "../../utils/FPUtils";
+import {Highlight} from "../../data/Data";
+import {CellPosition} from "./MatrixView";
+import CellGroupHighlight = Highlight.CellGroupHighlight;
+import AreaHighlight = Highlight.AreaHighlight;
+
 
 export interface IndexedLabel {
     label: string
@@ -19,18 +32,28 @@ export interface MatrixStyle {
     cellStrokeColor?: string
     cellSizeToFontSize?: (number: number) => number
     hideLabel?: boolean
-    interactiveCell?: boolean
+    toggleableCell?: boolean
+    reorderable?: boolean
     fillColor?: string
+    highlightColor?: string
+    showLabelsOnHover?: boolean
+
+    hoverLabelEffect?: AdjacencyMatrix.HoverLabelEffect
+    hoverLabelCallback?: (label: string) => void
+    leaveLabelCallback?: (label: string) => void
+
+    hoverCellEffect?: AdjacencyMatrix.HoverCellEffect
+    hoverCellCallback?: (di: DrawingInstruction) => void
+    leaveCellCallback?: (di: DrawingInstruction) => void
 }
 
 export interface CellStyle {
-
     cursor: string
-
 }
+
 export class AdjacencyMatrix extends SVGComponent {
 
-    static defaultStyle : MatrixStyle = {
+    static defaultStyle: MatrixStyle = {
         matrixFrame: {
             x: 100,
             y: 100,
@@ -41,7 +64,11 @@ export class AdjacencyMatrix extends SVGComponent {
         spaceBetweenLabels: 10,
         padding: 36,
         hideLabel: false,
-        interactiveCell: true,
+        toggleableCell: true,
+        highlightColor: '#fc6b94',
+        cellStrokeColor: 'lightgray',
+        reorderable: true,
+        showLabelsOnHover: false,
         cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
     }
 
@@ -55,9 +82,9 @@ export class AdjacencyMatrix extends SVGComponent {
     private cellSize: number
     private fontSize: number
 
-    private graph: UndirectedGraph;
+    private _graph: UndirectedGraph;
     private style: MatrixStyle
-    private transitionTime: number;
+    transitionTime: number;
 
     private orderedLabels: string[]
 
@@ -75,7 +102,7 @@ export class AdjacencyMatrix extends SVGComponent {
         return this.hLabelGroup.selectAll(`.${AdjacencyMatrix.CSS_CLASS_H_LABEL}`)
     }
 
-    private get cells()
+    private get cells(): d3.Selection<SVGRectElement, DrawingInstruction, any, any>
     {
         return this.cellsGroup.selectAll(`.${AdjacencyMatrix.CSS_CLASS_CELL}`)
     }
@@ -86,18 +113,43 @@ export class AdjacencyMatrix extends SVGComponent {
         return longestLabelWidth >= this.cellSize
     }
 
+    initializeStyleWithDefaultValues(matrixStyle)
+    {
+        const style: MatrixStyle = {}
+        for (const matrixStyleKey in matrixStyle)
+        {
+            matrixStyle.hasOwnProperty()
+            style[matrixStyleKey] = matrixStyle[matrixStyleKey]
+        }
+    }
+
     // todo!!!: Make graph label and cell size based on the frame constraints
-    constructor(graph: UndirectedGraph,
-                style: MatrixStyle = AdjacencyMatrix.defaultStyle,
+    constructor(style: MatrixStyle = AdjacencyMatrix.defaultStyle,
+                graph: UndirectedGraph = null,
                 transitionTime = 400)
     {
         super(null, style.matrixFrame)
-        this.style = style
-        this.graph = graph
-        this.orderedLabels = graph.vertices
+        this.style = replaceUndefinedWithDefaultValues(style, AdjacencyMatrix.defaultStyle)
+        this._graph = graph
         this.transitionTime = transitionTime
-        this.initializeView();
-        this.render()
+        if (this._graph !== null)
+        {
+            this.orderedLabels = this._graph.vertices
+            this.initializeView();
+            this.render()
+        }
+    }
+
+
+    set graph(value: UndirectedGraph)
+    {
+        this._graph = value;
+        if (value !== null)
+        {
+            this.orderedLabels = this._graph.vertices
+            this.initializeView();
+            this.render()
+        }
     }
 
     private render = () => {
@@ -106,6 +158,20 @@ export class AdjacencyMatrix extends SVGComponent {
         {
             this.joinHLabels()
             this.joinVLabels()
+        }
+
+        if (this.style.showLabelsOnHover)
+        {
+            const setLabelsOpacity = (opacity: number, duration: number = 200) => {
+                const ease = d3.easeExpOut
+                return () => {
+                    this.hLabelGroup.transition().ease(ease).duration(duration).style('opacity', opacity)
+                    this.vLabelGroup.transition().ease(ease).duration(duration).style('opacity', opacity)
+                }
+            }
+            setLabelsOpacity(0, 0)()
+            this.svg.on('mouseover', setLabelsOpacity(1))
+                .on('mouseleave', setLabelsOpacity(0))
         }
     }
 
@@ -124,7 +190,7 @@ export class AdjacencyMatrix extends SVGComponent {
                 longestLabel = label
             }
         }
-        console.log(`longest label "${longestLabel}" width ${longestLabelWidth}, label height: ${labelHeight}`)
+        // console.log(`longest label "${longestLabel}" width ${longestLabelWidth}, label height: ${labelHeight}`)
         return [longestLabelWidth, labelHeight]
     }
 
@@ -171,77 +237,124 @@ export class AdjacencyMatrix extends SVGComponent {
     }
 
     joinVLabels = (): void => {
+
+        const hoverVLabelEffect = (effect: AdjacencyMatrix.HoverLabelEffect): ((event, label: string) => void) => {
+            switch (effect)
+            {
+                case AdjacencyMatrix.HoverLabelEffect.HighlightSymmetric:
+                    return (event, label: string) => {
+                        this.cells.filter((di) =>
+                                              di.position.rowLabel === label || di.position.columnLabel === label)
+                            .raise()
+                            .style('stroke', this.style.highlightColor)
+                            .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverLabelCallback(label)
+                        }
+                    }
+                case AdjacencyMatrix.HoverLabelEffect.HighlightCellsByAxis:
+                    return (event, label: string) => {
+                        this.cells.filter((di) => di.position.rowLabel === label)
+                            .raise()
+                            .style('stroke', this.style.highlightColor)
+                            .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverLabelCallback(label)
+                        }
+                    }
+                default:
+                    return null
+            }
+        }
+
         this.vLabelGroup
             .selectAll(`.${AdjacencyMatrix.CSS_CLASS_V_LABEL}`)
             .data(this.orderedLabels, d => d)
-            .join((enter) => enter.append('text')
-                                  .attr('class', `${AdjacencyMatrix.CSS_CLASS_LABEL} vertical-label`)
-                                  .attr('font-family', this.style.fontName)
-                                  .text(label => label)
-                                  .attr('alignment-baseline', 'middle')
-                                  .style('text-anchor', 'end')
-                                  .attr('x', 0)
-                                  .attr('y', (d, i) => i * this.cellSize + this.cellSize / 2)
-                                  .style('font-size', this.fontSize)
-                                  .call(d3.drag()
-                                          .on('drag', (event, label: string) => {
+            .join((enter) => {
+                      const labels = enter.append('text')
+                                          .attr('class', `${AdjacencyMatrix.CSS_CLASS_LABEL} vertical-label`)
+                                          .attr('font-family', this.style.fontName)
+                                          .text(label => label)
+                                          .attr('alignment-baseline', 'middle')
+                                          .style('text-anchor', 'end')
+                                          .attr('x', 0)
+                                          .attr('y', (d, i) => i * this.cellSize + this.cellSize / 2)
+                                          .style('font-size', this.fontSize)
+                                          .on('mouseover', hoverVLabelEffect(this.style.hoverLabelEffect))
+                                          .on('mouseleave', this.restoreFromEffect)
 
-                                              console.log(`x: ${event.x}, y: ${event.y}`)
-                                              // while dragging, detect whether matrix labels needs to be reordered
-                                              // store it as insertion place
-                                              let insertion = this.manualReorderLabels(label, event.y)
-                                              if (insertion !== null)
-                                              {
-                                                  // if matrix labels were reordered,
-                                                  // perform animation on the matrix visualization to reflect changes.
-                                                  let [labelToMove, targetIndex] = insertion
-                                                  this.moveRow(labelToMove, targetIndex)
-                                              }
 
-                                              // move the label and cell along with the current cursor position while dragging
-                                              d3.selectAll(`.${AdjacencyMatrix.CSS_CLASS_LABEL}.${AdjacencyMatrix.CSS_CLASS_V_LABEL}`)
-                                                .filter((d) => d === label)
-                                                .raise()
-                                                .attr('y', event.y)
+                      if (this.style.reorderable)
+                      {
+                          labels
+                              .style('cursor', 'ns-resize')
+                              .call(d3.drag()
+                                      .on('start', (event, label: string) => {
+                                          const colorScale = d3.interpolatePlasma
+                                          const similarityMap = this.similarityMap(label)
 
-                                              this.cells
-                                                  .filter((cellData: DrawingInstruction) => {
-                                                      return cellData.position.rowLabel === label
-                                                  })
-                                                  .raise()
-                                                  .attr('y', event.y - this.cellSize / 2)
+                                          // highlight similar cells
+                                          d3.selectAll<SVGElement, DrawingInstruction>('.cell')
+                                            .filter((cellData) => {
+                                                return true
+                                                // let similaritySet = this.similarSet(label, cellData.position.rowLabel)
+                                                // return similaritySet.has(cellData.position.columnLabel)
+                                            })
+                                            .transition()
+                                            .duration(100)
+                                            .attr('stroke', (d) => `${colorScale(similarityMap.get(d.position.rowLabel))}`)
+                                            .style('fill', (d) => {
+                                                if (d.filling === false)
+                                                {
+                                                    return 'white'
+                                                }
+                                                else
+                                                {
+                                                    return `${colorScale(similarityMap.get(d.position.rowLabel))}`
+                                                }
+                                            })
+                                      })
+                                      .on('drag', (event, label: string) => {
 
-                                              // region todo highlight similar cells while dragging
+                                          console.log(`x: ${event.x}, y: ${event.y}`)
+                                          // while dragging, detect whether matrix labels needs to be reordered
+                                          // store it as insertion place
+                                          let insertion = this.manualReorderLabels(label, event.y)
+                                          if (insertion !== null)
+                                          {
+                                              // if matrix labels were reordered,
+                                              // perform animation on the matrix visualization to reflect changes.
+                                              let [labelToMove, targetIndex] = insertion
+                                              this.moveRow(labelToMove, targetIndex)
+                                          }
 
-                                              // there is some problem with transition animation to be used here.
-                                              let previousLabel = this.previousLabel(label)
-                                              if (previousLabel !== null)
-                                              {
-                                                  let similaritySet = this.similarity(label, previousLabel)
-                                                  d3.selectAll('.cell')
-                                                    .filter((cellData: DrawingInstruction) => {
-                                                        return cellData.position.rowLabel === previousLabel
-                                                            && similaritySet.has(cellData.position.columnLabel)
-                                                    })
-                                                    .attr('fill', 'red')
-                                              }
-                                              let nextLabel = this.nextLabel(label)
-                                              if (nextLabel !== null)
-                                              {
-                                                  let similaritySet = this.similarity(label, nextLabel)
-                                                  d3.selectAll('.cell')
-                                                    .filter((cellData: DrawingInstruction) => {
-                                                        return cellData.position.rowLabel === nextLabel
-                                                            && similaritySet.has(cellData.position.columnLabel)
-                                                    }).attr('fill', 'red')
-                                              }
-                                              // endregion
+                                          // move the label and cell along with the current cursor position while dragging
+                                          d3.selectAll(`.${AdjacencyMatrix.CSS_CLASS_LABEL}.${AdjacencyMatrix.CSS_CLASS_V_LABEL}`)
+                                            .filter((d) => d === label)
+                                            .raise()
+                                            .attr('y', event.y)
 
-                                          })
-                                          .on('end', ((event, label: string) => {
-                                              // rerender when user finished dragging:
-                                              this.render()
-                                          })))
+                                          this.cells
+                                              .filter((cellData: DrawingInstruction) => {
+                                                  return cellData.position.rowLabel === label
+                                              })
+                                              .raise()
+                                              .attr('y', event.y - this.cellSize / 2)
+
+                                      })
+                                      .on('end', ((event, label: string) => {
+                                          // rerender when user finished dragging:
+                                          this.render()
+                                      })))
+                      }
+
+                  }
                 ,
                   update => update.call(update =>
                                             update
@@ -251,66 +364,201 @@ export class AdjacencyMatrix extends SVGComponent {
     }
 
     joinHLabels = (): void => {
+
+        const hoverHLabelEffect = (effect: AdjacencyMatrix.HoverLabelEffect): ((event, label: string) => void) => {
+            switch (effect)
+            {
+                case AdjacencyMatrix.HoverLabelEffect.HighlightSymmetric:
+                    return (event, label: string) => {
+                        this.cells.filter((di) =>
+                                              di.position.rowLabel === label || di.position.columnLabel === label)
+                            .raise()
+                            .style('stroke', this.style.highlightColor)
+                            .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverLabelCallback(label)
+                        }
+                    }
+                case AdjacencyMatrix.HoverLabelEffect.HighlightCellsByAxis:
+                    return (event, label: string) => {
+                        this.cells.filter((di) => di.position.columnLabel === label)
+                            .raise()
+                            .style('stroke', this.style.highlightColor)
+                            .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverLabelCallback(label)
+                        }
+                    }
+                default:
+                    return null
+            }
+        }
+
+
         this.horizontalLabels.data(this.orderedLabels, d => d)
             .join(
-                enter =>
-                    enter.append('text')
-                         .attr('transform', (d, i) => `rotate(${this.isHLabelRotated ? -90 : 0})`)
-                         .attr('class', `${AdjacencyMatrix.CSS_CLASS_LABEL} ${AdjacencyMatrix.CSS_CLASS_H_LABEL}`)
-                         .attr('x', this.isHLabelRotated ? 0 : (d, i) => i * this.cellSize + this.cellSize / 2)
-                         .attr('y', this.isHLabelRotated ? (d, i) => i * this.cellSize + this.cellSize / 2 : 0)
-                         .attr('font-family', this.style.fontName)
-                         .text(label => label)
-                         .style('text-anchor', this.isHLabelRotated ? 'start' : 'middle')
-                         .attr('alignment-baseline', this.isHLabelRotated ? 'middle' : 'text-bottom')
-                         .style('font-size', this.fontSize)
-                         .call(d3.drag()
-                                 .on('drag', (event, label: string) => {
-
-                                     console.log(`x: ${event.x}, y: ${event.y}`)
-                                     // while dragging, detect whether matrix labels needs to be reordered
-                                     // store it as insertion place
-                                     let insertion = this.manualReorderLabels(label, event.x)
-                                     if (insertion !== null)
-                                     {
-                                         // if matrix labels were reordered,
-                                         // perform animation on the matrix visualization to reflect changes.
-                                         let [labelToMove, targetIndex] = insertion
-                                         this.moveColumn(labelToMove, targetIndex)
-                                     }
-
-                                     // move the label and cell along with the current cursor position while dragging
-                                     // todo highlight similar cells while dragging
-                                     d3.selectAll(`.${AdjacencyMatrix.CSS_CLASS_LABEL}.${AdjacencyMatrix.CSS_CLASS_H_LABEL}`)
-                                       .filter((d) => d === label)
-                                       .raise()
-                                       .attr(this.isHLabelRotated ? 'y' : 'x', event.x)
-
-                                     this.cells
-                                         .filter((cellData: DrawingInstruction, i) => {
-                                             return cellData.position.columnLabel === label
-                                         })
-                                         .raise()
-                                         .attr('x', event.x - this.cellSize / 2)
+                enter => {
+                    const labels = enter.append('text')
+                                        .attr('transform', (d, i) => `rotate(${this.isHLabelRotated ? -90 : 0})`)
+                                        .classed(`${AdjacencyMatrix.CSS_CLASS_LABEL} ${AdjacencyMatrix.CSS_CLASS_H_LABEL}`, true)
+                                        .attr('x', this.isHLabelRotated ? 0 : (d, i) => i * this.cellSize + this.cellSize / 2)
+                                        .attr('y', this.isHLabelRotated ? (d, i) => i * this.cellSize + this.cellSize / 2 : 0)
+                                        .attr('font-family', this.style.fontName)
+                                        .text(label => label)
+                                        .style('text-anchor', this.isHLabelRotated ? 'start' : 'middle')
+                                        .attr('alignment-baseline', this.isHLabelRotated ? 'middle' : 'text-bottom')
+                                        .style('font-size', this.fontSize)
+                                        .on('mouseover', hoverHLabelEffect(this.style.hoverLabelEffect))
+                                        .on('mouseleave', this.restoreFromEffect)
 
 
-                                 })
-                                 .on('end', ((event, label: string) => {
-                                     // rerender when user finished dragging
-                                     this.render()
-                                 })))
+                    if (this.style.reorderable)
+                    {
+                        labels
+                            .style('cursor', 'ew-resize')
+                            .call(d3.drag()
+                                    .on('start', (event, label: string) => {
+                                        // highlight similar cells
+                                        d3.selectAll('.cell')
+                                          .filter((cellData: DrawingInstruction) => {
+                                              let similaritySet = this.similarSet(label, cellData.position.columnLabel)
+                                              return similaritySet.has(cellData.position.rowLabel)
+                                          })
+                                          .transition()
+                                          .duration(300)
+                                          .style('fill', '#3B82F6')
+                                    })
+                                    .on('drag', (event, label: string) => {
 
+                                        console.log(`x: ${event.x}, y: ${event.y}`)
+                                        // while dragging, detect whether matrix labels needs to be reordered
+                                        // store it as insertion place
+                                        let insertion = this.manualReorderLabels(label, event.x)
+                                        if (insertion !== null)
+                                        {
+                                            // if matrix labels were reordered,
+                                            // perform animation on the matrix visualization to reflect changes.
+                                            let [labelToMove, targetIndex] = insertion
+                                            this.moveColumn(labelToMove, targetIndex)
+                                        }
+
+                                        // move the label and cell along with the current cursor position while dragging
+                                        // todo highlight similar cells while dragging
+                                        d3.selectAll(`.${AdjacencyMatrix.CSS_CLASS_LABEL}.${AdjacencyMatrix.CSS_CLASS_H_LABEL}`)
+                                          .filter((d) => d === label)
+                                          .raise()
+                                          .attr(this.isHLabelRotated ? 'y' : 'x', event.x)
+
+                                        this.cells
+                                            .filter((cellData: DrawingInstruction, i) => {
+                                                return cellData.position.columnLabel === label
+                                            })
+                                            .raise()
+                                            .attr('x', event.x - this.cellSize / 2)
+
+
+                                    })
+                                    .on('end', ((event, label: string) => {
+                                        // rerender when user finished dragging
+                                        this.render()
+                                    })))
+                    }
+                }
                 ,
                 update =>
                     update.call(update =>
                                     update
-                                        .transition(this.transitionTime)
+                                        .transition().duration(this.transitionTime)
                                         .attr(this.isHLabelRotated ? 'y' : 'x', (d, i) => i * this.cellSize + this.cellSize / 2))
             )
     }
 
     joinCells = (): void => {
-        this.cells.data(this.graph.toDrawingInstructionArray(this.orderedLabels), (d: DrawingInstruction) => {
+
+        const hoverCellEffect = (effect: AdjacencyMatrix.HoverCellEffect): ((event, di: DrawingInstruction) => void) => {
+            switch (effect)
+            {
+                case AdjacencyMatrix.HoverCellEffect.HighlightRelated:
+                    return (event, targetData: DrawingInstruction) => {
+                        const {rowLabel, columnLabel} = targetData.position
+                        this.cells.filter((di) =>
+                                              di.position.rowLabel === rowLabel || di.position.columnLabel === columnLabel)
+                            .raise()
+                            .style('stroke', this.style.highlightColor)
+                            .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log('hoverCellCallback:')
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverCellCallback(targetData)
+                        }
+                    }
+                case AdjacencyMatrix.HoverCellEffect.HighlightSelf:
+                    return (event, targetData: DrawingInstruction) => {
+                        d3.select(event.currentTarget)
+                          .raise()
+                          .style('stroke', this.style.highlightColor)
+                          .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log('hoverCellCallback:')
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverCellCallback(targetData)
+                        }
+                    }
+                case AdjacencyMatrix.HoverCellEffect.HighlightSymmetric:
+                    return (event, targetData: DrawingInstruction) => {
+                        this.cells.filter((di) => {
+                            const {rowLabel, columnLabel} = di.position
+                            const targetPosition = targetData.position
+                            return (targetPosition.rowLabel === rowLabel && targetPosition.columnLabel === columnLabel) ||
+                                (targetPosition.rowLabel === columnLabel && targetPosition.columnLabel === rowLabel)
+                        })
+                            .raise()
+                            .style('stroke', this.style.highlightColor)
+                            .style('stroke-width', 3)
+
+                        if (this.style.hoverCellCallback)
+                        {
+                            console.log('hoverCellCallback:')
+                            console.log(this.style.hoverCellCallback)
+                            this.style.hoverCellCallback(targetData)
+                        }
+                    }
+                default:
+                    return null
+            }
+        }
+
+        const restore = (event, targetData: DrawingInstruction) => {
+            const effect = this.style.hoverCellEffect
+            if (effect === AdjacencyMatrix.HoverCellEffect.None ||
+                effect === null || effect === undefined)
+            {
+                return null
+
+            }
+            else
+            {
+                this.cells
+                    .style('stroke', this.style.cellStrokeColor)
+                    .style('stroke-width', '1px')
+                if (this.style.leaveCellCallback)
+                {
+                    this.style.leaveCellCallback(targetData)
+                }
+            }
+        }
+
+        this.cells.data(this._graph.toDrawingInstructionArray(this.orderedLabels), (d: DrawingInstruction) => {
             const pos = d.position
             return `${pos.rowLabel}, ${pos.columnLabel}`
         }).join(
@@ -322,32 +570,39 @@ export class AdjacencyMatrix extends SVGComponent {
                               this.findLabelIndex(d.position.rowLabel) * this.cellSize)
                           .attr('x', (d: DrawingInstruction) =>
                               this.findLabelIndex(d.position.columnLabel) * this.cellSize)
-                          .attr('fill', (d: DrawingInstruction) => d.filling !== false ?
+                          .style('fill', (d: DrawingInstruction) => d.filling !== false ?
                               AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL)
+                          .style('cursor', this.style.toggleableCell ? 'pointer' : null)
+                          .style('stroke', this.style.cellStrokeColor)
                           .style('stroke-width', "1px")
-                          .on('click', this.style.interactiveCell ? (event, targetData: DrawingInstruction) => {
+                          .on('click', this.style.toggleableCell ? (event, targetData: DrawingInstruction) => {
                               console.log('click')
                               let v1 = targetData.position.rowLabel
                               let v2 = targetData.position.columnLabel
                               if (targetData.filling === false)
                               {
-                                  this.graph.addEdge(new Edge(v1, v2, null))
+                                  this._graph.addEdge(new Edge(v1, v2, null))
                               }
                               else
                               {
-                                  this.graph.removeEdge(new Edge(v1, v2, null))
+                                  this._graph.removeEdge(new Edge(v1, v2, null))
                               }
                               this.render()
                           } : null)
+                          .on('mouseover', hoverCellEffect(this.style.hoverCellEffect))
+                          .on('mouseleave', restore)
             ,
-            update => update.call(update => update.transition(this.transitionTime)
+            update => update.call(update => update.raise()
+                                                  .transition()
+                                                  .duration(this.transitionTime)
                                                   .attr('y', (d: DrawingInstruction) =>
                                                       this.findLabelIndex(d.position.rowLabel) * this.cellSize)
                                                   .attr('x', (d: DrawingInstruction) =>
                                                       this.findLabelIndex(d.position.columnLabel) * this.cellSize)
-                                                  .attr('fill',
-                                                        (d: DrawingInstruction) => d.filling !== false ?
-                                                            AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL))
+                                                  .attr('stroke', this.style.cellStrokeColor)
+                                                  .style('fill',
+                                                         (d: DrawingInstruction) => d.filling !== false ?
+                                                             AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL))
         )
     }
 
@@ -373,6 +628,12 @@ export class AdjacencyMatrix extends SVGComponent {
         this.render()
     }
 
+    private restoreFromEffect = () => {
+        this.cells
+            .style('stroke', this.style.cellStrokeColor)
+            .style('stroke-width', '1px')
+    }
+
     private findLabelIndex = (label: string): number => {
         return this.orderedLabels.findIndex(v => v === label)
     }
@@ -384,20 +645,46 @@ export class AdjacencyMatrix extends SVGComponent {
      * @returns an array whose [x] refers to a boolean that
      *          tells whether the given two labels have the same relationship to ordersLabels[x]
      */
-    private similarity = (labelA: string, labelB: string): Set<string> => {
+    private similarSet = (labelA: string, labelB: string): Set<string> => {
         const labelCount = this.orderedLabels.length
         let labelARow = Array<boolean | number>(labelCount)
         let labelBRow = Array<boolean | number>(labelCount)
         let similaritySet = new Set<string>()
         this.orderedLabels.forEach((label) => {
-            if ((this.graph.isConnected(label, labelA) != false)
-                && (this.graph.isConnected(label, labelB) != false))
+            if ((this._graph.isConnected(label, labelA) != false)
+                && (this._graph.isConnected(label, labelB) != false))
             {
                 similaritySet.add(label)
             }
         })
 
         return similaritySet;
+    }
+
+    isSimilar(onLabel: Vertex, labelA: Vertex, labelB: Vertex): boolean
+    {
+        const isLabelAConnected = this._graph.isConnected(onLabel, labelA)
+        const isLabelBConnected = this._graph.isConnected(onLabel, labelB)
+        return ((isLabelAConnected != false) && (isLabelBConnected != false)) || (isLabelAConnected === isLabelBConnected)
+    }
+
+    private similarity = (labelA: string, labelB: string): number => {
+        let similarityCount = 0
+        this.orderedLabels.forEach((label) => {
+            if (this.isSimilar(label, labelA, labelB))
+            {
+                similarityCount = similarityCount + 1
+            }
+        })
+        return similarityCount / this.orderedLabels.length
+    }
+
+    private similarityMap = (label: string): Map<Vertex, number> => {
+        const map = new Map<string, number>()
+        this.orderedLabels.forEach((otherLabel) => {
+            map.set(otherLabel, this.similarity(label, otherLabel))
+        })
+        return map
     }
 
     /**
@@ -430,6 +717,7 @@ export class AdjacencyMatrix extends SVGComponent {
         return null;
     }
 
+
     changeShape()
     {
         // .append('circle')
@@ -437,7 +725,7 @@ export class AdjacencyMatrix extends SVGComponent {
         // .attr('cx', d => d.position.column * CELL_SIZE + CELL_SIZE / 2)
         // .attr('cy', d => d.position.row * CELL_SIZE + CELL_SIZE / 2)
         // .attr('r', CELL_SIZE / 2)
-        // .attr('fill', d => d.filling !== false ? CELL_FILLED_FILL : CELL_EMPTY_FILL)
+        // .style('fill', d => d.filling !== false ? CELL_FILLED_FILL : CELL_EMPTY_FILL)
         // .style('stroke-width', "1px")
         // swapColumns(3, 5)
     }
@@ -496,6 +784,109 @@ export class AdjacencyMatrix extends SVGComponent {
 //         }
     }
 
+    highlightCells = (highlight: CellGroupHighlight) => {
+        const cellsSet = new ObjectSet(CellPosition.group(...highlight.cells))
+
+        const cells = this.svg
+                          .selectAll<SVGRectElement, DrawingInstruction>('.cell')
+                          .filter((di) => {
+                              return cellsSet.has(drawingInstructionToPositionedCell(di, this.orderedLabels).position)
+                          })
+
+        this.breathAnimation(cells, highlight.color)
+    }
+
+    highlightRectAreas = (highlight: AreaHighlight) => {
+        let predicates: ((di: DrawingInstruction) => boolean)[] = []
+        for (const area of highlight.areas)
+        {
+            const [[startRow, startCol], [endRow, endCol]] = area
+            const isInArea = (di: DrawingInstruction) => {
+                const {row, col} = drawingInstructionToPositionedCell(di, this.orderedLabels).position
+
+                const isException = ormap((exceptionCell) =>
+                                              exceptionCell[0] === row && exceptionCell[1] === col,
+                                          highlight.exceptions)
+                if (isException)
+                {
+                    return false
+                }
+                else
+                {
+                    let isHighlight = row >= startRow && row <= endRow &&
+                        col >= startCol && col <= endCol
+
+                    isHighlight = highlight.highlightFilledOnly ?
+                        isHighlight && (di.filling !== false) : isHighlight
+                    return isHighlight
+                }
+            }
+            if (highlight.union)
+            {
+                predicates.push(isInArea)
+            }
+            else
+            {
+                const cells = this.cells
+                                  .filter((di) => isInArea(di))
+                this.breathAnimation(cells,
+                                     highlight.color,
+                                     highlight.isOneByOne,
+                                     highlight.isReverse,
+                                     highlight.duration,
+                                     highlight.delay)
+            }
+        }
+
+        if (highlight.union)
+        {
+            const cells = this.svg
+                              .selectAll<SVGRectElement, DrawingInstruction>('.cell')
+                              .filter((di) => {
+                                  return ormap((predicate) => predicate(di), predicates)
+                              })
+
+            this.breathAnimation(cells,
+                                 highlight.color,
+                                 highlight.isOneByOne,
+                                 highlight.isReverse,
+                                 highlight.duration,
+                                 highlight.delay)
+        }
+    }
+
+    breathAnimation = (cells: d3.Selection<SVGRectElement, DrawingInstruction, any, any>,
+                       color: string,
+                       oneByOne: boolean = false,
+                       reverse = false,
+                       duration: number = 500,
+                       delay: number = 50) => {
+        const filled = "black"    //this.style.fillColor
+        const unfilled = "white"
+        cells
+            .transition()
+            .ease(d3.easeQuadOut)
+            .duration(duration)
+            .delay((d, i, g) =>
+                       oneByOne ? (reverse ? (g.length - i) * delay : i * delay) : 0
+            )
+            .style('fill', color)
+            .transition()
+            .ease(d3.easeQuadIn)
+            .duration(duration)
+            .delay((d, i, g) =>
+                       oneByOne ? (reverse ? (g.length - i * delay) : i * delay) : 0
+            )
+            .style('fill', (di) => di.filling === false ? unfilled : filled)
+            .end()
+            .then(() => {
+                this.breathAnimation(cells, color, oneByOne, reverse, duration, delay)
+            })
+            .catch((e) => {
+                console.error(e)
+            })
+    }
+
     /**
      * Reorder the matrix label according the current dragging position.
      * @param draggingLabel the label that is currently being dragged
@@ -511,7 +902,7 @@ export class AdjacencyMatrix extends SVGComponent {
         let originPosition = index * this.cellSize + this.cellSize / 2
         let moveDistance = cursorPosition - originPosition // pos+/neg-: move towards end/start
         let endIndex = this.orderedLabels.length - 1
-        console.log(`index: ${index}, move distance: ${moveDistance}`)
+        // console.log(`index: ${index}, move distance: ${moveDistance}`)
         if (index === 0)
         { // start, can only move down
             if (moveDistance >= this.cellSize)
@@ -564,10 +955,13 @@ export class AdjacencyMatrix extends SVGComponent {
     private moveRow = (label: string, targetIndex: number) => {
         // no need to raise
         this.verticalLabels.filter((d) => d === label)
-            .transition().duration(this.transitionTime)
+            .raise()
+            .transition()
+            .duration(this.transitionTime)
             .attr('y', targetIndex * this.cellSize + this.cellSize / 2)
 
         this.cells
+            .raise()
             .filter((cellData: DrawingInstruction, i) => {
                 return cellData.position.rowLabel === label
             })
@@ -578,11 +972,13 @@ export class AdjacencyMatrix extends SVGComponent {
     private moveColumn = (label: string, targetIndex: number) => {
         // no need to raise
         this.horizontalLabels
+            .raise()
             .filter((d) => d === label)
             .transition().duration(this.transitionTime)
             .attr(this.isHLabelRotated ? 'y' : 'x', targetIndex * this.cellSize + this.cellSize / 2)
 
         this.cells
+            .raise()
             .filter((cellData: DrawingInstruction, i) => {
                 return cellData.position.columnLabel === label
             })
@@ -593,7 +989,7 @@ export class AdjacencyMatrix extends SVGComponent {
     // automatically reorder labels
     autoReorderLabels()
     {
-        this.orderedLabels = UndirectedGraph.reorderedLabels(this.orderedLabels, this.graph)
+        this.orderedLabels = UndirectedGraph.reorderedLabels(this.orderedLabels, this._graph)
         console.log(this.orderedLabels)
         this.render()
         // let newOrder = reorderLabels(this.orderedLabels, this.graph)
@@ -605,30 +1001,10 @@ export class AdjacencyMatrix extends SVGComponent {
         // })
     }
 
-    highlightSimilarCellsBesideRow(label: string)
+    stopAnimation()
     {
-        // todo: 1. find rows on both sides
-        //       2. compare each cell with this row
-        //       3. highlight similar cells with fills
-        let labelIndex = this.findLabelIndex(label)
-        let lastIndex = labelIndex - 1 < 0 ? null : labelIndex - 1
-        let nextIndex = labelIndex + 1 > this.orderedLabels.length - 1 ? null : labelIndex + 1
-
-        let labelRow = this.cells.filter((d: DrawingInstruction) => d.position.rowLabel === label).if(lastIndex !== null)
-        {
-            this.cells.filter((d: DrawingInstruction) => {
-                if (d.position.rowLabel === this.orderedLabels[lastIndex])
-                {
-
-                }
-            })
-                .attr('fill', 'green')
-        }
-        if (nextIndex !== null)
-        {
-
-        }
-
+        this.cells.interrupt()
+        this.render()
     }
 }
 
@@ -663,6 +1039,21 @@ function calculateSwap(source: string[], target: string[], separator: string = "
     // })
     console.log(swapSet)
     return swapSet
+}
+
+export namespace AdjacencyMatrix {
+    export enum HoverCellEffect {
+        HighlightRelated,
+        HighlightSymmetric,
+        HighlightSelf,
+        None
+    }
+
+    export enum HoverLabelEffect {
+        HighlightCellsByAxis,
+        HighlightSymmetric,
+        None
+    }
 }
 
 // todo: add node, remove node

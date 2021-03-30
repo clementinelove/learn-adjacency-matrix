@@ -102,3 +102,19 @@ export interface Equatable<T> {
     equals(anotherValue: T): boolean
 }
 
+export function replaceUndefinedWithDefaultValues<T extends object>(obj: T, defaultValueObj: T) : T {
+    let objWithDefault : T = Object()
+    for (const key in defaultValueObj) {
+        if (obj[key] === undefined) {
+            objWithDefault[key] = defaultValueObj[key]
+        } else {
+            objWithDefault[key] = obj[key]
+        }
+    }
+    for (const key in obj) {
+        if (defaultValueObj[key] === undefined) {
+            objWithDefault[key] = obj[key]
+        }
+    }
+    return objWithDefault
+}

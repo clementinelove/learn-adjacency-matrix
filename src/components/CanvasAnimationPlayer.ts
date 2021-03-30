@@ -19,12 +19,11 @@ export class CanvasAnimationPlayer extends Component {
                           .attr('width', width)
                           .attr('height', height)
 
-        this.canvas.classed('mx-auto my-8 rounded-md hover:shadow-inner transition', true)
         this.context = this.canvas.node().getContext('2d')
         scaleCanvas(this.context, width, height)
     }
 
-    set animationState(number: number)
+    private set animationState(number: number)
     {
         if (this.currentAnimation.started)
         {
@@ -34,7 +33,7 @@ export class CanvasAnimationPlayer extends Component {
         this.prepareAnimation()
     }
 
-    get animationState(): number
+    private get animationState(): number
     {
         return this._animationState
     }
@@ -70,7 +69,11 @@ export class CanvasAnimationPlayer extends Component {
         })
     }
 
-    play = () => {
+    play(i) {
+        this.animationState = i
+    }
+
+    playFromStart = () => {
         this.animationState = 0
         window.requestAnimationFrame(this.redraw(this.context))
     }

@@ -14,7 +14,6 @@ export class Component {
 
     get view(): d3.Selection<any, any, any, any>
     {
-        console.log("id:" + this.id)
         return d3.select("#" + this.id)
     }
 
@@ -42,6 +41,9 @@ export class Component {
             this.view
                 .attr('width', `${width}px`)
                 .attr('height', `${height}px`)
+        }
+        if (id === null) {
+            this.hide(true)
         }
     }
 
@@ -85,6 +87,25 @@ export class Component {
         this.node
             .appendChild(component.view.node())
         component.hide(false)
+    }
+
+    addAll(...components: Component[]) {
+        components.forEach((c) => this.add(c))
+    }
+
+    remove(component: Component = null)
+    {
+        component.hide(true)
+        // if (component === null) {
+        //     const node = this.view.node() as HTMLElement
+        //     node.removeChild(node.firstChild)
+        // } else {
+        //     this.find(`${component.id}`)
+        // }
+    }
+
+    removeAll() {
+        this.view.selectChildren().classed('hidden', true)
     }
 
     deallocate()

@@ -1,8 +1,9 @@
 import * as reorder from "reorder.js";
 import {Equatable, Range, shuffled, sumOfArithmeticSequence} from "../Utils";
 import {ObjectSet} from "./ObjectSet";
-import {Vertex} from "../../data/animations/GenerateLabels";
+import {Vertex} from "../../data/animations/network/GenerateLabels";
 import {OrderedLabels} from "./OrderedLabels";
+import {CellPosition, PositionedCell} from "../../components/svg/MatrixView";
 
 export class Edge implements Equatable<Edge> {
     readonly vertex0: Vertex
@@ -31,7 +32,7 @@ export class Edge implements Equatable<Edge> {
 
 type VertexTuple = [Vertex, Vertex]
 
-interface MatrixPosition {
+interface LabeledPosition {
     rowLabel: string
     columnLabel: string
 }
@@ -41,8 +42,18 @@ interface MatrixPosition {
 type Relationship = number | false
 
 export interface DrawingInstruction {
-    position: MatrixPosition
+    position: LabeledPosition
     filling: Relationship
+}
+
+export function drawingInstructionToPositionedCell(di: DrawingInstruction, vertexOrder: Vertex[]) : PositionedCell {
+    const {rowLabel, columnLabel} = di.position
+    const rowIndex = vertexOrder.indexOf(rowLabel)
+    const colIndex = vertexOrder.indexOf(columnLabel)
+    return {
+        position: new CellPosition(rowIndex, colIndex),
+        value: di.filling === false ? 0 : 1
+    }
 }
 
 export class UndirectedGraph {

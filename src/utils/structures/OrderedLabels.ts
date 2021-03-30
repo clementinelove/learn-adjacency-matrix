@@ -1,4 +1,4 @@
-import {Vertex} from "../../data/animations/GenerateLabels";
+import {Vertex} from "../../data/animations/network/GenerateLabels";
 
 const charCodeOfLowercaseA = 'a'.charCodeAt(0)
 const charCodeOfUppercaseA = 'A'.charCodeAt(0)

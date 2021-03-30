@@ -1,6 +1,7 @@
 import {ViewController} from "../UI/ViewController";
 import {AdjacencyMatrix} from "../components/svg/AdjacencyMatrix";
 import {ExampleGraphs} from "../data/ExampleGraphs";
+import {TitledButton} from "../components/TitledButton";
 
 export class MatrixSorting extends ViewController {
 
@@ -8,9 +9,16 @@ export class MatrixSorting extends ViewController {
     {
         super('matrixSorting');
 
-        const adjacencyMatrix = this.allocate(new AdjacencyMatrix(ExampleGraphs.getExample(0)))
+        const adjacencyMatrix = this.allocate(new AdjacencyMatrix(AdjacencyMatrix.defaultStyle, ExampleGraphs.getExample(4)))
+        const button = this.allocate(new TitledButton("Generate to Console"))
 
-        this.dom.add(adjacencyMatrix)
+        button.on('click', () => {
+            // console.log(adjacencyMatrix._graph.toNumbersArray(adjacencyMatrix.graph.vertices))
+        })
+
+        this.view.add(adjacencyMatrix)
+        this.view.add(button)
+
     }
 
 
