@@ -1,7 +1,7 @@
 import {NetworkAnimation} from "./NetworkAnimation";
 import * as d3 from "d3";
 import {NetworkData} from "./NetworkAnimationData";
-import {Edge} from "../../utils/structures/UndirectedGraph";
+import {Edge} from "../../../utils/structures/UndirectedGraph";
 import {Vertex} from "./GenerateLabels";
 
 export class AddMoreNodes extends NetworkAnimation {

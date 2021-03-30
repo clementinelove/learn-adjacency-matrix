@@ -6,7 +6,7 @@
   <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
   <title>Document</title>
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cantarell&family=Lexend&family=Comfortaa&family=Kufam&family=Merriweather&family=Merriweather+Sans&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Cantarell&family=Frank+Ruhl+Libre&family=Lexend&family=Comfortaa&family=Kufam&family=Merriweather&family=Merriweather+Sans&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap"
         rel="stylesheet">
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
@@ -16,37 +16,31 @@
 <body class="font-lexend h-full">
 
   <div id="menu">
-    <div id="menu-content" class="pt-20 fixed shadow-md h-full w-full bg-white bg-opacity-80"
-         style="-webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);">
-      <!--      <a id="nodeLinkBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm-->
-      <!--                    hover:bg-gray-100" href="#">From Node-Link Diagram To Matrix</a>-->
-      <!--      <a id="matrixPatternsMixerBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm-->
-      <!--                    hover:bg-gray-100" href="#">Matrix Patterns</a>-->
-      <!--      <a class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm-->
-      <!--                    hover:bg-gray-100" href="#">Sorting Matrix</a>-->
-    </div>
+    <!--    style="-webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);"-->
   </div>
 
-  <div id="homePage" class="hidden flex flex-col justify-center h-full items-center">
-    <div class="grid grid-cols-2 justify-self-start mb-4">
-      <h1 class="text-3xl font-kufam w-80">
-        <span class="text-lg italic font-opensans">Learn</span><br/>
-        Adjacency Matrix</h1>
-    </div>
+  <div id="app">
 
-    <div class="grid grid-cols-2">
-      <div class="justify-self-end w-80">
-        <div id="coverMatrix">
-          <!-- Cover adjacency matrix here -->
-        </div>
-        <!--        <p class="uppercase tracking-widest justify-self-center text-gray-400 text-lg">Node Clique</p>-->
+    <div id="homePage" class="hidden flex flex-col justify-center h-full items-center">
+      <div class="grid grid-cols-2 justify-self-start mb-4">
+        <h1 class="text-3xl font-kufam w-80">
+          <span class="text-lg italic font-opensans">Learn</span><br/>
+          Adjacency Matrix</h1>
       </div>
 
-      <div class="ml-4 justify-self-start w-80">
-        <p>A <em class="font-semibold italic">visualisation technique</em>
-          to help you learn more about relationships.</p>
+      <div class="grid grid-cols-2">
+        <div class="justify-self-end w-80">
+          <div id="coverMatrix">
+            <!-- Cover adjacency matrix here -->
+          </div>
+          <!--        <p class="uppercase tracking-widest justify-self-center text-gray-400 text-lg">Node Clique</p>-->
+        </div>
 
-        <button class="mt-4 p-2 bg-white border border-gray-400 inline-block rounded-md shadow-md
+        <div class="ml-4 justify-self-start w-80">
+          <p>A <em class="font-semibold italic">visualisation technique</em>
+            to help you learn more about relationships.</p>
+
+          <button class="mt-4 p-2 bg-white border border-gray-400 inline-block rounded-md shadow-md
                   hover:border-gray-900" href="#">
           <span class="flex flex-row justify-center items-center mx-3">
             <i class="text-4xl fas fa-book-reader mr-3"></i>
@@ -56,56 +50,54 @@
               <span class="text-xs">From Node-Link Diagram To Matrix</span>
             </span>
           </span>
-        </button>
+          </button>
 
-        <h2 class="mt-4 pl-2.5
+          <h2 class="mt-4 pl-2.5
                    text-xs uppercase font-cantarell tracking-widest text-gray-400">Chapters</h2>
-        <div class="chapter-links space-y-0.5 mt-2 w-64">
-          <a id="nodeLinkBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
+          <div class="chapter-links space-y-0.5 mt-2 w-64">
+            <a id="nodeLinkBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
                     hover:bg-gray-100" href="#">From Node-Link Diagram To Matrix</a>
-          <a id="matrixPatternsMixerBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
+            <a id="matrixPatternsMixerBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
                     hover:bg-gray-100" href="#">Matrix Patterns</a>
-          <a id="matrixSortingBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
+            <a id="matrixSortingBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
                     hover:bg-gray-100" href="#">Sorting Matrix</a>
+          </div>
         </div>
+
       </div>
 
+      <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>
     </div>
 
-    <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>
-  </div>
+    <div id="contentReader" class="hidden flex flex-col justify-between items-center h-full max-w-3xl mx-auto max-h-96">
 
-  <div id="contentReader" class="hidden flex flex-col justify-between items-center h-full max-w-2xl mx-auto max-h-96">
+      <div id="slideMedia" class="gallery my-8 select-none">
 
-    <div id="slideMedia" class="gallery my-8 select-none">
+      </div>
 
-    </div>
-
-    <div id="messageBox" class="mx-auto w-full my-2">
-    </div>
-    <a href="#"
-       id="continueBtn"
-       class="my-4 select-none self-end text-2xl border border-gray-300 p-2 pl-4 pr-4 shadow-md rounded-md
+      <div id="messageBox" class="mx-auto w-full my-2">
+      </div>
+      <a href="#"
+         id="continueBtn"
+         class="my-4 select-none self-end text-2xl border border-gray-300 p-2 pl-4 pr-4 shadow-md rounded-md
          hover:border-gray-900">Continue</a>
-  </div>
+    </div>
 
-  <div id="patternViewer" class="hidden flex flex-col items-center">
-    <h1 class="my-8 text-lg text-black select-none">The 6 Common Pattern for Adjacency Matrix</h1>
-    <p class="my-8 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
-    <div class="grid grid-cols-2 grid-rows-1">
-      <div id="matrixExample" class="justify-self-end m-8">
-
-      </div>
-
-      <div class="max-w-md">
-        <div id="patternList" class="flex flex-row my-4">
+    <div id="patternViewer" class="hidden flex flex-col items-center">
+      <h1 class="my-8 text-lg text-black select-none">The 6 Common Pattern for Adjacency Matrix</h1>
+      <p class="my-8 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
+      <div class="grid grid-cols-2 grid-rows-1">
+        <div id="matrixExample" class="justify-self-end m-8">
 
         </div>
-        <h1 class="text-3xl font-bold">Node Clique</h1>
-        <h4 class="text-sm mt-2">Complete blocks without missing cells inside (exclude self-links)</h4>
-        <p class="text-lg mt-2">Represents set of nodes where every node is connected to every other node.</p>
-        <div id="matrixControls">
-          <p class="my-2 uppercase tracking-widest text-gray-300">Density</p>
+
+        <div class="max-w-md">
+          <div id="patternList" class="flex flex-row my-4">
+
+          </div>
+          <div id="infoContainer">
+
+          </div>
 
         </div>
         <a href="#"
@@ -116,6 +108,8 @@
   </div>
 
   <div id="matrixSorting">
+
+  </div>
 
   </div>
 

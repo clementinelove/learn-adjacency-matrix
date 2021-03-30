@@ -38,7 +38,7 @@ const coverMatrixStyle: MatrixStyle = {
     spaceBetweenLabels: 10,
     padding: 0,
     hideLabel: true,
-    interactiveCell: true,
+    toggableCell: true,
     cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
 }
 // endregion

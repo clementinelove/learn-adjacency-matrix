@@ -1,9 +1,9 @@
-import {DrawingInstruction} from "../../utils/structures/UndirectedGraph";
-import {controlPointPosition, distance, Point} from "../../utils/structures/Geometry";
+import {DrawingInstruction} from "../../../utils/structures/UndirectedGraph";
+import {controlPointPosition, distance, Point} from "../../../utils/structures/Geometry";
 import * as d3 from "d3";
 import {NetworkAnimation} from "./NetworkAnimation";
 import {Vertex} from "./GenerateLabels";
-import {animationScale, timelineSlices} from "./AnimationUtils";
+import {animationScale, timelineSlices} from "../../../utils/AnimationUtils";
 
 export class MergeNodes extends NetworkAnimation {
 

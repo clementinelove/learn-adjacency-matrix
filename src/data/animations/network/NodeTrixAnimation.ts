@@ -1,7 +1,7 @@
 import {Vertex} from "./GenerateLabels";
-import {PointTransitionScale, Ticker} from "../../utils/CanvasUtils";
+import {PointTransitionScale, Ticker} from "../../../utils/CanvasUtils";
 import * as d3 from "d3";
-import {controlPointPosition, distance} from "../../utils/structures/Geometry";
+import {controlPointPosition, distance} from "../../../utils/structures/Geometry";
 import {NetworkAnimation} from "./NetworkAnimation";
 import {NetworkData} from "./NetworkAnimationData";
 

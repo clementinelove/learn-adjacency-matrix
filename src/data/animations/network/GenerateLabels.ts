@@ -1,5 +1,5 @@
-import {controlPointPosition, distance, Point} from "../../utils/structures/Geometry";
-import {PointTransitionScale} from "../../utils/CanvasUtils";
+import {controlPointPosition, distance, Point} from "../../../utils/structures/Geometry";
+import {PointTransitionScale} from "../../../utils/CanvasUtils";
 import * as d3 from "d3";
 import {NetworkAnimation} from "./NetworkAnimation";
 import {NetworkData} from "./NetworkAnimationData";

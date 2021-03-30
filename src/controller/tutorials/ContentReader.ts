@@ -13,6 +13,7 @@ export class ContentReader extends ViewController {
     {
         super('contentReader');
         this.messageBox.add(this.slideText)
+        this.continueBtn.view.text('Continue')
         this.continueBtn.hide(true)
     }
 }

@@ -31,7 +31,7 @@ export class SlideText extends Component {
                   .transition()
                   .duration(300)
                   .ease(d3.easeQuadInOut)
-                  .delay((d, i) => 20 * (i + 1))
+                  .delay((d, i) => 30 * (i + 1))
                   .style('opacity', 1)
                   .end().then(callback)
             } else {

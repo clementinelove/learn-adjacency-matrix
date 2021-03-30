@@ -1,7 +1,7 @@
-import {UndirectedGraph} from "../../utils/structures/UndirectedGraph"
-import {CanvasAnimation, CanvasRuler, PointTransitionScale, Ticker} from "../../utils/CanvasUtils"
-import {arc, controlPointPosition, distance, filledArc, midpoint, Point, roundedRect} from "../../utils/structures/Geometry"
-import {MatrixStyle} from "../../components/svg/AdjacencyMatrix";
+import {UndirectedGraph} from "../../../utils/structures/UndirectedGraph"
+import {CanvasAnimation, CanvasRuler, PointTransitionScale, Ticker} from "../../../utils/CanvasUtils"
+import {arc, controlPointPosition, distance, filledArc, midpoint, Point, roundedRect} from "../../../utils/structures/Geometry"
+import {MatrixStyle} from "../../../components/svg/AdjacencyMatrix";
 import {Vertex} from "./GenerateLabels";
 import {
     NetworkData,
@@ -10,7 +10,7 @@ import {
     NetworkSimulationNode,
     PositionedNode
 } from "./NetworkAnimationData";
-import {Simulation} from "../Simulation";
+import {Simulation} from "../../Simulation";
 
 
 export abstract class NetworkAnimation implements CanvasAnimation {

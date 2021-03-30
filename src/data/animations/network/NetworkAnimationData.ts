@@ -1,9 +1,9 @@
 import * as d3 from "d3";
-import {UndirectedGraph} from "../../utils/structures/UndirectedGraph";
-import {MatrixStyle} from "../../components/svg/AdjacencyMatrix";
-import {Rect} from "../../utils/structures/Geometry";
+import {UndirectedGraph} from "../../../utils/structures/UndirectedGraph";
+import {MatrixStyle} from "../../../components/svg/AdjacencyMatrix";
+import {Rect} from "../../../utils/structures/Geometry";
 import {LightWeightNode, Vertex} from "./GenerateLabels";
-import {Simulation} from "../Simulation";
+import {Simulation} from "../../Simulation";
 
 export interface NetworkSimulationNode extends d3.SimulationNodeDatum {
     vertex: Vertex

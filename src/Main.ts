@@ -1,14 +1,5 @@
-import * as d3 from "d3";
-import {cliqueEdges, UndirectedGraph, vertexArray, VertexNameStyle} from "./utils/structures/UndirectedGraph";
-import {flatten} from "./utils/FP";
+
 import "./styles/main.css"
-import {AdjacencyMatrix, MatrixStyle} from "./components/svg/AdjacencyMatrix";
-import {initNetworkAnimationData} from "./data/animations/NetworkAnimationData";
-import {OrderedLabels} from "./utils/structures/OrderedLabels";
-import {MatrixView} from "./components/svg/MatrixView";
-import {Slider} from "./components/svg/Slider";
-import {CanvasAnimationPlayer} from "./components/CanvasAnimationPlayer";
-import {HomeController} from "./controller/HomeController";
 import {App} from "./UI/App";
 import {AdjacencyMatrixIntro} from "./controller/tutorials/AdjacencyMatrixIntro";
 import {NavigationMenuController} from "./controller/NavigationMenuController";
@@ -16,6 +7,7 @@ import {pagesData} from "./data/Pages";
 import {PatternViewer} from "./controller/PatternViewer";
 import {MatrixSorting} from "./controller/MatrixSorting";
 import {MatrixReorderingIntro} from "./controller/tutorials/MatrixReorderingIntro";
+import {PatternsIntro} from "./controller/tutorials/PatternsIntro";
 
 /*
 let graph = UndirectedGraph.fromMatrix([
@@ -177,5 +169,5 @@ let slider = new Slider()
 slider.addTo(matrixControls)
 */
 
-const app = new App(new MatrixReorderingIntro())
+const app = new App(new PatternViewer())
 app.navigationController = new NavigationMenuController(pagesData)

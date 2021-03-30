@@ -7,13 +7,13 @@ export class ViewController {
 
     navigation: App = null
     id: string // the id of the dom
-    protected dom: Component
+    protected view: Component
     allocated: Component[] = []
 
     constructor(id: string)
     {
         this.id = id;
-        this.dom = new Component(id)
+        this.view = new Component(id)
         this.hide(true)
     }
 
@@ -30,10 +30,10 @@ export class ViewController {
     }
 
     hide(v: boolean) {
-        this.dom.toggleClass('hidden', v)
+        this.view.toggleClass('hidden', v)
     }
 
     find(id: string) {
-        return this.dom.find(id)
+        return this.view.find(id)
     }
 }

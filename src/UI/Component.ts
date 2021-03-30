@@ -43,6 +43,9 @@ export class Component {
                 .attr('width', `${width}px`)
                 .attr('height', `${height}px`)
         }
+        if (id === null) {
+            this.hide(true)
+        }
     }
 
     get node(): HTMLElement
@@ -85,6 +88,25 @@ export class Component {
         this.node
             .appendChild(component.view.node())
         component.hide(false)
+    }
+
+    addAll(...components: Component[]) {
+        components.forEach((c) => this.add(c))
+    }
+
+    remove(component: Component = null)
+    {
+        component.hide(true)
+        // if (component === null) {
+        //     const node = this.view.node() as HTMLElement
+        //     node.removeChild(node.firstChild)
+        // } else {
+        //     this.find(`${component.id}`)
+        // }
+    }
+
+    removeAll() {
+        this.view.selectChildren().classed('hidden', true)
     }
 
     deallocate()

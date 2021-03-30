@@ -3,8 +3,9 @@ import * as d3 from "d3";
 import "../../styles/adjacency-matrix.sass"
 import {CanvasRuler} from "../../utils/CanvasUtils";
 import {Rect} from "../../utils/structures/Geometry";
-import {Component} from "../../UI/Component";
 import {SVGComponent} from "../../UI/SVGComponent";
+import {Vertex} from "../../data/animations/network/GenerateLabels";
+import {replaceUndefinedWithDefaultValues} from "../../utils/Utils";
 
 export interface IndexedLabel {
     label: string
@@ -19,18 +20,19 @@ export interface MatrixStyle {
     cellStrokeColor?: string
     cellSizeToFontSize?: (number: number) => number
     hideLabel?: boolean
-    interactiveCell?: boolean
+    toggableCell?: boolean
+    showConnections?: boolean
     fillColor?: string
+    highlightColor?: string
 }
 
 export interface CellStyle {
-
     cursor: string
-
 }
+
 export class AdjacencyMatrix extends SVGComponent {
 
-    static defaultStyle : MatrixStyle = {
+    static defaultStyle: MatrixStyle = {
         matrixFrame: {
             x: 100,
             y: 100,
@@ -41,7 +43,9 @@ export class AdjacencyMatrix extends SVGComponent {
         spaceBetweenLabels: 10,
         padding: 36,
         hideLabel: false,
-        interactiveCell: true,
+        toggableCell: true,
+        highlightColor: 'blue',
+        cellStrokeColor: 'lightgray',
         cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
     }
 
@@ -55,9 +59,9 @@ export class AdjacencyMatrix extends SVGComponent {
     private cellSize: number
     private fontSize: number
 
-    private graph: UndirectedGraph;
+    graph: UndirectedGraph;
     private style: MatrixStyle
-    private transitionTime: number;
+    transitionTime: number;
 
     private orderedLabels: string[]
 
@@ -86,13 +90,22 @@ export class AdjacencyMatrix extends SVGComponent {
         return longestLabelWidth >= this.cellSize
     }
 
+    initializeStyleWithDefaultValues(matrixStyle) {
+        const style : MatrixStyle = {}
+        for (const matrixStyleKey in matrixStyle)
+        {
+            matrixStyle.hasOwnProperty()
+            style[matrixStyleKey] = matrixStyle[matrixStyleKey]
+        }
+    }
+
     // todo!!!: Make graph label and cell size based on the frame constraints
     constructor(graph: UndirectedGraph,
                 style: MatrixStyle = AdjacencyMatrix.defaultStyle,
                 transitionTime = 400)
     {
         super(null, style.matrixFrame)
-        this.style = style
+        this.style = replaceUndefinedWithDefaultValues(style, AdjacencyMatrix.defaultStyle)
         this.graph = graph
         this.orderedLabels = graph.vertices
         this.transitionTime = transitionTime
@@ -124,7 +137,7 @@ export class AdjacencyMatrix extends SVGComponent {
                 longestLabel = label
             }
         }
-        console.log(`longest label "${longestLabel}" width ${longestLabelWidth}, label height: ${labelHeight}`)
+        // console.log(`longest label "${longestLabel}" width ${longestLabelWidth}, label height: ${labelHeight}`)
         return [longestLabelWidth, labelHeight]
     }
 
@@ -184,6 +197,28 @@ export class AdjacencyMatrix extends SVGComponent {
                                   .attr('y', (d, i) => i * this.cellSize + this.cellSize / 2)
                                   .style('font-size', this.fontSize)
                                   .call(d3.drag()
+                                          .on('start', (event, label: string) => {
+                                              const colorScale = d3.interpolatePlasma
+                                              const similarityMap = this.similarityMap(label)
+
+                                              // highlight similar cells
+                                              d3.selectAll<SVGElement, DrawingInstruction>('.cell')
+                                                .filter((cellData) => {
+                                                    return true
+                                                    // let similaritySet = this.similarSet(label, cellData.position.rowLabel)
+                                                    // return similaritySet.has(cellData.position.columnLabel)
+                                                })
+                                                .transition()
+                                                .duration(100)
+                                                .attr('stroke', (d) => `${colorScale(similarityMap.get(d.position.rowLabel))}`)
+                                                .attr('fill', (d) => {
+                                                    if (d.filling === false) {
+                                                        return 'white'
+                                                    } else {
+                                                        return `${colorScale(similarityMap.get(d.position.rowLabel))}`
+                                                    }
+                                                })
+                                          })
                                           .on('drag', (event, label: string) => {
 
                                               console.log(`x: ${event.x}, y: ${event.y}`)
@@ -210,32 +245,6 @@ export class AdjacencyMatrix extends SVGComponent {
                                                   })
                                                   .raise()
                                                   .attr('y', event.y - this.cellSize / 2)
-
-                                              // region todo highlight similar cells while dragging
-
-                                              // there is some problem with transition animation to be used here.
-                                              let previousLabel = this.previousLabel(label)
-                                              if (previousLabel !== null)
-                                              {
-                                                  let similaritySet = this.similarity(label, previousLabel)
-                                                  d3.selectAll('.cell')
-                                                    .filter((cellData: DrawingInstruction) => {
-                                                        return cellData.position.rowLabel === previousLabel
-                                                            && similaritySet.has(cellData.position.columnLabel)
-                                                    })
-                                                    .attr('fill', 'red')
-                                              }
-                                              let nextLabel = this.nextLabel(label)
-                                              if (nextLabel !== null)
-                                              {
-                                                  let similaritySet = this.similarity(label, nextLabel)
-                                                  d3.selectAll('.cell')
-                                                    .filter((cellData: DrawingInstruction) => {
-                                                        return cellData.position.rowLabel === nextLabel
-                                                            && similaritySet.has(cellData.position.columnLabel)
-                                                    }).attr('fill', 'red')
-                                              }
-                                              // endregion
 
                                           })
                                           .on('end', ((event, label: string) => {
@@ -265,6 +274,17 @@ export class AdjacencyMatrix extends SVGComponent {
                          .attr('alignment-baseline', this.isHLabelRotated ? 'middle' : 'text-bottom')
                          .style('font-size', this.fontSize)
                          .call(d3.drag()
+                                 .on('start', (event, label: string) => {
+                                     // highlight similar cells
+                                     d3.selectAll('.cell')
+                                       .filter((cellData: DrawingInstruction) => {
+                                           let similaritySet = this.similarSet(label, cellData.position.columnLabel)
+                                           return similaritySet.has(cellData.position.rowLabel)
+                                       })
+                                       .transition()
+                                       .duration(300)
+                                       .attr('fill', '#3B82F6')
+                                 })
                                  .on('drag', (event, label: string) => {
 
                                      console.log(`x: ${event.x}, y: ${event.y}`)
@@ -304,7 +324,7 @@ export class AdjacencyMatrix extends SVGComponent {
                 update =>
                     update.call(update =>
                                     update
-                                        .transition(this.transitionTime)
+                                        .transition().duration(this.transitionTime)
                                         .attr(this.isHLabelRotated ? 'y' : 'x', (d, i) => i * this.cellSize + this.cellSize / 2))
             )
     }
@@ -322,10 +342,11 @@ export class AdjacencyMatrix extends SVGComponent {
                               this.findLabelIndex(d.position.rowLabel) * this.cellSize)
                           .attr('x', (d: DrawingInstruction) =>
                               this.findLabelIndex(d.position.columnLabel) * this.cellSize)
+                          .attr('stroke', this.style.cellStrokeColor)
                           .attr('fill', (d: DrawingInstruction) => d.filling !== false ?
                               AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL)
                           .style('stroke-width', "1px")
-                          .on('click', this.style.interactiveCell ? (event, targetData: DrawingInstruction) => {
+                          .on('click', this.style.toggableCell ? (event, targetData: DrawingInstruction) => {
                               console.log('click')
                               let v1 = targetData.position.rowLabel
                               let v2 = targetData.position.columnLabel
@@ -340,11 +361,14 @@ export class AdjacencyMatrix extends SVGComponent {
                               this.render()
                           } : null)
             ,
-            update => update.call(update => update.transition(this.transitionTime)
+            update => update.call(update => update.raise()
+                                                  .transition()
+                                                  .duration(this.transitionTime)
                                                   .attr('y', (d: DrawingInstruction) =>
                                                       this.findLabelIndex(d.position.rowLabel) * this.cellSize)
                                                   .attr('x', (d: DrawingInstruction) =>
                                                       this.findLabelIndex(d.position.columnLabel) * this.cellSize)
+                                                  .attr('stroke', this.style.cellStrokeColor)
                                                   .attr('fill',
                                                         (d: DrawingInstruction) => d.filling !== false ?
                                                             AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL))
@@ -384,7 +408,7 @@ export class AdjacencyMatrix extends SVGComponent {
      * @returns an array whose [x] refers to a boolean that
      *          tells whether the given two labels have the same relationship to ordersLabels[x]
      */
-    private similarity = (labelA: string, labelB: string): Set<string> => {
+    private similarSet = (labelA: string, labelB: string): Set<string> => {
         const labelCount = this.orderedLabels.length
         let labelARow = Array<boolean | number>(labelCount)
         let labelBRow = Array<boolean | number>(labelCount)
@@ -398,6 +422,31 @@ export class AdjacencyMatrix extends SVGComponent {
         })
 
         return similaritySet;
+    }
+
+    isSimilar(onLabel: Vertex, labelA: Vertex, labelB: Vertex) : boolean {
+        const isLabelAConnected = this.graph.isConnected(onLabel, labelA)
+        const isLabelBConnected = this.graph.isConnected(onLabel, labelB)
+        return ((isLabelAConnected != false) && (isLabelBConnected != false)) || (isLabelAConnected === isLabelBConnected)
+    }
+
+    private similarity = (labelA: string, labelB: string): number => {
+        let similarityCount = 0
+        this.orderedLabels.forEach((label) => {
+            if (this.isSimilar(label, labelA, labelB))
+            {
+                similarityCount = similarityCount + 1
+            }
+        })
+        return similarityCount / this.orderedLabels.length
+    }
+
+    private similarityMap = (label: string): Map<Vertex, number> => {
+        const map = new Map<string, number>()
+        this.orderedLabels.forEach((otherLabel) => {
+            map.set(otherLabel, this.similarity(label, otherLabel))
+        })
+        return map
     }
 
     /**
@@ -429,6 +478,8 @@ export class AdjacencyMatrix extends SVGComponent {
         }
         return null;
     }
+
+
 
     changeShape()
     {
@@ -511,7 +562,7 @@ export class AdjacencyMatrix extends SVGComponent {
         let originPosition = index * this.cellSize + this.cellSize / 2
         let moveDistance = cursorPosition - originPosition // pos+/neg-: move towards end/start
         let endIndex = this.orderedLabels.length - 1
-        console.log(`index: ${index}, move distance: ${moveDistance}`)
+        // console.log(`index: ${index}, move distance: ${moveDistance}`)
         if (index === 0)
         { // start, can only move down
             if (moveDistance >= this.cellSize)
@@ -564,10 +615,13 @@ export class AdjacencyMatrix extends SVGComponent {
     private moveRow = (label: string, targetIndex: number) => {
         // no need to raise
         this.verticalLabels.filter((d) => d === label)
-            .transition().duration(this.transitionTime)
+            .raise()
+            .transition()
+            .duration(this.transitionTime)
             .attr('y', targetIndex * this.cellSize + this.cellSize / 2)
 
         this.cells
+            .raise()
             .filter((cellData: DrawingInstruction, i) => {
                 return cellData.position.rowLabel === label
             })
@@ -578,11 +632,13 @@ export class AdjacencyMatrix extends SVGComponent {
     private moveColumn = (label: string, targetIndex: number) => {
         // no need to raise
         this.horizontalLabels
+            .raise()
             .filter((d) => d === label)
             .transition().duration(this.transitionTime)
             .attr(this.isHLabelRotated ? 'y' : 'x', targetIndex * this.cellSize + this.cellSize / 2)
 
         this.cells
+            .raise()
             .filter((cellData: DrawingInstruction, i) => {
                 return cellData.position.columnLabel === label
             })
