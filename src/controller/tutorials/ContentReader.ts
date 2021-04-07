@@ -6,19 +6,23 @@ import {Button} from "../../UI/Button";
 import Axis = LayoutConstraint.Axis;
 import Alignment = StackView.Alignment;
 import {SlideProgressBar} from "../../components/SlideProgressBar";
+import {Component} from "../../UI/Component";
 
 export class ContentReader extends ViewController {
 
+    title: Component
     slideMedia: StackView
     slideText: SlideText
     messageBox: StackView
     continueBtn: Button
-    private readerContainer: StackView;
+    readerContainer: StackView;
     slideProgressBar: SlideProgressBar;
 
-    constructor()
+    constructor(title: string)
     {
         super('contentReader');
+        this.title = new Component('contentTitle')
+        this.title.view.html(title)
         this.readerContainer = this.allocate(new StackView())
         this.slideMedia = this.allocate(new StackView())
         this.slideText = this.allocate(new SlideText())

@@ -46,11 +46,29 @@ export class Simulation {
         this.instance.alpha(1).restart()
     }
 
-    addLink([source, target] : [Vertex, Vertex], value: number = 0)
+    addLink([source, target]: [Vertex, Vertex], value: number = 0)
     {
         const sourceNode = this._simNodes.find((n) => n.vertex === source)
         const targetNode = this._simNodes.find((n) => n.vertex === target)
         this._simLinks.push({source: sourceNode, target: targetNode, value: value})
+        this.instance.force("link",
+                            d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this._simLinks)
+                              .id((d) => d.vertex)
+                              .distance((d) => {
+                                  return 80
+                              })
+        )
+        this.instance.alpha(1).restart()
+    }
+
+    removeLink([source, target]: [Vertex, Vertex])
+    {
+        const sourceNode = this._simNodes.find((n) => n.vertex === source)
+        const targetNode = this._simNodes.find((n) => n.vertex === target)
+        this._simLinks = this._simLinks.filter((link) => {
+            return !((link.source === sourceNode && link.target === targetNode) ||
+                (link.target === sourceNode && link.source === targetNode))
+        })
         this.instance.force("link",
                             d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this._simLinks)
                               .id((d) => d.vertex)

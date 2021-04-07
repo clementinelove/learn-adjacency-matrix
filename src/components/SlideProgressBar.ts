@@ -16,7 +16,7 @@ export class SlideProgressBar extends Component {
     slideSelectionControl: d3.Selection<SVGElement, any, any, any>
     private _delegate: SlideProgressDelegate
 
-    private mainTone = '#CCC'
+    private mainTone = '#9CA3AF'
 
     set delegate(value: SlideProgressDelegate)
     {
@@ -78,7 +78,7 @@ export class SlideProgressBar extends Component {
                            }),
                   (update) =>
                       update
-                          .style('fill', (d) => d === this.currentSlideIndex ? 'lightgray' : 'white')
+                          .style('fill', (d) => d === this.currentSlideIndex ? this.mainTone : 'white')
             )
     }
 
@@ -86,7 +86,6 @@ export class SlideProgressBar extends Component {
 }
 
 export interface SlideProgressDelegate {
-    text: string[][]
-    slidePlayer: SlidePlayer
+    text: ((self) => string[])[]
     playSlide: (i) => void
 }

@@ -19,13 +19,13 @@ export function flatten<T>(arr: Array<T | T[]>)
     return flatten
 }
 
-export function andmap<T>(predicate: (v: T)=> boolean, arr: Array<T>) {
+export function andmap<T>(predicate: (v: T, index: number)=> boolean, arr: Array<T>) {
     let result: boolean = null
-    arr.forEach((v) => {
+    arr.forEach((v, i) => {
         if (result === null) {
-            result = predicate(v)
+            result = predicate(v, i)
         } else {
-            result = predicate(v) && result
+            result = predicate(v, i) && result
             if (result === false) {
                 return false
             }

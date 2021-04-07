@@ -56,7 +56,7 @@ export function drawingInstructionToPositionedCell(di: DrawingInstruction, verte
     }
 }
 
-export class UndirectedGraph {
+export class UndirectedGraph extends EventTarget {
 
     // todo: consider replacing the implementation using a dict
     //       e.g. row['labelZ'] : Vertex[]=> ['labelX', 'labelY']
@@ -68,6 +68,7 @@ export class UndirectedGraph {
 
     private constructor(vertices: Vertex[], ...edges: Edge[])
     {
+        super()
         this._vertices = vertices
         if (new Set(vertices).size < vertices.length)
         {
@@ -86,19 +87,38 @@ export class UndirectedGraph {
         return this._edges.toArray()
     }
 
-    addVertex(vertex: Vertex)
+    addVertex = (vertex: Vertex) =>
     {
         this._vertices.push(vertex)
+
+        this.dispatchEvent(new CustomEvent<Vertex>(UndirectedGraph.Event.nodeAdded, {
+            detail: vertex
+        }))
     }
 
-    addEdge(edge: Edge)
+    removeVertex = (vertex: Vertex) => {
+        this._vertices = this._vertices.filter(v => v !== vertex)
+
+        this.dispatchEvent(new CustomEvent<Vertex>(UndirectedGraph.Event.nodeRemoved, {
+            detail: vertex
+        }))
+    }
+
+    addEdge = (edge: Edge) =>
     {
         this._edges.add(edge)
+        this.dispatchEvent(new CustomEvent<Edge>(UndirectedGraph.Event.edgeAdded, {
+            detail: edge
+        }))
     }
 
-    removeEdge(edge: Edge): boolean
+    removeEdge = (edge: Edge) =>
     {
-        return this._edges.remove(edge)
+        this._edges.remove(edge)
+
+        this.dispatchEvent(new CustomEvent<Edge>(UndirectedGraph.Event.edgeRemoved, {
+            detail: edge
+        }))
     }
 
     static fromMatrix(matrix: Relationship[][], orderedLabels: OrderedLabels)
@@ -418,3 +438,11 @@ function graphWithClique(vertexCount: number = null,
 }
 
 
+export namespace UndirectedGraph {
+    export enum Event {
+        nodeRemoved= 'nodeRemoved',
+        nodeAdded = 'nodeAdded',
+        edgeAdded = 'edgeAdded',
+        edgeRemoved = 'edgeRemoved'
+    }
+}

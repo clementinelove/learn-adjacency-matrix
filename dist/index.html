@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16">
   <link rel="icon" type="image/png" href="/favicon2x.png" sizes="32x32">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cantarell&family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300;1,400&family=Frank+Ruhl+Libre&family=Lexend&family=Comfortaa&family=Kufam&family=Merriweather&family=Merriweather+Sans&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Cantarell&family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300;1,400;0,700,&family=Frank+Ruhl+Libre&family=Lexend&family=Comfortaa&family=Kufam&family=Merriweather&family=Merriweather+Sans&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap"
         rel="stylesheet">
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
@@ -72,15 +72,37 @@
       <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>
     </div>
 
-    <div id="contentReader" class="hidden h-full mx-auto pt-16 pl-16">
+    <div id="contentReader" class="hidden h-full mx-auto p-16">
+      <h1 id="contentTitle"
+          class="text-5xl text-gray-400 font-thin leading-snug mb-4">Title</h1>
     </div>
 
-    <div id="patternViewer" class="pt-16 pl-16 hidden flex flex-col items-start">
-      <p class="my-8 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
+    <div id="patternViewer" class="p-16 hidden flex flex-col items-start">
+      <h1 class="text-5xl text-gray-400 font-thin leading-snug mb-4">Pattern Viewer</h1>
+      <p class="my-4 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
       <div id="matrixInfoContainer" class="flex flex-row items-end">
 
       </div>
       <div id="patternList" class="flex flex-row my-4">
+
+      </div>
+    </div>
+
+    <div id="matrixExplorer" class="hidden p-16">
+        <h1 class="text-5xl text-gray-400 font-thin leading-snug mb-4">Node-Link Diagram <i>versus</i> <br/>Adjacency Matrix</h1>
+      <hr />
+      <div id="diagrams" class="flex flex-row">
+        <div id="nodeLinkDiagramContainer" class="mr-8 border-r border-l border-gray-200">
+
+        </div>
+        <div id="adjacencyMatrixContainer" class="">
+
+        </div>
+      </div>
+
+      <hr />
+
+      <div id="controls">
 
       </div>
     </div>

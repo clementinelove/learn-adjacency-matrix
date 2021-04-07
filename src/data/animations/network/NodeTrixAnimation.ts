@@ -40,7 +40,7 @@ export class NodeTrixAnimation extends NetworkAnimation {
     play = (context: CanvasRenderingContext2D): void => {
         this.context = context
         const {width, height} = this.networkDiagramStyle.frame
-        const {fontName, fontSize, nodeRadius, nodeColor, linkLength} = this.networkDiagramStyle
+        const {fontName, fontSize, nodeRadius, nodeColor, linkWidth} = this.networkDiagramStyle
         const font = `${fontSize}px ${fontName}`
         const currentTick = this.ticker.tick
         const edgesCount = this.simLinks.length

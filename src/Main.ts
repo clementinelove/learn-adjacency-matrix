@@ -9,6 +9,7 @@ import {MatrixSorting} from "./controller/MatrixSorting";
 import {MatrixReorderingIntro} from "./controller/tutorials/MatrixReorderingIntro";
 import {PatternsIntro} from "./controller/tutorials/PatternsIntro";
 import {HomeController} from "./controller/HomeController";
+import {MatrixExplorer} from "./controller/MatrixExplorer";
 
 /*
 let graph = UndirectedGraph.fromMatrix([
@@ -170,5 +171,5 @@ let slider = new Slider()
 slider.addTo(matrixControls)
 */
 
-const app = new App(new AdjacencyMatrixIntro())
+const app = new App(new MatrixReorderingIntro())
 app.navigationController = new NavigationMenuController(pagesData)

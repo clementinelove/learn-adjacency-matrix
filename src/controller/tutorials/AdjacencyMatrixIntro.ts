@@ -35,16 +35,16 @@ const animationNetworkStyle = {
 
 export class AdjacencyMatrixIntro extends ContentReader implements SlideProgressDelegate {
 
-    text: string[][] = [
-        ['This is a node-link diagram visualizes the friendship of a network.',
+    text: (() => string[])[] = [
+        () => ['This is a node-link diagram visualizes the friendship of a network.',
             'For each person, we draw a node; for each connection (link) a line.', 'For a network not so complex, it works fine.'],
-        ['But in many cases, we need to analyse a more complex network.',
+        () => ['But in many cases, we need to analyse a more complex network.',
             'And once the dataset gets bigger, occlusion and link crossings start to appear.'],
-        ['This is where adjacency matrix can help.'],
-        ["Nodes will now be represented by the labels written on the top and left of the matrix."],
-        ['With each filled cell representing a connection between two nodes.'],
-        ["Now, try hover your mouse on these cells and see what they mean.", "Click 'Continue' button when you finished."],
-        ['That said, if we wish to learn more from the matrix, it\'d be helpful to know some common pattern.']
+        () => ['This is where adjacency matrix can help.'],
+        () => ["Nodes will now be represented by the labels written on the top and left of the matrix."],
+        () => ['With each filled cell representing a connection between two nodes.'],
+        () => ["Now, try hover your mouse on these cells and see what they mean.", "Click 'Continue' button when you finished."],
+        () => ['That said, if we wish to learn more from the matrix, it\'d be helpful to know some common pattern.']
     ]
 
 
@@ -58,7 +58,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
 
     constructor()
     {
-        super();
+        super("Introduction");
         this.slideProgressBar.delegate = this
         this.slideProgressBar.render()
 
@@ -93,6 +93,9 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
                     `Highlighted cells are connections of node ${label}.`
 
             },
+            leaveLabelCallback: () => {
+                this.infoLabel.text = ''
+            },
             hoverCellCallback: (di) => {
                 const {rowLabel, columnLabel} = di.position
                 let content: string = null
@@ -107,7 +110,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
                 this.infoLabel.text = content
             },
             leaveCellCallback: (di) => {
-                this.infoLabel.setText('')
+                this.infoLabel.text = ''
             }
         }
 
@@ -134,7 +137,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
     {
         console.log('play slide: ' + i)
         this.slideMedia.removeAll()
-        this.slideText.loadLines(this.text[i], true, () => this.continueBtn.hide(false))
+        this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
 
         if (i < 5)
         {

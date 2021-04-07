@@ -1,9 +1,14 @@
-import {UndirectedGraph} from "../../utils/structures/UndirectedGraph";
+import {Edge, UndirectedGraph} from "../../utils/structures/UndirectedGraph";
 import * as d3 from "d3";
-import {controlPointPosition, distance, midpoint, pArc} from "../../utils/structures/Geometry";
-import {PointTransitionScale} from "../../utils/CanvasUtils";
+import {
+    NetworkDiagramStyle,
+    NetworkSimulationLink,
+    NetworkSimulationNode
+} from "../../data/animations/network/NetworkAnimationData";
+import {SVGComponent} from "../../UI/SVGComponent";
+import {replaceUndefinedWithDefaultValues} from "../../utils/Utils";
+import {Simulation} from "../../data/Simulation";
 import {Vertex} from "../../data/animations/network/GenerateLabels";
-import {NetworkDiagramStyle, NetworkSimulationLink, NetworkSimulationNode} from "../../data/animations/network/NetworkAnimationData";
 
 
 // class GraphNode implements d3.SimulationNodeDatum {
@@ -17,23 +22,23 @@ import {NetworkDiagramStyle, NetworkSimulationLink, NetworkSimulationNode} from 
 //     }
 // }
 
-export class NodeLinkDiagram {
+export class NodeLinkDiagram extends SVGComponent {
 
     private simNodesMap: Map<string, NetworkSimulationNode>
     private graph: UndirectedGraph
-    private linkGroup: any
-    private nodeGroup: any
-    private simulation: any
+    private linkGroup: d3.Selection<SVGGElement, any, any, any>
+    private nodeGroup: d3.Selection<SVGGElement, any, any, any>
+    private simulation: Simulation
     private _simNodes: any = null
     private _simLinks: any = null
     private style: NetworkDiagramStyle
 
-    get nodes()
+    get nodes(): d3.Selection<SVGLineElement, NetworkSimulationNode, SVGGElement, any>
     {
         return this.nodeGroup.selectAll(".node")
     }
 
-    get links()
+    get links(): d3.Selection<SVGLineElement, NetworkSimulationLink, SVGGElement, any>
     {
         return this.linkGroup.selectAll(".link")
     }
@@ -54,37 +59,69 @@ export class NodeLinkDiagram {
         })
     }
 
+    static defaultStyle: NetworkDiagramStyle = {
+        frame: {
+            x: 0,
+            y: 0,
+            width: 500,
+            height: 500
+        },
+        nodeColor: '#a8ddff',
+        linkColor: '#CCC',
+        linkWidth: 2.5,
+        nodeStrokeColor: '#FFF',
+        highlightColor: '#F00',
+        fontName: 'sans-serif',
+        fontSize: 8,
+        nodeRadius: 16
+    }
+
     constructor(graph: UndirectedGraph,
-                style: NetworkDiagramStyle = {
-                    frame: {
-                        x: 0,
-                        y: 0,
-                        width: 500,
-                        height: 500
-                    },
-                    fontName: 'sans-serif',
-                    fontSize: 8,
-                    nodeRadius: 16
-                })
+                style: NetworkDiagramStyle)
     {
+        super(null, style.frame)
         this.simNodesMap = new Map<string, NetworkSimulationNode>()
         graph.vertices.forEach((vertex) => {
             this.simNodesMap.set(vertex, {vertex: vertex, group: 1})
         })
         this.graph = graph;
-        this.style = style
+        this.graph.addEventListener(UndirectedGraph.Event.edgeAdded, (e: CustomEvent<Edge>) => {
+            console.log('edge added')
+            this.addLink(e.detail.vertex0, e.detail.vertex1)
+        })
+
+        this.graph.addEventListener(UndirectedGraph.Event.edgeRemoved, (e: CustomEvent<Edge>) => {
+            this.removeLink(e.detail.vertex0, e.detail.vertex1)
+        })
+        this.style = replaceUndefinedWithDefaultValues(style, NodeLinkDiagram.defaultStyle)
+
+
+        let {width, height} = this.style.frame
+        this.simulation = this.createSimulation(this.simNodes, this.simLinks)
+
+        // initialize ui
+
+        this.linkGroup = this.svg.append("g")
+                             .attr('class', 'link-group')
+                             .attr("stroke", "#999")
+                             .attr("stroke-opacity", 0.6)
+        this.nodeGroup = this.svg.append("g")
+                             .attr('class', 'node-group')
+
+        this.render()
     }
 
     createSimulation = (nodes, links) => {
         const {width, height} = this.style.frame
-        return d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(nodes)
-                 .force("charge", d3.forceManyBody())
-                 .force("link", d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(links)
-                                  .id((d) => d.vertex)
-                                  .distance((d) => {
-                                      return 80
-                                  }))
-                 .force("center", d3.forceCenter(width / 2, height / 2))
+        return new Simulation({width: width, height: height}, nodes, links)
+        // return d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(nodes)
+        //          .force("charge", d3.forceManyBody())
+        //          .force("link", d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(links)
+        //                           .id((d) => d.vertex)
+        //                           .distance((d) => {
+        //                               return 80
+        //                           }))
+        //          .force("center", d3.forceCenter(width / 2, height / 2))
     }
 
     static drag = (simulation) => {
@@ -99,12 +136,14 @@ export class NodeLinkDiagram {
         {
             event.subject.fx = event.x;
             event.subject.fy = event.y;
-            console.log("fx: " + event.x + "; fy: " + event.fy)
         }
 
         function dragended(event)
         {
-            if (!event.active) simulation.alphaTarget(0);
+            if (!event.active)
+            {
+                simulation.alphaTarget(0);
+            }
             event.subject.fx = null;
             event.subject.fy = null;
         }
@@ -115,216 +154,148 @@ export class NodeLinkDiagram {
                  .on("end", dragended);
     }
 
-    draw(drawingContext)
+    render()
     {
-        let {width, height} = this.style.frame
+        let svg = this.svg
 
-        let svg = drawingContext.append('svg')
-                                .attr('width', `${width}px`)
-                                .attr('height', `${height}px`)
-
-        this.simulation = this.createSimulation(this.simNodes, this.simLinks)
-
-        this.linkGroup = svg.append("g")
-                            .attr('class', 'link-group')
-                            .attr("stroke", "#999")
-                            .attr("stroke-opacity", 0.6)
         this.joinLinks()
 
-        this.nodeGroup = svg.append("g")
-                            .attr('class', 'node-group')
         this.joinNodes()
 
-        this.simulation.on("tick", () => {
+        this.simulation.instance.on("tick", () => {
             this.links
-                .attr("d", d => d3.line()([[d.source.x, d.source.y], [d.target.x, d.target.y]]))
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
             this.nodes
                 .attr("transform", d => `translate(${d.x}, ${d.y})`);
         });
-
-        let animeButton = d3.select('body')
-                            .append('button')
-                            .attr('type', 'button')
-                            .text('Anime!')
-                            .on('click', (event) => {
-                                // region stop simulation
-                                // this.simulation.force('charge', null)
-                                // this.simulation.force('link', null)
-                                // this.simulation.force('center', null)
-                                this.simulation.stop()
-                                this.simulation.on('tick', null)
-                                // endregion
-
-                                // duplicate links for animation
-                                let cloneLinks = this.links.clone()
-
-                                // calculate positions for the new
-                                const padding = 10
-                                const matrixMargin = 10
-                                const nodeRadius = this.style.nodeRadius
-                                const nodeDiameter = nodeRadius * 2
-
-                                // region replace links with paths (commented)
-
-                                let nodePositions = new Map<string, [number, number]>() // point => vertex
-
-                                this.nodes.each(function (datum: NetworkSimulationNode) {
-                                    let transformString: string = this.getAttribute('transform')
-                                    let [matched, x, y] = transformString.match(/translate\((\d+.\d+), +(\d+.\d+)\)/)
-                                    console.log(`${datum.vertex}: ${parseFloat(x)}, ${parseFloat(y)}`)
-                                    nodePositions.set(datum.vertex, [parseFloat(x), parseFloat(y)])
-                                })
-
-                                // let edges: NetworkSimulationLink[] = []
-                                // this.links.each(function () {
-                                //     let x1: number = parseFloat(this.getAttribute('x1'))
-                                //     let y1: number = parseFloat(this.getAttribute('y1'))
-                                //     let x2: number = parseFloat(this.getAttribute('x2'))
-                                //     let y2: number = parseFloat(this.getAttribute('y2'))
-                                //     console.log(`x1: ${x1}, y1: ${y1}, x2: ${x2}, y2: ${y2}`)
-                                //     let vertex1PointStr = `${x1},${y1}`
-                                //     let vertex2PointStr = `${x2},${y2}`
-                                //     let v1 = pointDict.get(vertex1PointStr)
-                                //     let v2 = pointDict.get(vertex2PointStr)
-                                //     console.log(`Edge between ${v1} and ${v2}`)
-                                //     edges.push(new Edge(v1, v2, null,))
-                                // })
-                                // this.links.remove()
-                                // let line = d3.line()
-                                // this.linkGroup.selectAll('.link')
-                                //     .data(edges)
-                                //     .join('path')
-                                //     .attr('d', (d: NetworkGraphLink) => line([d.sourcePoint, d.targetPoint]))
-                                //     .attr('stroke', 'black')
-                                // endregion
-
-
-                                let nodeTargetPosition = (vertex: Vertex): [number, number] => {
-                                    const nodeIndex = this.graph.vertices.indexOf(vertex)
-                                    const x = padding + nodeDiameter + matrixMargin + nodeIndex * nodeDiameter + nodeRadius
-                                    const y = x
-                                    return [x, y]
-                                }
-
-                                const simNodesToTransitionScales = new Map<string, PointTransitionScale>()
-                                // const {padding, matrixMargin} = this.matrixStyle
-                                // const nodeRadius = this.networkDiagramStyle.nodeRadius
-                                // const nodeDiameter = nodeRadius * 2
-
-                                this.simNodes.forEach((node) => {
-                                    const vertex = node.vertex
-                                    const [x, y] = nodePositions.get(vertex)
-                                    // const {vertex, x, y} = node
-                                    console.log(`${vertex}: ${x}, ${y}`)
-                                    const nodeIndex = this.graph.vertices.indexOf(vertex)
-                                    const destCenterX = padding + nodeDiameter + matrixMargin + nodeIndex * nodeDiameter + nodeRadius
-                                    const destCenterY = destCenterX
-                                    simNodesToTransitionScales.set(vertex, new PointTransitionScale(x, y, destCenterX, destCenterY, 1))
-                                })
-
-                                const t = 2000
-
-
-                                this.links
-                                    .transition()
-                                    .duration(t)
-                                    .attrTween('d', (link: NetworkSimulationLink) => {
-                                        return function (t: number) {
-                                            // console.log('interp start ----')
-                                            const {source, target} = link
-                                            const duration = 1
-                                            const sourcePointScaler = simNodesToTransitionScales.get(source.vertex)
-                                            const targetPointScaler = simNodesToTransitionScales.get(target.vertex)
-                                            const sourcePoint = sourcePointScaler.point(t)
-                                            const targetPoint = targetPointScaler.point(t)
-                                            // const sourcePoint = new Point(source.x, source.y)
-                                            // const targetPoint = new Point(target.x, target.y)
-                                            const mid = midpoint(targetPoint, sourcePoint)
-                                            const findCurrentControlPoint = (positiveDistance: boolean) => {
-                                                const maxControlPoint = controlPointPosition(sourcePoint, targetPoint,
-                                                                                             (positiveDistance ? 1 : -1) * distance(sourcePoint, targetPoint) / 2
-                                                )
-                                                const controlPointTransitionScaler =
-                                                    new PointTransitionScale(mid.x, mid.y,
-                                                                             maxControlPoint.x, maxControlPoint.y,
-                                                                             duration
-                                                    )
-                                                return controlPointTransitionScaler.point(t);
-                                            }
-
-                                            const currentControlPoint =
-                                                findCurrentControlPoint(true)
-
-                                            const radius =
-                                                d3.scaleLinear()
-                                                  .domain([0, duration])
-                                                  .range([distance(mid, targetPoint) / distance(mid, currentControlPoint) * distance(targetPoint, currentControlPoint), 0])
-
-                                            const linkColor = 'blue'
-                                            // const linkColor = this.linkColor(source.vertex, target.vertex, d3.interpolateTurbo)
-                                            const context = d3.path()
-                                            pArc(context, sourcePoint, findCurrentControlPoint(true), targetPoint, radius(t))
-                                            pArc(context, sourcePoint, findCurrentControlPoint(false), targetPoint, radius(t))
-                                            return context.toString()
-                                        }
-                                    })
-
-                                this.nodes
-                                    .transition()
-                                    .duration(t)
-                                    // .ease()
-                                    .attr('transform', (d) => {
-                                        const newPosition = nodeTargetPosition(d.vertex)
-                                        return `translate(${newPosition[0]},${newPosition[1]})`
-                                    })
-
-                                console.log('clicked')
-                            })
-
 
         return svg.node();
     }
 
     joinLinks = () => {
-        this.linkGroup
-            .selectAll(".link")
+        this.links
             .data(this.simLinks)
-            .join("path")
+            .join("line")
             .attr('class', 'link')
-            .attr('fill', 'none')
-            .attr("stroke-width", d => Math.sqrt(d.value));
+            .style('stroke', this.style.linkColor)
+            .attr("stroke-width", this.style.linkWidth)
+            .on('mouseenter', (event, link) => {
+                if (this.style.highlightLinkOnHover)
+                {
+                    this.highlightLink(link)
+                }
+                if (this.style.hoverLinkCallback)
+                {
+                    this.style.hoverLinkCallback(link)
+                }
+            })
+            .on('mouseleave', (event, link) => {
+                this.restoreLink()
+                if (this.style.leaveLinkCallback)
+                {
+                    this.style.leaveLinkCallback(link)
+                }
+            })
     }
 
     joinNodes = () => {
 
         // todo make them non-selectable
 
-        let node = this.nodeGroup
-                       .selectAll(".node")
+        let node = this.nodes
                        .data(this.simNodes)
                        .join("g")
                        .attr('class', 'node')
-                       .call(NodeLinkDiagram.drag(this.simulation))
+                       .call(NodeLinkDiagram.drag(this.simulation.instance))
+                       .on('mouseenter', (event, node) => {
+                           if (this.style.highlightNodeOnHover)
+                           {
+                               this.highlightNode(node)
+                           }
+                           if (this.style.hoverNodeCallback)
+                           {
+                               this.style.hoverNodeCallback(node)
+                           }
+                       })
+                       .on('mouseleave', (event, node) => {
+
+                           this.restoreNode()
+                           if (this.style.leaveNodeCallback)
+                           {
+                               this.style.leaveNodeCallback(node)
+                           }
+                       })
 
         let circles = node
             .append('circle')
-            .attr("stroke", "#fff")
+            .classed('nodeShape', true)
+            .attr("stroke", this.style.nodeStrokeColor)
             .attr("stroke-width", 1.5)
             .attr("r", this.style.nodeRadius.toString())
-            .attr("fill", '#a8ddff')
+            .attr("fill", this.style.nodeColor)
 
 
         let labels = node
             .append('text')
+            .classed('nodeLabel', true)
             .text(node => node.vertex)
             .style('fill', 'black')
+            .style('user-select', 'none')
             .attr('alignment-baseline', 'middle')
             .style('text-anchor', 'middle')
             .style('font-family', this.style.fontName)
             .style('font-size', this.style.fontSize.toString())
+            .style('font-weight', 400)
 
         node
             .append("title")
             .text(d => d.vertex);
     }
+
+    highlightNode(node: NetworkSimulationNode)
+    {
+        this.nodes.selectAll('.nodeShape')
+            .filter((d) => {
+                return d === node
+            })
+            .style('stroke', this.style.highlightColor)
+    }
+
+    restoreNode()
+    {
+        this.nodes.selectAll('.nodeShape')
+            .style('stroke', this.style.nodeStrokeColor)
+    }
+
+    highlightLink(link: NetworkSimulationLink)
+    {
+        this.links
+            .filter((d) => {
+                return d === link
+            })
+            .style('stroke', this.style.highlightColor)
+    }
+
+    restoreLink()
+    {
+        this.links
+            .style('stroke', this.style.linkColor)
+    }
+
+
+    addLink(source: Vertex, target: Vertex)
+    {
+        this.simulation.addLink([source, target])
+        this.render()
+    }
+
+    removeLink(source: Vertex, target: Vertex)
+    {
+        this.simulation.removeLink([source, target])
+        this.render()
+    }
+
 }

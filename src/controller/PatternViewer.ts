@@ -36,7 +36,7 @@ const xxlPatternStyle: MatrixStyle = {
     reorderable: false,
     toggleableCell: false,
     hoverCellEffect: HoverCellEffect.HighlightRelated,
-    showLabelsOnHover: true
+    showLabelsOnHover: false
 }
 
 export class PatternViewer extends ViewController {

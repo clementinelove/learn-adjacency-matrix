@@ -182,7 +182,7 @@ export class PatternsIntro extends ContentReader {
 
     constructor()
     {
-        super();
+        super('Patterns');
 
         this.slideMedia.add(this.allPatternsShowcaseMatrixContainer)
         const slidePlayer = new SlidePlayer()

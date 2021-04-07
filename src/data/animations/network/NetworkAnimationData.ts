@@ -27,7 +27,14 @@ export interface NetworkDiagramStyle {
     nodeColor?: string
     nodeStrokeColor?: string
     linkColor?: string
-    linkLength?: number
+    linkWidth?: number
+    highlightNodeOnHover?: boolean
+    highlightLinkOnHover?: boolean
+    highlightColor?: string
+    hoverNodeCallback?: (node: NetworkSimulationNode) => void
+    leaveNodeCallback?: (node: NetworkSimulationNode) => void
+    hoverLinkCallback?: (link: NetworkSimulationLink) => void
+    leaveLinkCallback?: (link: NetworkSimulationLink) => void
 }
 
 export const initNetworkAnimationData = (graph: UndirectedGraph, networkStyle: NetworkDiagramStyle, matrixStyle: MatrixStyle): NetworkData => {

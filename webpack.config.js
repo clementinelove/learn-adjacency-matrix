@@ -38,6 +38,10 @@ module.exports = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.mp4$/i,
+                type: 'asset/resource'
+            }
         ]
     },
     resolve: {

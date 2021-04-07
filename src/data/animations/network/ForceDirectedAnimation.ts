@@ -66,7 +66,7 @@ export class ForceDirectedAnimation extends NetworkAnimation {
         this.started = true
         this.context = context
 
-        const {fontName, fontSize, nodeRadius, nodeColor, linkLength} = this.networkDiagramStyle
+        const {fontName, fontSize, nodeRadius, nodeColor, linkWidth} = this.networkDiagramStyle
         const font = `${fontSize}px ${fontName}`
         this.simLinks.forEach((link) => {
             const {source, target} = link

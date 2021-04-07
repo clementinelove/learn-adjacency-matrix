@@ -7,8 +7,19 @@ import Axis = LayoutConstraint.Axis;
 import Alignment = StackView.Alignment;
 
 export class Button extends Component {
-    title: string
+    private _title: string
     subtitle: string
+
+    get title(): string
+    {
+        return this._title;
+    }
+
+    set title(value: string)
+    {
+        this._title = value;
+        this._titleLabel.setText(value, false)
+    }
 
     private imageAndTitlesContainer: StackView;
     private titleContainer: StackView;
