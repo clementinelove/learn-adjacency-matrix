@@ -3,6 +3,8 @@ import {Component} from "../UI/Component";
 
 export class SlideText extends Component {
 
+    selectorPrefix = 'SlideText'
+
     constructor()
     {
         super();

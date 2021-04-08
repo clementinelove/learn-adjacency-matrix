@@ -9,7 +9,7 @@ import {MatrixSorting} from "./controller/MatrixSorting";
 import {MatrixReorderingIntro} from "./controller/tutorials/MatrixReorderingIntro";
 import {PatternsIntro} from "./controller/tutorials/PatternsIntro";
 import {HomeController} from "./controller/HomeController";
-import {MatrixExplorer} from "./controller/MatrixExplorer";
+import {MatrixExplorer} from "./components/MatrixExplorer";
 
 /*
 let graph = UndirectedGraph.fromMatrix([

@@ -2,6 +2,8 @@ import {Component} from "./Component";
 
 export class Label extends Component {
 
+    selectorPrefix = 'Label'
+
     private _text: string
 
     set text(newText: string) {

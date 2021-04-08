@@ -16,6 +16,7 @@ import {LayoutConstraint} from "../../UI/LayoutConstraint";
 import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
 import Axis = LayoutConstraint.Axis;
 import HoverLabelEffect = AdjacencyMatrix.HoverLabelEffect;
+import {MatrixExplorer} from "../../components/MatrixExplorer";
 
 const animationNetworkStyle = {
     frame: {
@@ -42,7 +43,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             'And once the dataset gets bigger, occlusion and link crossings start to appear.'],
         () => ['This is where adjacency matrix can help.'],
         () => ["Nodes will now be represented by the labels written on the top and left of the matrix."],
-        () => ['With each filled cell representing a connection between two nodes.'],
+        () => ['With each cell representing a connection between two nodes.', "A Filled cell means the connection exists. An unfilled cell means the connection doesn't exist"],
         () => ["Now, try hover your mouse on these cells and see what they mean.", "Click 'Continue' button when you finished."],
         () => ['That said, if we wish to learn more from the matrix, it\'d be helpful to know some common pattern.']
     ]
@@ -50,11 +51,10 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
 
     slidePlayer: SlidePlayer
     canvasPlayer: CanvasAnimationPlayer
-
     adjacencyMatrix: AdjacencyMatrix
-
     infoLabel: Label
     interactiveMatrixContainer: StackView
+    matrixExplorer: MatrixExplorer
 
     constructor()
     {
@@ -74,6 +74,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             new GenerateLabels(network2, 100),
             new MergeNodes(network2, 100)
         ))
+        this.matrixExplorer = this.allocate(new MatrixExplorer())
         this.infoLabel = this.allocate(new Label(''))
         const matrixStyle: MatrixStyle = {
             matrixFrame: {
@@ -146,7 +147,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         }
         if (i === 5)
         {
-            this.slideMedia.add(this.interactiveMatrixContainer)
+            this.slideMedia.add(this.matrixExplorer)
             this.adjacencyMatrix.view
                 .style('opacity', 0)
                 .transition().duration(300)

@@ -7,7 +7,7 @@ export class Component {
     /**
      * Controls need to have prefix since uuid may start with a number
      */
-    static selectorPrefix = 'Controller-'
+    selectorPrefix = 'Component'
 
     readonly id: string
     readonly dimension: Dimension
@@ -22,7 +22,7 @@ export class Component {
     {
         if (id === null || id === undefined)
         {
-            this.id = Component.selectorPrefix + uuid()
+            this.id = this.constructor.name + '-' + uuid()
             d3.select('body')
               .append('div')
               .attr('id', this.id)
@@ -42,7 +42,8 @@ export class Component {
                 .attr('width', `${width}px`)
                 .attr('height', `${height}px`)
         }
-        if (id === null) {
+        if (id === null)
+        {
             this.hide(true)
         }
     }
@@ -89,7 +90,8 @@ export class Component {
         component.hide(false)
     }
 
-    addAll(...components: Component[]) {
+    addAll(...components: Component[])
+    {
         components.forEach((c) => this.add(c))
     }
 
@@ -104,7 +106,8 @@ export class Component {
         // }
     }
 
-    removeAll() {
+    removeAll()
+    {
         this.view.selectChildren().classed('hidden', true)
     }
 

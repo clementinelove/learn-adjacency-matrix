@@ -3,6 +3,8 @@ import {Dimension} from "../utils/structures/Geometry";
 
 export class Video extends Component {
 
+    selectorPrefix = 'Video'
+
     readonly source: string
 
     constructor(source: string, autoplay: boolean = false, dimension: Dimension = null)

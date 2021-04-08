@@ -2,6 +2,8 @@ import {Component} from "../UI/Component";
 
 export class TitledButton extends Component {
 
+    selectorPrefix = 'TitledButton'
+
     private _title: string
 
     get button()

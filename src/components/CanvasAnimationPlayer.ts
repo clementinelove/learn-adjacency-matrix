@@ -3,6 +3,9 @@ import {CanvasAnimation, createCanvas, scaleCanvas} from "../utils/CanvasUtils";
 import {Component} from "../UI/Component";
 
 export class CanvasAnimationPlayer extends Component {
+
+    selectorPrefix = 'CanvasAnimationPlayer'
+
     private _animationState: number = 0
     private animations: CanvasAnimation[] = []
     canvas: d3.Selection<HTMLCanvasElement, any, any, any>

@@ -659,8 +659,8 @@ export class AdjacencyMatrix extends SVGComponent {
             .raise()
             .transition()
             .duration(animated ? this.transitionTime : 0)
+            .style('stroke-width', '2px')
             .style('stroke', this.style.highlightColor)
-            .style('stroke-width', 2)
 
         if (includeLabel)
         {

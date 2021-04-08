@@ -7,6 +7,9 @@ import Axis = LayoutConstraint.Axis;
 import Alignment = StackView.Alignment;
 
 export class Button extends Component {
+
+    selectorPrefix = 'Button'
+
     private _title: string
     subtitle: string
 

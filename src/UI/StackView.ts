@@ -4,6 +4,8 @@ import Axis = LayoutConstraint.Axis;
 
 export class StackView extends Component {
 
+    selectorPrefix = 'StackView'
+
     _axis: Axis
     _alignment: StackView.Alignment
 

@@ -11,11 +11,11 @@ export class App {
     constructor(rootViewController: ViewController)
     {
         this.rootVC = rootViewController;
-        this.loadVC(this.rootVC)
+        this.loadVCAsCurrent(this.rootVC)
         rootViewController.hide(false)
     }
 
-    private loadVC(vc: ViewController)
+    private loadVCAsCurrent(vc: ViewController)
     {
         this.currentVC = vc
         this.currentVC.navigation = this
@@ -26,7 +26,7 @@ export class App {
         // TODO: make the process animated
         this.currentVC.hide(true)
         this.currentVC.deallocateAll()
-        this.loadVC(vc)
+        this.loadVCAsCurrent(vc)
         this.currentVC.hide(false)
     }
 

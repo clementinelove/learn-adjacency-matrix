@@ -2,6 +2,9 @@ import {Component} from "./Component";
 import {Rect} from "../utils/structures/Geometry";
 
 export class SVGComponent extends Component {
+
+    selectorPrefix = 'SVGComponent'
+
     svg: d3.Selection<SVGElement, any, any, any>
 
     protected readonly frame: Rect

@@ -332,31 +332,6 @@ export namespace Data {
                                     [[1, 1], [4, 4]],
                                     [[8, 8], [11, 11]]
                                 ]).highlightColor('#f3b70a'),
-
-                // connections
-                Highlight.areas([[[1, 5], [1, 10]], [[5, 1], [10, 1]]], false, false)
-                         .highlightColor(connectionColor)
-                         .animateDelay(connectionDelay)
-                         .animateOneByOne(true, true),
-                Highlight.areas([[[3, 5], [3, 9]], [[5, 3], [9, 3]]], false, false)
-                         .highlightColor(connectionColor)
-                         .animateDelay(connectionDelay)
-                         .animateOneByOne(true, true),
-                // Highlight.areas([[[4, 5], [4, 8]], [[5, 4], [8, 4]]], false, false)
-                //          .highlightColor(connectionColor).animateDelay(connectionDelay)
-                //          .animateOneByOne(true, true),
-
-                Highlight.areas([[[11, 2], [11, 8]], [[2, 11], [8, 11]]], false, false)
-                         .highlightColor(connectionColor)
-                         .animateDelay(connectionDelay)
-                         .animateOneByOne(true, false),
-                Highlight.areas([[[10, 4], [10, 8]], [[4, 10], [8, 10]]], false, false)
-                         .highlightColor(connectionColor)
-                         .animateDelay(connectionDelay)
-                         .animateOneByOne(true, false),
-                // Highlight.areas([[[9, 5], [9, 8]], [[5, 9], [8, 9]]], false, false)
-                //          .highlightColor(connectionColor).animateDelay(connectionDelay)
-                //          .animateOneByOne(true, false),
             ]
         }
 

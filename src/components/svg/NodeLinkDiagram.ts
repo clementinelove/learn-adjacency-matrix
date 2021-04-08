@@ -264,6 +264,14 @@ export class NodeLinkDiagram extends SVGComponent {
             .style('stroke', this.style.highlightColor)
     }
 
+    highlightNodeByVertex(v: Vertex) {
+        this.nodes.selectAll('.nodeShape')
+            .filter((d: NetworkSimulationNode) => {
+                return d.vertex === v
+            })
+            .style('stroke', this.style.highlightColor)
+    }
+
     restoreNode()
     {
         this.nodes.selectAll('.nodeShape')
@@ -275,6 +283,17 @@ export class NodeLinkDiagram extends SVGComponent {
         this.links
             .filter((d) => {
                 return d === link
+            })
+            .style('stroke', this.style.highlightColor)
+    }
+
+    highlightLinkByVertex(v0: Vertex, v1: Vertex)
+    {
+        this.links
+            .filter((d) => {
+                const [sourceVertex, targetVertex] = [d.source.vertex, d.target.vertex]
+                return ((sourceVertex === v0) && (targetVertex === v1)) ||
+                    ((sourceVertex === v1) && (targetVertex === v0))
             })
             .style('stroke', this.style.highlightColor)
     }
