@@ -1,0 +1,291 @@
+import {ContentReader} from "./ContentReader";
+import {AdjacencyMatrix, MatrixStyle} from "../../components/svg/AdjacencyMatrix";
+import {Data, Highlight} from "../../data/Data";
+import {GridView} from "../../UI/GridView";
+import {MatrixView} from "../../components/svg/MatrixView";
+import {Label} from "../../UI/Label";
+import {StackView} from "../../UI/StackView";
+import {LayoutConstraint} from "../../UI/LayoutConstraint";
+import {PatternMenuItem} from "../../components/PatternMenuItem";
+import {UndirectedGraph} from "../../utils/structures/UndirectedGraph";
+import {OrderedLabels} from "../../utils/structures/OrderedLabels";
+import {SlideProgressDelegate} from "../../components/SlideProgressBar";
+import {MatrixReorderingIntro} from "./MatrixReorderingIntro";
+import Alignment = StackView.Alignment;
+import Axis = LayoutConstraint.Axis;
+import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
+
+const patternsList = [
+    Data.MatrixPatterns.selfLinks,
+    Data.MatrixPatterns.cluster,
+    Data.MatrixPatterns.clique,
+    Data.MatrixPatterns.paths,
+    Data.MatrixPatterns.connectors,
+    Data.MatrixPatterns.hub
+]
+
+export class PatternsIntro extends ContentReader implements SlideProgressDelegate {
+
+    text = [
+        () => ['To help us interpret an adjacency matrix, there are six common visual patterns to know.'],
+        () => [`Diagonals are ${Highlight.main('Self Links')}, which as the name suggests, are links that connect a node to itself.`, `They could appear, for example, as self-citations in a citation network.`],
+        () => [`${Highlight.main('Node Cluster')} is a cluster of nodes where almost all the nodes in it are connected.`, 'Self links are not required.'],
+        () => [`If all links would be present, the cluster would be a ${Highlight.main('Node Clique')}.`, 'Self links are not required.'],
+        () => [
+            `${Highlight.main('Paths')} are set of links that forms up a <strong>continuous</strong> connection that lead a node to another node. Usually in stairs shape.`,
+            "In our example, Node 1 can use the 'stair' to find any nodes along the path, which eventually leads it to Node 10."
+        ],
+        () => [`Sometimes, off-diagonal cells can be ${Highlight.main('Connectors')} that connects between two ${Highlight.secondary('node cliques or clusters')}.`],
+        () => [`A dense row or column is suggesting the node has many connections (that is, it's 'highly connected'), known as ${Highlight.main('Hub Node')}.`],
+        () => ["Now you should be able to interpret an adjacency matrix without too much trouble.",
+            "However, sometimes these patterns are not so obvious to see, and requires some care from us.",
+            "Let's move on to the next part: <strong>matrix reordering</strong>."]
+    ]
+
+    menuButtonSize = 70
+
+    static smPatternStyle: MatrixStyle = {
+        matrixFrame: {
+            x: 0,
+            y: 0,
+            width: 72,
+            height: 72
+        },
+        fontName: 'monospace',
+        hideLabel: true,
+        toggleableCell: false
+    }
+
+    static mdPatternStyle: MatrixStyle = {
+        matrixFrame: {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100
+        },
+        fontName: 'monospace',
+        hideLabel: true,
+        toggleableCell: false
+    }
+
+    static xlPatternStyle: MatrixStyle = {
+        matrixFrame: {
+            x: 20,
+            y: 20,
+            width: 300,
+            height: 300
+        },
+        fontName: 'Roboto',
+        reorderable: false,
+        toggleableCell: false,
+        hoverCellEffect: HoverCellEffect.HighlightRelated,
+        hideLabel: false,
+    }
+
+    allPatternsShowcaseMatrixContainer: GridView = (() => {
+        const patternsContainer = this.allocate(new GridView(2, 3))
+        Data.MatrixPatterns.allPatterns.forEach((ptrn, i) => {
+            const matrix = new PatternMenuItem(ptrn, this.menuButtonSize)
+            matrix.assignClass('m-4')
+            patternsContainer.add(matrix)
+        })
+        patternsContainer.assignClass('my-16')
+        return patternsContainer
+    })()
+
+    _selectedMatrixIndex = 0
+
+    set selectedMatrixIndex(v: number)
+    {
+        this._selectedMatrixIndex = v
+        this.updatePatternsMenu()
+    }
+
+    updatePatternsMenu = () => {
+        this.patternsMenu.view.selectAll('.patternMenuItem')
+            .classed('opacity-30', (d, i) => {
+                return i !== this._selectedMatrixIndex
+            })
+    }
+
+    patternsMenu = (() => {
+        const menu = this.allocate(new StackView())
+        menu.alignment = Alignment.Leading
+        menu.axis = Axis.Horizontal
+        patternsList.forEach((pattern, i) => {
+            const btn = new PatternMenuItem(pattern, this.menuButtonSize, false)
+            btn.assignClass('patternMenuItem opacity-30 mr-4 cursor-pointer hover:opacity-100')
+            btn.on('click', () => {
+                const newSlideIndex = 1 + i
+                this.slideProgressBar.updateCurrentSelection(newSlideIndex)
+                this.playSlide(newSlideIndex)
+                menu.view.selectAll('.patternMenuItem')
+                    .classed('opacity-30', true)
+                btn.removeClass('opacity-30')
+            })
+
+            if (i === this._selectedMatrixIndex)
+            {
+                btn.removeClass('opacity-30')
+            }
+
+            menu.add(btn)
+        })
+        return menu
+    })()
+
+    showcaseMatrix: AdjacencyMatrix = (() => {
+        const patternMatrix = this.allocate(
+            new AdjacencyMatrix(PatternsIntro.xlPatternStyle)
+        )
+        patternMatrix.assignClass('my-8')
+        return patternMatrix
+    })()
+
+    showcaseNameLabel: Label = (() => {
+        const label = this.allocate(new Label(""))
+        label.assignClass('capitalize text-3xl')
+        return label
+    })()
+
+    showcaseShapeLabel: Label = (() => {
+        const label = this.allocate(new Label(""))
+        label.assignClass('lowercase text-base tracking-widest text-gray-400')
+        return label
+    })()
+
+    showcaseDescriptionLabel: Label = (() => {
+        const label = this.allocate(new Label(""))
+        label.assignClass('mt-4 text-lg w-80')
+        return label
+    })()
+
+    showcaseIdentityMatrix = (() => {
+        const patternMatrix = this.allocate(
+            new MatrixView(PatternsIntro.smPatternStyle)
+        )
+        patternMatrix.assignClass('mr-4')
+        return patternMatrix
+    })()
+
+    showcaseMatrixInfoContainer: StackView = (() => {
+        const infoContainer = this.allocate(new StackView())
+        infoContainer.axis = Axis.Horizontal
+
+        const labelContainer = this.allocate(new StackView())
+        labelContainer.axis = Axis.Vertical
+        labelContainer.alignment = Alignment.Leading
+        labelContainer.addAll(this.showcaseShapeLabel, this.showcaseNameLabel, this.showcaseDescriptionLabel)
+
+        infoContainer.addAll(labelContainer)
+        infoContainer.assignClass('mt-8')
+        return infoContainer
+    })()
+
+    showcaseContainer: StackView = (() => {
+        const container = this.allocate(new StackView())
+        container.axis = Axis.Horizontal
+        container.alignment = Alignment.Leading
+        container.addAll(this.showcaseMatrix, this.showcaseMatrixInfoContainer)
+        container.assignClass('my-4')
+        return container
+    })()
+
+    mediaContainer: StackView = (() => {
+        const container = this.allocate(new StackView())
+        container.axis = Axis.Vertical
+        container.alignment = Alignment.Leading
+        container.addAll(this.showcaseContainer, this.patternsMenu)
+        return container
+    })()
+
+    constructor()
+    {
+        super('Patterns');
+
+        this.slideMedia.add(this.allPatternsShowcaseMatrixContainer)
+        this.slideProgressBar.delegate = this
+        this.slideProgressBar.render()
+        this.playSlide(0)
+        this.continueBtn.on('click', () => {
+            const currentSlideIndex = this.slideProgressBar.currentSlideIndex
+            if (currentSlideIndex === this.text.length - 1)
+            {
+                this.navigation.navigateTo(new MatrixReorderingIntro(), true)
+            }
+            else
+            {
+                const newIndex = this.slideProgressBar.currentSlideIndex + 1
+                this.playSlide(newIndex)
+                this.slideProgressBar.updateCurrentSelection(newIndex)
+                this.continueBtn.hide(true)
+            }
+        })
+    }
+
+    playSlide(i)
+    {
+
+        this.slideMedia.removeAll()
+
+        this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
+        this.continueBtn.hide(true)
+
+
+        if (i === 0)
+        {
+            this.slideMedia.add(this.allPatternsShowcaseMatrixContainer)
+        }
+        if (i >= 1 && i < patternsList.length + 1)
+        {
+            this.slideMedia.add(this.mediaContainer)
+
+            const pattern = patternsList[i - 1]
+
+            this.selectedMatrixIndex = i - 1
+
+            this.showcaseMatrix.graph = UndirectedGraph.fromMatrix(pattern.instances[0], OrderedLabels.numeric)
+
+            this.showcaseMatrix.stopAnimation()
+
+            if (pattern.areaHighlights !== undefined)
+            {
+                pattern.areaHighlights.forEach((hl) => this.showcaseMatrix.highlightRectAreas(hl))
+            }
+
+            if (pattern.cellGroupHighlights !== undefined)
+            {
+                pattern.cellGroupHighlights.forEach((hl) => {
+                    this.showcaseMatrix.highlightCells(hl)
+                })
+            }
+
+            if (pattern.labelHighlight !== undefined)
+            {
+                pattern.labelHighlight.forEach(({indexes, color}) => {
+                    indexes.forEach(i => {
+                        this.showcaseMatrix.highlightLabel(this.showcaseMatrix.orderedLabels[i], false, color)
+                    })
+                })
+            }
+
+            this.showcaseIdentityMatrix.matrix = pattern.typicalExample
+            this.showcaseNameLabel.setText(pattern.name)
+            this.showcaseShapeLabel.setText(pattern.shape)
+            this.showcaseDescriptionLabel.text = pattern.description
+        }
+        if (i === 7)
+        {
+            this.slideMedia.add(this.allPatternsShowcaseMatrixContainer)
+        }
+
+        if (i === this.text.length - 1)
+        {
+            this.continueBtn.view.text('Matrix Reordering')
+        }
+        else
+        {
+            this.continueBtn.view.text('Continue')
+        }
+    }
+}
