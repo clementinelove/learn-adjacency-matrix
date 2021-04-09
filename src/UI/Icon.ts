@@ -3,8 +3,6 @@ import {Component} from "./Component";
 
 export class Icon extends Component {
 
-    selectorPrefix = 'Icon'
-
     readonly icon: d3.Selection<HTMLSpanElement, any, any, any>
 
     constructor(cssClass: string)

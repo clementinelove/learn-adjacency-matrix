@@ -26,6 +26,7 @@ export class ViewController {
         for (const component of this.allocated)
         {
             component.deallocate()
+            console.log('deallocated: ' + component.id)
         }
     }
 

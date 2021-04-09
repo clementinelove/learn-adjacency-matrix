@@ -39,7 +39,7 @@ export class SlideProgressBar extends Component {
         this.progressLabel.color = this.mainTone
         this.add(this.progressLabel)
         this.slideSelectionControl = this.view.append('svg')
-                                         .attr('width', this.totalSlideCount * (this.buttonSideLength + 2 * this.borderWidth) + (this.totalSlideCount - 1) * this.buttonSpacing)
+                                         .attr('width', this.totalSlideCount * (this.buttonSideLength + this.borderWidth) + (this.totalSlideCount - 1) * this.buttonSpacing)
                                          .attr('height', this.buttonSideLength + 2 * this.borderWidth)
         this.joinButtons()
 

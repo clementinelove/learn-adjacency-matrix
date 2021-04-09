@@ -13,10 +13,12 @@ import {SlideProgressDelegate} from "../../components/SlideProgressBar";
 import * as d3 from "d3";
 import {StackView} from "../../UI/StackView";
 import {LayoutConstraint} from "../../UI/LayoutConstraint";
+import {MatrixExplorer} from "../../components/MatrixExplorer";
+import {HomeController} from "../HomeController";
 import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
 import Axis = LayoutConstraint.Axis;
 import HoverLabelEffect = AdjacencyMatrix.HoverLabelEffect;
-import {MatrixExplorer} from "../../components/MatrixExplorer";
+import {PatternsIntro} from "./PatternsIntro";
 
 const animationNetworkStyle = {
     frame: {
@@ -43,9 +45,14 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             'And once the dataset gets bigger, occlusion and link crossings start to appear.'],
         () => ['This is where adjacency matrix can help.'],
         () => ["Nodes will now be represented by the labels written on the top and left of the matrix."],
-        () => ['With each cell representing a connection between two nodes.', "A Filled cell means the connection exists. An unfilled cell means the connection doesn't exist"],
-        () => ["Now, try hover your mouse on these cells and see what they mean.", "Click 'Continue' button when you finished."],
-        () => ['That said, if we wish to learn more from the matrix, it\'d be helpful to know some common pattern.']
+        () => ['With each cell representing a connection between two nodes.',
+            "Usually, we use a filled (colored) cell to show the connection exists.", "An unfilled cell means the connection doesn't exist."],
+        () => [
+            "Now, you can freely explore the elements of the adjacency matrix.",
+            "<strong>Hover</strong> your mouse on the node-link diagram or the matrix, see what these elements represent.",
+            "<strong>Click</strong> a cell of the matrix will toggle the corresponding link from the node-link diagram."
+            , "When you finished exploring, we will show you more about the common visual patterns of adjacency matrix, which allows you to get more insights from the matrix."
+        ]
     ]
 
 
@@ -127,18 +134,31 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         this.playSlide(0)
 
         this.continueBtn.on('click', () => {
-            const newIndex = this.slideProgressBar.currentSlideIndex + 1
-            this.playSlide(newIndex)
-            this.slideProgressBar.updateCurrentSelection(newIndex)
-            this.continueBtn.hide(true)
+            const currentSlideIndex = this.slideProgressBar.currentSlideIndex
+            if (currentSlideIndex === this.text.length - 1)
+            {
+                this.navigation.navigateTo(new PatternsIntro(), true)
+            }
+            else
+            {
+                const newIndex = this.slideProgressBar.currentSlideIndex + 1
+                this.playSlide(newIndex)
+                this.slideProgressBar.updateCurrentSelection(newIndex)
+                this.continueBtn.hide(true)
+            }
         })
     }
 
     playSlide(i)
     {
-        console.log('play slide: ' + i)
         this.slideMedia.removeAll()
         this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
+
+        if (i === this.text.length - 1) {
+            this.continueBtn.title = 'Learn more about Patterns'
+        } else {
+            this.continueBtn.title = 'Continue'
+        }
 
         if (i < 5)
         {
@@ -154,6 +174,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
                 .ease(d3.easeQuadInOut)
                 .style('opacity', 1)
         }
+
     }
 
     initializeAnimationData(exampleIndex: number)
