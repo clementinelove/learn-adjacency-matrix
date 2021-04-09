@@ -171,5 +171,5 @@ let slider = new Slider()
 slider.addTo(matrixControls)
 */
 
-const app = new App(new MatrixReorderingIntro())
+const app = new App(new HomeController())
 app.navigationController = new NavigationMenuController(pagesData)

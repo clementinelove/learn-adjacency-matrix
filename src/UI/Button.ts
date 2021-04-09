@@ -31,6 +31,17 @@ export class Button extends Component {
     private _titleLabel: Label
     private _subtitleLabel: Label
 
+
+    get titleLabel(): Label
+    {
+        return this._titleLabel;
+    }
+
+    get subtitleLabel(): Label
+    {
+        return this._subtitleLabel;
+    }
+
     constructor(title?: string, subtitle?: string, icon?: string)
     {
         super();
@@ -41,13 +52,13 @@ export class Button extends Component {
         this.titleContainer = new StackView()
         this.titleContainer.axis = Axis.Vertical
         this.titleContainer.alignment = Alignment.Leading
-        this.imageAndTitlesContainer.addAll(this.titleContainer)
 
         this._image = new Icon(icon)
         this._titleLabel = new Label(title)
         this._subtitleLabel = new Label(subtitle)
 
-        this.titleContainer.addAll(this._titleLabel)
+        this.titleContainer.addAll(this._titleLabel, this._subtitleLabel)
+        this.imageAndTitlesContainer.addAll(this._image, this.titleContainer)
 
         this.add(this.imageAndTitlesContainer)
     }

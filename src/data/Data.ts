@@ -5,42 +5,46 @@ type Area = [Cell, Cell]
 
 export namespace Highlight {
 
-    export const defaultHighlightColor = "#0a7fcf"
+    export const mainHighlightColor = "#0a7fcf"
+    export const secondaryHighlightColor = '#f3b70a'
 
     export interface LabelHighlight {
         indexes: number[]
         color?: string
     }
 
-    export const label = (index: number, color = defaultHighlightColor) => {
+    export const label = (index: number, color = mainHighlightColor) => {
         return [index, color]
     }
 
     export const area = (area: Area,
                          highlightFilledOnly: boolean = true,
                          oneByOne: boolean = false,
-                         color: string = defaultHighlightColor) => {
+                         color: string = mainHighlightColor) => {
         return new AreaHighlight([area], false, oneByOne, highlightFilledOnly, color)
     }
 
     export const areas = (areas: Area[],
                           union: boolean = true,
                           highlightFilledOnly: boolean = true,
-                          oneByOne: boolean = false, color: string = defaultHighlightColor) => {
+                          oneByOne: boolean = false, color: string = mainHighlightColor) => {
         return new AreaHighlight(areas, union, oneByOne, highlightFilledOnly, color)
     }
 
     export const cells = (cells: Cell[],
                           oneByOne: boolean = false,
-                          color: string = defaultHighlightColor) => {
+                          color: string = mainHighlightColor) => {
         return new CellGroupHighlight(cells, oneByOne, color)
     }
 
     export const cell = (cell: Cell,
                          oneByOne: boolean = false,
-                         color: string = defaultHighlightColor) => {
+                         color: string = mainHighlightColor) => {
         return new CellGroupHighlight([cell], oneByOne, color)
     }
+
+    export const main = (text) => `<span style="color: ${mainHighlightColor}">${text}</span>`
+    export const secondary = (text) => `<span style="color: ${secondaryHighlightColor}">${text}</span>`
 
     export class AreaHighlight {
 
@@ -163,6 +167,7 @@ export namespace Highlight {
 export namespace Data {
     export namespace MatrixPatterns {
 
+        import secondaryHighlightColor = Highlight.secondaryHighlightColor;
         export const clique: MatrixPatternData = {
             name: "Node Clique",
             shape: "Block",
@@ -289,11 +294,20 @@ export namespace Data {
             areaHighlights: [
                 Highlight.area([[4, 0], [9, 5]], true, true).except([6, 4]),
                 Highlight.area([[0, 4], [5, 9]], true, true).except([4, 6])
+            ],
+            labelHighlight: [
+                {
+                    indexes: [0, 4],
+                    color: Highlight.mainHighlightColor
+                },
+                {
+                    indexes: [5, 9],
+                    color: Highlight.secondaryHighlightColor
+                }
             ]
         }
 
         const connectionDelay = 300
-        const connectionColor = '#ff4b78'
         export const connectors: MatrixPatternData = {
             name: "Connectors",
             shape: "Off-diagonal cells",
@@ -331,7 +345,7 @@ export namespace Data {
                 Highlight.areas([
                                     [[1, 1], [4, 4]],
                                     [[8, 8], [11, 11]]
-                                ]).highlightColor('#f3b70a'),
+                                ]).highlightColor(secondaryHighlightColor),
             ]
         }
 
@@ -372,10 +386,12 @@ export namespace Data {
                                     [[9, 4], [11, 4]]
                                 ])
             ],
-            labelHighlight: {
-                indexes: [1, 5],
-                color: Highlight.defaultHighlightColor
-            }
+            labelHighlight: [
+                {
+                    indexes: [0, 4],
+                    color: Highlight.mainHighlightColor
+                }
+            ]
         }
 
 // static readonly path = [
@@ -407,7 +423,7 @@ export interface MatrixPatternData {
     instances: number[][][]
     cellGroupHighlights?: Highlight.CellGroupHighlight[]
     areaHighlights?: Highlight.AreaHighlight[]
-    labelHighlight? : Highlight.LabelHighlight
+    labelHighlight?: Highlight.LabelHighlight[]
 }
 
 

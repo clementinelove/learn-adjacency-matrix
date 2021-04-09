@@ -7,13 +7,16 @@ import Axis = LayoutConstraint.Axis;
 import Alignment = StackView.Alignment;
 import {SlideProgressBar} from "../../components/SlideProgressBar";
 import {Component} from "../../UI/Component";
+import {Label} from "../../UI/Label";
 
 export class ContentReader extends ViewController {
 
-    title: Component
+    title: Label
     slideMedia: StackView
-    slideText: SlideText
+    tips: Label;
     messageBox: StackView
+    slideText: SlideText
+
     continueBtn: Button
     readerContainer: StackView;
     slideProgressBar: SlideProgressBar;
@@ -21,8 +24,9 @@ export class ContentReader extends ViewController {
     constructor(title: string)
     {
         super('contentReader');
-        this.title = new Component('contentTitle')
-        this.title.view.html(title)
+
+        this.title = this.allocate(new Label(''))
+        this.tips = this.allocate(new Label(''))
         this.readerContainer = this.allocate(new StackView())
         this.slideMedia = this.allocate(new StackView())
         this.slideText = this.allocate(new SlideText())
@@ -30,8 +34,9 @@ export class ContentReader extends ViewController {
         this.continueBtn = this.allocate(new Button('Continue'))
 
         this.slideProgressBar = this.allocate(new SlideProgressBar())
-        this.readerContainer.add(this.slideProgressBar)
 
+        this.title.setText(title)
+        this.title.assignClass('text-5xl text-gray-400 font-thin leading-snug mb-4')
         this.slideMedia.axis = Axis.Vertical
         this.slideMedia.alignment = Alignment.Center
         this.messageBox.axis = Axis.Vertical
@@ -44,7 +49,7 @@ export class ContentReader extends ViewController {
         this.readerContainer.axis = Axis.Vertical
         this.readerContainer.alignment = Alignment.Leading
         this.view.add(this.readerContainer)
-        this.readerContainer.addAll(this.slideMedia, this.messageBox)
+        this.readerContainer.addAll(this.title, this.slideProgressBar, this.slideMedia, this.messageBox)
         this.continueBtn.hide(true)
     }
 }

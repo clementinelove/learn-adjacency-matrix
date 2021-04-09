@@ -8,31 +8,28 @@ import {MatrixSorting} from "../controller/MatrixSorting";
 
 export interface Page {
     name: string,
+    description: string
     targetController: () => ViewController
 }
 export const pagesData : Page[] = [
     {
         name: "Home",
+        description: "Home Page",
         targetController: () => new HomeController()
     },
     {
-        name: "From Node-Link Diagram To Matrix Intro",
+        name: "Introduction",
+        description: "From Node-Link Diagram to Matrix",
         targetController: () => new AdjacencyMatrixIntro()
     },
     {
-        name: "Matrix Patterns Intro",
+        name: "Matrix Patterns",
+        description: "Common Patterns for Adjacency Matrix",
         targetController: () => new PatternsIntro()
     },
     {
-        name: "Sorting Matrix Intro",
-        targetController: () => new MatrixReorderingIntro()
-    },
-    {
-        name: "Pattern Viewer",
-        targetController: () => new PatternViewer()
-    },
-    {
         name: "Reordering",
-        targetController: () => new MatrixSorting()
+        description: "Reordering Matrix to find patterns",
+        targetController: () => new MatrixReorderingIntro()
     }
 ]

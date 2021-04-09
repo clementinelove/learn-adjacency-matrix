@@ -50,7 +50,8 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             "But for node 3, its most similar node is node 1, so we can move node 3 beside node 1."],
         () => ["Notice that since the adjacency matrix is symmetric, when you move a column / row to another column / row's position, its corresponding row / column needs to be swapped, too."],
         () => ["Now, you can drag the labels to reorder the matrix by yourself! ", "There is no correct answer here, just to let you experiment how reordering works.", "Try it now and click 'Continue' when you think you've found the pattern you are looking for."],
-        () => ["Manually reorder the matrix is doable, and useful when you don't have a computer around. When you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
+        () => ["Manually reorder the matrix is doable, and useful when you don't have a computer around.",
+            "That said, when you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
         () => ["There you go. The matrix is now auto reordered based on <i>optimal leaf ordering</i>. Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
         () => ["We can easily identify three node clusters in highlighted areas."],
         (self: MatrixReorderingIntro) => {

@@ -8,12 +8,7 @@
   <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16">
   <link rel="icon" type="image/png" href="/favicon2x.png" sizes="32x32">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cantarell&family=Roboto:ital,wght@0,100;0,300;0,400;1,100;1,300;1,400;0,700,&family=Frank+Ruhl+Libre&family=Lexend&family=Comfortaa&family=Kufam&family=Merriweather&family=Merriweather+Sans&family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap"
-        rel="stylesheet">
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
-        integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
-        crossorigin="anonymous"/>
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre&family=Kufam&family=Lexend:wght@500&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body class="font-roboto font-light">
 
@@ -21,85 +16,61 @@
     <!--    style="-webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);"-->
   </div>
 
-  <div id="app pt-10">
-    <div id="homePage" class="pt-10 hidden flex flex-col items-center justify-center">
-      <div class="flex-grow"></div>
-      <div class="md:grid md:grid-cols-2 md:justify-self-start mb-4">
-        <h1 class="text-xl md:text-3xl font-kufam md:w-80">
-          <span class="text-lg italic font-opensans">Learn</span><br/>
-          Adjacency Matrix</h1>
+  <div id="app py-10">
+    <div id="homePage" class="pt-10 hidden flex flex-col items-center">
+
+      <h1 class="text-5xl font-kufam">
+        <span class="text-3xl italic font-roboto">Learn</span><br/>
+        Adjacency Matrix</h1>
+      <div id="coverMatrix" class="mt-4">
+        <!-- Cover adjacency matrix here -->
       </div>
 
-      <div class="flex flex-col items-center md:grid md:grid-cols-2">
-        <div class="md:justify-self-end md:w-80">
-          <div id="coverMatrix">
-            <!-- Cover adjacency matrix here -->
-          </div>
-          <!--        <p class="uppercase tracking-widest justify-self-center text-gray-400 text-lg">Node Clique</p>-->
+      <div class="flex flex-col items-center content-center">
+        <p class="text-2xl mt-4 mx-4">A <em class="font-semibold italic">visualisation technique</em>
+          to help you learn more about relationships.</p>
+
+
+        <div id="startLearningBtnContainer" class="my-4 p-4 text-2xl border border-black cursor-pointer rounded-md hover:bg-gray-100">
+
         </div>
 
-        <div class="flex flex-col items-center content-center md:flex-none md:ml-4 md:justify-self-start md:w-80">
-          <p class="text-base mt-4 mx-4">A <em class="font-semibold italic">visualisation technique</em>
-            to help you learn more about relationships.</p>
-
-          <button class="mt-4 p-2 bg-white border border-gray-400 inline-block rounded-md shadow-md
-                  hover:border-gray-900" href="#"
-                  id="startLearningBtn">
-          <span class="flex flex-row items-center content-center md:justify-center mx-3">
-            <i class="text-4xl fas fa-book-reader mr-3"></i>
-            <span class="leading-3">
-              <span class="text-2xl font-merriweather">Start Learning</span>
-              <br/>
-              <span class="text-xs">From Node-Link Diagram To Matrix</span>
-            </span>
-          </span>
-          </button>
-
-          <h2 class="mt-4 pl-2.5
-                   text-xs uppercase font-cantarell tracking-widest text-gray-400">Chapters</h2>
-          <div class="chapter-links space-y-0.5 mt-2 w-64">
-            <a id="nodeLinkBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
-                    hover:bg-gray-100" href="#">From Node-Link Diagram To Matrix</a>
-            <a id="matrixPatternsMixerBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
-                    hover:bg-gray-100" href="#">Matrix Patterns</a>
-            <a id="matrixSortingBtn" class="pl-2.5 pr-2.5 pt-1 pb-1 bg-white rounded-md block text-sm
-                    hover:bg-gray-100" href="#">Sorting Matrix</a>
-          </div>
-        </div>
-
-      </div>
-
-      <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>
-    </div>
-
-    <div id="contentReader" class="hidden h-full mx-auto p-16">
-      <h1 id="contentTitle"
-          class="text-5xl text-gray-400 font-thin leading-snug mb-4">Title</h1>
-    </div>
-
-    <div id="patternViewer" class="p-16 hidden flex flex-col items-start">
-      <h1 class="text-5xl text-gray-400 font-thin leading-snug mb-4">Pattern Viewer</h1>
-      <p class="my-4 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
-      <div id="matrixInfoContainer" class="flex flex-row items-end">
-
-      </div>
-      <div id="patternList" class="flex flex-row my-4">
-
-      </div>
-    </div>
-
-    <div id="matrixExplorer" class="hidden flex flex-col items-center">
-      <div class="flex flex-row items-center border-gray-200">
-        <div id="nodeLinkDiagramContainer" class="mr-8 border-gray-200">
-
-        </div>
-        <div id="adjacencyMatrixContainer">
-
+        <h2 class="mt-4 text-lg uppercase font-cantarell tracking-widest text-gray-400">Chapters</h2>
+        <div id="chapterLinks" class="flex flex-row items-center space-x-4 mt-2 text-lg">
         </div>
       </div>
-      <div id="infoLabelContainer" class="text-lg" style="min-height: 60px">
-      </div>
+
     </div>
+
+<!--    <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>-->
+  </div>
+
+  <div id="contentReader" class="hidden h-full mx-auto p-16">
+  </div>
+
+  <div id="patternViewer" class="p-16 hidden flex flex-col items-start">
+    <h1 class="text-5xl text-gray-400 font-thin leading-snug mb-4">Pattern Viewer</h1>
+    <p class="my-4 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
+    <div id="matrixInfoContainer" class="flex flex-row items-end">
+
+    </div>
+    <div id="patternList" class="flex flex-row my-4">
+
+    </div>
+  </div>
+
+  <!--    <div id="matrixExplorer" class="hidden flex flex-col items-center">-->
+  <!--      <div class="flex flex-row items-center border-gray-200">-->
+  <!--        <div id="nodeLinkDiagramContainer" class="mr-8 border-gray-200">-->
+
+  <!--        </div>-->
+  <!--        <div id="adjacencyMatrixContainer">-->
+
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--      <div id="infoLabelContainer" class="text-lg" style="min-height: 60px">-->
+  <!--      </div>-->
+  <!--    </div>-->
   </div>
 
   <div id="matrixSorting">

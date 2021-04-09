@@ -5,26 +5,28 @@ import {AdjacencyMatrix} from "./svg/AdjacencyMatrix";
 import {Component} from "../UI/Component";
 import {NetworkSimulationLink, NetworkSimulationNode} from "../data/animations/network/NetworkAnimationData";
 import {Label} from "../UI/Label";
+import {StackView} from "../UI/StackView";
+import {LayoutConstraint} from "../UI/LayoutConstraint";
 import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
 import HoverLabelEffect = AdjacencyMatrix.HoverLabelEffect;
+import Axis = LayoutConstraint.Axis;
+import Alignment = StackView.Alignment;
 
 export class MatrixExplorer extends Component {
 
     graph: UndirectedGraph
     nodeLinkDiagram: NodeLinkDiagram
     adjacencyMatrix: AdjacencyMatrix
-    nodeLinkDiagramContainer: Component
-    adjacencyMatrixContainer: Component
-    infoLabelContainer: Component;
+    graphContainer: StackView
     infoLabel: Label
 
     constructor()
     {
-        super('matrixExplorer');
-        this.nodeLinkDiagramContainer = new Component('nodeLinkDiagramContainer')
-        this.adjacencyMatrixContainer = new Component('adjacencyMatrixContainer')
-        this.infoLabelContainer = new Component('infoLabelContainer')
-
+        super();
+        this.assignClass('flex flex-col items-center')
+        this.graphContainer = new StackView()
+        this.graphContainer.axis = Axis.Horizontal
+        this.graphContainer.alignment = Alignment.Center
         this.graph = ExampleGraphs.getExample(3)
 
         const nodeLinkDiagramStyle = {
@@ -110,11 +112,12 @@ export class MatrixExplorer extends Component {
 
 
         this.nodeLinkDiagram = new NodeLinkDiagram(this.graph, nodeLinkDiagramStyle)
+        this.nodeLinkDiagram.assignClass('mr-8 border-gray-200')
         this.adjacencyMatrix = new AdjacencyMatrix(adjacencyMatrixStyle, this.graph)
         this.infoLabel = new Label('')
-        this.nodeLinkDiagramContainer.add(this.nodeLinkDiagram)
-        this.adjacencyMatrixContainer.add(this.adjacencyMatrix)
-        this.infoLabelContainer.add(this.infoLabel)
+        this.infoLabel.view.style('min-height','60px')
+        this.graphContainer.addAll(this.nodeLinkDiagram, this.adjacencyMatrix)
+        this.addAll(this.graphContainer, this.infoLabel)
 
 
     }
