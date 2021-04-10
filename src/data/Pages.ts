@@ -31,5 +31,10 @@ export const pagesData : Page[] = [
         name: "Reordering",
         description: "Reordering Matrix to find patterns",
         targetController: () => new MatrixReorderingIntro()
+    },
+    {
+        name: "Lyon Metro",
+        description: "Lyon Metro Testing",
+        targetController: () => new MatrixSorting()
     }
 ]

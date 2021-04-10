@@ -42,7 +42,8 @@ export class MatrixExplorer extends Component {
             hoverNodeCallback: (node: NetworkSimulationNode) => {
                 const vertex = node.vertex
                 this.adjacencyMatrix.highlightAllRelationshipOfNode(vertex)
-                this.infoLabel.text = 'Node ' + vertex
+                this.infoLabel.text = `Node ${vertex}</br>` +
+                    `Highlighted cells are connections of node ${vertex}.`
             },
             hoverLinkCallback: (link: NetworkSimulationLink) => {
                 const [sourceVertex, targetVertex] = [link.source.vertex, link.target.vertex]

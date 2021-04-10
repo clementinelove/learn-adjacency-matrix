@@ -14,11 +14,10 @@ import * as d3 from "d3";
 import {StackView} from "../../UI/StackView";
 import {LayoutConstraint} from "../../UI/LayoutConstraint";
 import {MatrixExplorer} from "../../components/MatrixExplorer";
-import {HomeController} from "../HomeController";
+import {PatternsIntro} from "./PatternsIntro";
 import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
 import Axis = LayoutConstraint.Axis;
 import HoverLabelEffect = AdjacencyMatrix.HoverLabelEffect;
-import {PatternsIntro} from "./PatternsIntro";
 
 const animationNetworkStyle = {
     frame: {
@@ -44,9 +43,10 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         () => ['But in many cases, we need to analyse a more complex network.',
             'And once the dataset gets bigger, occlusion and link crossings start to appear.'],
         () => ['This is where adjacency matrix can help.'],
-        () => ["Nodes will now be represented by the labels written on the top and left of the matrix."],
+        () => ["<strong>Nodes</strong> will now be represented by the <strong>labels</strong> written on the top and left of the matrix."],
         () => ['With each cell representing a connection between two nodes.',
-            "Usually, we use a filled (colored) cell to show the connection exists.", "An unfilled cell means the connection doesn't exist."],
+            "Usually, we use a filled (in our case we use <strong>black</strong>) cell to show the connection exists.",
+            "An unfilled cell means the connection doesn't exist."],
         () => [
             "Now, you can freely explore the elements of the adjacency matrix.",
             "<strong>Hover</strong> your mouse on the node-link diagram or the matrix, see what these elements represent.",
@@ -153,10 +153,15 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
     {
         this.slideMedia.removeAll()
         this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
+        this.tips.text = ""
 
-        if (i === this.text.length - 1) {
+
+        if (i === this.text.length - 1)
+        {
             this.continueBtn.title = 'Learn more about Patterns'
-        } else {
+        }
+        else
+        {
             this.continueBtn.title = 'Continue'
         }
 
@@ -168,6 +173,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         if (i === 5)
         {
             this.slideMedia.add(this.matrixExplorer)
+            this.tips.text = "Hover on cells or links of the node-link diagram, or labels and cells of the matrix"
             this.adjacencyMatrix.view
                 .style('opacity', 0)
                 .transition().duration(300)

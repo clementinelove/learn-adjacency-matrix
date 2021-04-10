@@ -35,7 +35,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
             `${Highlight.main('Paths')} are set of links that forms up a <strong>continuous</strong> connection that lead a node to another node. Usually in stairs shape.`,
             "In our example, Node 1 can use the 'stair' to find any nodes along the path, which eventually leads it to Node 10."
         ],
-        () => [`Sometimes, off-diagonal cells can be ${Highlight.main('Connectors')} that connects between two ${Highlight.secondary('node cliques or clusters')}.`],
+        () => [`Sometimes, off-diagonal cells can be ${Highlight.main('Connectors')} that <strong>connects</strong> between two ${Highlight.secondary('node cliques or clusters')}.`],
         () => [`A dense row or column is suggesting the node has many connections (that is, it's 'highly connected'), known as ${Highlight.main('Hub Node')}.`],
         () => ["Now you should be able to interpret an adjacency matrix without too much trouble.",
             "However, sometimes these patterns are not so obvious to see, and requires some care from us.",
@@ -142,17 +142,18 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         return patternMatrix
     })()
 
-    showcaseNameLabel: Label = (() => {
+    showcaseShapeLabel: Label = (() => {
         const label = this.allocate(new Label(""))
-        label.assignClass('capitalize text-3xl')
+        label.assignClass('lowercase text-base tracking-widest text-gray-500')
         return label
     })()
 
-    showcaseShapeLabel: Label = (() => {
+    showcaseNameLabel: Label = (() => {
         const label = this.allocate(new Label(""))
-        label.assignClass('lowercase text-base tracking-widest text-gray-400')
+        label.assignClass('capitalize text-3xl font-medium')
         return label
     })()
+
 
     showcaseDescriptionLabel: Label = (() => {
         const label = this.allocate(new Label(""))
@@ -187,7 +188,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         container.axis = Axis.Horizontal
         container.alignment = Alignment.Leading
         container.addAll(this.showcaseMatrix, this.showcaseMatrixInfoContainer)
-        container.assignClass('my-4')
+        container.assignClass('my-2')
         return container
     })()
 
@@ -230,6 +231,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
         this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
         this.continueBtn.hide(true)
+        this.tips.text = ''
 
 
         if (i === 0)
@@ -239,6 +241,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         if (i >= 1 && i < patternsList.length + 1)
         {
             this.slideMedia.add(this.mediaContainer)
+            this.tips.text = "You can hover on cells to see their connections"
 
             const pattern = patternsList[i - 1]
 
@@ -281,7 +284,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
         if (i === this.text.length - 1)
         {
-            this.continueBtn.view.text('Matrix Reordering')
+            this.continueBtn.view.text('Learn more about Matrix Reordering')
         }
         else
         {

@@ -8,8 +8,8 @@ import {OrderedLabels} from "../../utils/structures/OrderedLabels";
 import {andmap} from "../../utils/FPUtils";
 import {Highlight} from "../../data/Data";
 import {LayoutConstraint} from "../../UI/LayoutConstraint";
-import Axis = LayoutConstraint.Axis;
 import {HomeController} from "../HomeController";
+import Axis = LayoutConstraint.Axis;
 
 const matrixExample1 = [
     [1, 1, 1, 0, 1, 1],
@@ -50,14 +50,11 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             "But for node 3, its most similar node is node 1, so we can move node 3 beside node 1."],
         () => ["Notice that since the adjacency matrix is symmetric, when you move a column / row to another column / row's position, its corresponding row / column needs to be swapped, too."],
         () => ["Now, you can drag the labels to reorder the matrix by yourself! ", "There is no correct answer here, just to let you experiment how reordering works.", "Try it now and click 'Continue' when you think you've found the pattern you are looking for."],
-        () => ["Manually reorder the matrix is doable, and useful when you don't have a computer around.",
-            "That said, when you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
-        () => ["There you go. The matrix is now auto reordered based on <i>optimal leaf ordering</i>. Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
-        () => ["We can easily identify three node clusters in highlighted areas."],
         (self: MatrixReorderingIntro) => {
             if (self.userReorderedLabels.length === 0)
             {
-                return ["Here is the matrix that auto-reordered by the optimal leaf ordering", "Do you think this algorithm is helpful in seeing patterns?"]
+                return ["Here is the matrix that auto-reordered by the machine on-the-fly.",
+                    "Do you think this result is helpful in seeing patterns?"]
             }
             else
             {
@@ -66,23 +63,27 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
                     return label === autoReorderResult[i]
                 }, this.userReorderedLabels))
                 {
-                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using the algorithm.",
+                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using an <strong>algorithm</strong>.",
                         "Your result is completely identical to machine's result! (the label order is reversed, though)"]
                 }
                 else if (andmap((label, i) => {
                     return label === autoReorderResult[5 - i]
                 }, this.userReorderedLabels))
                 {
-                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using the algorithm.",
+                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using an <strong>algorithm</strong>.",
                         "The pattern you find is completely identical to machine's result!"]
                 }
                 else
                 {
-                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using the algorithm.",
+                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using an <strong>algorithm</strong>.",
                         'Which result would you prefer more?']
                 }
             }
-        } // todo:  compare user reordered and auto reordered
+        }, // todo:  compare user reordered and auto reordered
+        () => ["In our example, we use the algorithm named <em>optimal leaf ordering</em> to reorder it automatically. Manually reorder the matrix is doable, and useful when you don't have a computer around.",
+            "That said, when you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
+        () => ["There you go. This matrix is now auto reordered using <i>optimal leaf ordering</i>. Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
+        () => ["We can now easily identify three node clusters in highlighted areas."],
     ]
 
 
@@ -149,6 +150,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
     {
         this.slideMedia.removeAll()
         this.continueBtn.title = 'Continue'
+        this.tips.text = ''
         this.slideMedia.axis = Axis.Horizontal
         this.slideText.loadLines(this.text[i](this), true, () => this.continueBtn.hide(false))
 
@@ -163,14 +165,14 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         {
             this.slideMedia.add(this.compareColumnVideo)
         }
-        if (i >= 3 && i <= 5)
+        if (i >= 3 && i <= 6)
         {
             this.slideMedia.add(this.adjacencyMatrix)
             this.adjacencyMatrix.graph = UndirectedGraph.fromMatrix(matrixExample1, OrderedLabels.numeric)
             this.adjacencyMatrix.reorderable = false
             if (i == 3)
             {
-                this.adjacencyMatrix.highlightLabel('1',true, '#2cbcff')
+                this.adjacencyMatrix.highlightLabel('1', true, '#2cbcff')
                 this.adjacencyMatrix.highlightLabel('2', true, '#ee228b')
                 this.adjacencyMatrix.highlightLabel('3', true, '#ecb11e')
             }
@@ -180,39 +182,40 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             }
             if (i == 5)
             {
+                this.tips.text = `Drag <strong>labels</strong> to reorder the matrix`
                 this.adjacencyMatrix.reorderable = true
                 this.adjacencyMatrix.setOrderedLabels(['3', '1', '2', '4', '5', '6'], false)
             }
+            if (i == 6)
+            {
+
+                if (this.userReorderedLabels.length !== 0)
+                {
+                    this.slideMedia.add(this.matrixForComparision)
+                    this.adjacencyMatrix.setOrderedLabels(this.userReorderedLabels, true)
+                    this.matrixForComparision.autoReorderLabels()
+                } else {
+                    this.adjacencyMatrix.autoReorderLabels()
+                }
+            }
         }
-        if (i >= 6 && i <= 8)
+        if (i >= 7 && i <= 9)
         {
             this.slideMedia.add(this.adjacencyMatrix)
             this.adjacencyMatrix.graph = UndirectedGraph.fromMatrix(matrixExample2, OrderedLabels.numeric)
             this.adjacencyMatrix.reorderable = false
-            if (i == 7)
+            if (i == 8)
             {
                 this.adjacencyMatrix.autoReorderLabels()
             }
-            if (i == 8)
+            if (i == 9)
             {
+                this.continueBtn.title = 'Back to Home'
                 this.adjacencyMatrix.autoReorderLabels(false)
                 this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[0, 0], [7, 7]], [[9, 9], [12, 12]], [[13, 13], [17, 17]]]))
             }
-
         }
-        if (i == 9)
-        {
-            this.continueBtn.title = 'Back to Home'
 
-            if (this.userReorderedLabels.length !== 0)
-            {
-                this.slideMedia.add(this.matrixForComparision)
-                this.matrixForComparision.orderedLabels = this.userReorderedLabels
-            }
-            this.slideMedia.add(this.adjacencyMatrix)
-            this.adjacencyMatrix.graph = UndirectedGraph.fromMatrix(matrixExample1, OrderedLabels.numeric)
-            this.adjacencyMatrix.autoReorderLabels(false)
-        }
     }
 
 
