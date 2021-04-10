@@ -3,11 +3,10 @@ import {SlideText} from "../../components/SlideText";
 import {StackView} from "../../UI/StackView";
 import {LayoutConstraint} from "../../UI/LayoutConstraint";
 import {Button} from "../../UI/Button";
-import Axis = LayoutConstraint.Axis;
-import Alignment = StackView.Alignment;
 import {SlideProgressBar} from "../../components/SlideProgressBar";
-import {Component} from "../../UI/Component";
 import {Label} from "../../UI/Label";
+import Alignment = StackView.Alignment;
+import Axis = LayoutConstraint.Axis;
 
 export class ContentReader extends ViewController {
 
@@ -18,6 +17,10 @@ export class ContentReader extends ViewController {
     slideText: SlideText
 
     continueBtn: Button
+    backBtn: Button
+
+    buttonContainer: StackView
+
     readerContainer: StackView;
     slideProgressBar: SlideProgressBar;
 
@@ -31,7 +34,13 @@ export class ContentReader extends ViewController {
         this.slideMedia = this.allocate(new StackView())
         this.slideText = this.allocate(new SlideText())
         this.messageBox = this.allocate(new StackView())
+
+        this.buttonContainer = this.allocate(new StackView())
+        this.buttonContainer.alignment = Alignment.Leading
+        this.buttonContainer.axis = Axis.Vertical
+        this.backBtn = this.allocate(new Button('← Back'))
         this.continueBtn = this.allocate(new Button('Continue'))
+        this.buttonContainer.addAll(this.continueBtn, this.backBtn)
 
         this.slideProgressBar = this.allocate(new SlideProgressBar())
 
@@ -43,14 +52,13 @@ export class ContentReader extends ViewController {
         this.messageBox.axis = Axis.Vertical
         this.messageBox.alignment = Alignment.Leading
 
-        this.messageBox.addAll(this.slideText, this.continueBtn)
+        this.messageBox.addAll(this.slideText)
         this.messageBox.assignClass('font-roboto font-light mt-4')
         this.continueBtn.assignClass("my-4 select-none text-lg py-2 px-4 transition border border-black rounded-md hover:bg-gray-100")
 
         this.readerContainer.axis = Axis.Vertical
         this.readerContainer.alignment = Alignment.Leading
         this.view.add(this.readerContainer)
-        this.readerContainer.addAll(this.title, this.slideProgressBar, this.slideMedia, this.tips, this.messageBox)
-        this.continueBtn.hide(true)
+        this.readerContainer.addAll(this.title, this.slideProgressBar, this.slideMedia, this.tips, this.messageBox, this.buttonContainer)
     }
 }

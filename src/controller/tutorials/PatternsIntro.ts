@@ -28,14 +28,20 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
     text = [
         () => ['To help us interpret an adjacency matrix, there are six common visual patterns to know.'],
+        // Self Links
         () => [`Diagonals are ${Highlight.main('Self Links')}, which as the name suggests, are links that connect a node to itself.`, `They could appear, for example, as self-citations in a citation network.`],
+        // Node Cluster
         () => [`${Highlight.main('Node Cluster')} is a cluster of nodes where almost all the nodes in it are connected.`, 'Self links are not required.'],
+        // Node Clique
         () => [`If all links would be present, the cluster would be a ${Highlight.main('Node Clique')}.`, 'Self links are not required.'],
+        // Paths
         () => [
             `${Highlight.main('Paths')} are set of links that forms up a <strong>continuous</strong> connection that lead a node to another node. Usually in stairs shape.`,
             "In our example, Node 1 can use the 'stair' to find any nodes along the path, which eventually leads it to Node 10."
         ],
-        () => [`Sometimes, off-diagonal cells can be ${Highlight.main('Connectors')} that <strong>connects</strong> between two ${Highlight.secondary('node cliques or clusters')}.`],
+        // Connectors
+        () => [`Sometimes, off-diagonal cells can be ${Highlight.main('Connectors')} that <strong>connects</strong> between two ${Highlight.secondary('node cliques or clusters')}.`, `In our example, the ${Highlight.main('highlighted cells')} located at the off-diagonal position connect ${Highlight.secondary('two cliques')}.`],
+        // Hub Node
         () => [`A dense row or column is suggesting the node has many connections (that is, it's 'highly connected'), known as ${Highlight.main('Hub Node')}.`],
         () => ["Now you should be able to interpret an adjacency matrix without too much trouble.",
             "However, sometimes these patterns are not so obvious to see, and requires some care from us.",
@@ -208,6 +214,12 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         this.slideProgressBar.delegate = this
         this.slideProgressBar.render()
         this.playSlide(0)
+        this.backBtn.on('click', () => {
+            const currentSlideIndex = this.slideProgressBar.currentSlideIndex
+            const newIndex = currentSlideIndex - 1
+            this.playSlide(newIndex)
+            this.slideProgressBar.updateCurrentSelection(newIndex)
+        })
         this.continueBtn.on('click', () => {
             const currentSlideIndex = this.slideProgressBar.currentSlideIndex
             if (currentSlideIndex === this.text.length - 1)
@@ -219,7 +231,6 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
                 const newIndex = this.slideProgressBar.currentSlideIndex + 1
                 this.playSlide(newIndex)
                 this.slideProgressBar.updateCurrentSelection(newIndex)
-                this.continueBtn.hide(true)
             }
         })
     }
@@ -229,10 +240,11 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
         this.slideMedia.removeAll()
 
-        this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
-        this.continueBtn.hide(true)
+        this.slideText.loadLines(this.text[i](), true)
         this.tips.text = ''
 
+
+        this.backBtn.hide(i === 0)
 
         if (i === 0)
         {
@@ -284,11 +296,11 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
         if (i === this.text.length - 1)
         {
-            this.continueBtn.view.text('Learn more about Matrix Reordering')
+            this.continueBtn.title= 'Learn more about Matrix Reordering'
         }
         else
         {
-            this.continueBtn.view.text('Continue')
+            this.continueBtn.title = 'Continue'
         }
     }
 }

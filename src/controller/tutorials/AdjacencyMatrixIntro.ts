@@ -133,6 +133,14 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         this.canvasPlayer.playFromStart()
         this.playSlide(0)
 
+        this.backBtn.on('click', () => {
+            const currentSlideIndex = this.slideProgressBar.currentSlideIndex
+            const newIndex = currentSlideIndex - 1
+            this.playSlide(newIndex)
+            this.slideProgressBar.updateCurrentSelection(newIndex)
+
+        })
+
         this.continueBtn.on('click', () => {
             const currentSlideIndex = this.slideProgressBar.currentSlideIndex
             if (currentSlideIndex === this.text.length - 1)
@@ -144,7 +152,6 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
                 const newIndex = this.slideProgressBar.currentSlideIndex + 1
                 this.playSlide(newIndex)
                 this.slideProgressBar.updateCurrentSelection(newIndex)
-                this.continueBtn.hide(true)
             }
         })
     }
@@ -152,7 +159,10 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
     playSlide(i)
     {
         this.slideMedia.removeAll()
-        this.slideText.loadLines(this.text[i](), true, () => this.continueBtn.hide(false))
+        this.slideText.loadLines(this.text[i](), true)
+
+        this.backBtn.hide(i === 0)
+
         this.tips.text = ""
 
 

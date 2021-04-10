@@ -122,6 +122,13 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         this.slideProgressBar.delegate = this
         this.slideProgressBar.render()
 
+        this.backBtn.on('click', () => {
+            const currentSlideIndex = this.slideProgressBar.currentSlideIndex
+            const newIndex = currentSlideIndex - 1
+            this.playSlide(newIndex)
+            this.slideProgressBar.updateCurrentSelection(newIndex)
+        })
+
         this.continueBtn.on('click', () => {
 
             const currentSlideIndex = this.slideProgressBar.currentSlideIndex
@@ -138,7 +145,6 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
                 const newIndex = currentSlideIndex + 1
                 this.playSlide(newIndex)
                 this.slideProgressBar.updateCurrentSelection(newIndex)
-                this.continueBtn.hide(true)
             }
         })
 
@@ -152,8 +158,9 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         this.continueBtn.title = 'Continue'
         this.tips.text = ''
         this.slideMedia.axis = Axis.Horizontal
-        this.slideText.loadLines(this.text[i](this), true, () => this.continueBtn.hide(false))
+        this.slideText.loadLines(this.text[i](this), true)
 
+        this.backBtn.hide(i === 0)
 
         if (i >= 0 && i <= 1)
         {
@@ -194,7 +201,9 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
                     this.slideMedia.add(this.matrixForComparision)
                     this.adjacencyMatrix.setOrderedLabels(this.userReorderedLabels, true)
                     this.matrixForComparision.autoReorderLabels()
-                } else {
+                }
+                else
+                {
                     this.adjacencyMatrix.autoReorderLabels()
                 }
             }

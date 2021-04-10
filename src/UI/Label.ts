@@ -16,7 +16,7 @@ export class Label extends Component {
             .html(str)
             .transition()
             .style('opacity', '0%')
-            .duration(300)
+            .duration(animated? 300 : 0)
             .style('opacity', '100%')
     }
 
