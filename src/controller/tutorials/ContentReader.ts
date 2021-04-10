@@ -39,6 +39,7 @@ export class ContentReader extends ViewController {
         this.title.assignClass('text-5xl text-gray-400 font-thin leading-snug mb-4')
         this.slideMedia.axis = Axis.Vertical
         this.slideMedia.alignment = Alignment.Center
+        this.tips.assignClass('text-gray-400 mt-4')
         this.messageBox.axis = Axis.Vertical
         this.messageBox.alignment = Alignment.Leading
 
@@ -49,7 +50,7 @@ export class ContentReader extends ViewController {
         this.readerContainer.axis = Axis.Vertical
         this.readerContainer.alignment = Alignment.Leading
         this.view.add(this.readerContainer)
-        this.readerContainer.addAll(this.title, this.slideProgressBar, this.slideMedia, this.messageBox)
+        this.readerContainer.addAll(this.title, this.slideProgressBar, this.slideMedia, this.tips, this.messageBox)
         this.continueBtn.hide(true)
     }
 }

@@ -9,11 +9,13 @@ export class MatrixSorting extends ViewController {
     {
         super('matrixSorting');
 
-        const adjacencyMatrix = this.allocate(new AdjacencyMatrix(AdjacencyMatrix.defaultStyle, ExampleGraphs.getExample(4)))
+        const adjacencyMatrix = this.allocate(new AdjacencyMatrix(AdjacencyMatrix.defaultStyle, ExampleGraphs.lyonMetro))
         const button = this.allocate(new TitledButton("Generate to Console"))
 
         button.on('click', () => {
             // console.log(adjacencyMatrix._graph.toNumbersArray(adjacencyMatrix.graph.vertices))
+            adjacencyMatrix.autoReorderLabels()
+
         })
 
         this.view.add(adjacencyMatrix)
