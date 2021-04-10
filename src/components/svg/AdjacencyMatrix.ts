@@ -19,6 +19,7 @@ import CellGroupHighlight = Highlight.CellGroupHighlight;
 import AreaHighlight = Highlight.AreaHighlight;
 
 
+
 export interface IndexedLabel {
     label: string
     index: number
@@ -548,7 +549,6 @@ export class AdjacencyMatrix extends SVGComponent {
                 effect === null || effect === undefined)
             {
                 return null
-
             }
             else
             {
@@ -723,20 +723,29 @@ export class AdjacencyMatrix extends SVGComponent {
     }
 
     restoreFromEffect = (callback = null) => {
-        return () => {
-            this.cells
-                .style('stroke', this.style.cellStrokeColor)
-                .style('stroke-width', '1px')
+        const style = this.style.hoverLabelEffect
+        if (style === AdjacencyMatrix.HoverLabelEffect.None || style === undefined || style === null)
+        {
+            return null
+        }
+        else
+        {
+            return () => {
+                this.cells
+                    .style('stroke', this.style.cellStrokeColor)
+                    .style('stroke-width', '1px')
 
-            this.allLabels
-                .style('fill', 'black')
-                .style('font-weight', 300)
+                this.allLabels
+                    .style('fill', 'black')
+                    .style('font-weight', 300)
 
-            if (callback !== null)
-            {
-                callback()
+                if (callback !== null)
+                {
+                    callback()
+                }
             }
         }
+
     }
 
     private findLabelIndex = (label: string): number => {
