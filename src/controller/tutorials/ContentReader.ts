@@ -36,8 +36,8 @@ export class ContentReader extends ViewController {
         this.messageBox = this.allocate(new StackView())
 
         this.buttonContainer = this.allocate(new StackView())
-        this.buttonContainer.alignment = Alignment.Leading
-        this.buttonContainer.axis = Axis.Vertical
+        this.buttonContainer.alignment = Alignment.Center
+        this.buttonContainer.axis = Axis.Horizontal
         this.backBtn = this.allocate(new Button('← Back'))
         this.continueBtn = this.allocate(new Button('Continue'))
         this.buttonContainer.addAll(this.continueBtn, this.backBtn)
@@ -55,6 +55,7 @@ export class ContentReader extends ViewController {
         this.messageBox.addAll(this.slideText)
         this.messageBox.assignClass('font-roboto font-light mt-4')
         this.continueBtn.assignClass("my-4 select-none text-lg py-2 px-4 transition border border-black rounded-md hover:bg-gray-100")
+        this.backBtn.assignClass('mx-4 p-2 select-none text-blue-400 rounded-md transition hover:bg-gray-100')
 
         this.readerContainer.axis = Axis.Vertical
         this.readerContainer.alignment = Alignment.Leading
