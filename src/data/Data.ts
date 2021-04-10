@@ -5,8 +5,8 @@ type Area = [Cell, Cell]
 
 export namespace Highlight {
 
-    export const mainHighlightColor = "#0a7fcf"
-    export const secondaryHighlightColor = '#f3b70a'
+    export const mainHighlightColor = "#00a25f"
+    export const secondaryHighlightColor = '#e29905'
 
     export interface LabelHighlight {
         indexes: number[]
