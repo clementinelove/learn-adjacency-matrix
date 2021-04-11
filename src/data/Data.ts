@@ -1,11 +1,12 @@
 import {Component} from "../UI/Component";
+import {colorBrush} from "../utils/Utils";
 
 type Cell = [number, number]
 type Area = [Cell, Cell]
 
 export namespace Highlight {
 
-    export const mainHighlightColor = "#00a25f"
+    export const mainHighlightColor = "#00b391"
     export const secondaryHighlightColor = '#e29905'
 
     export interface LabelHighlight {
@@ -43,8 +44,8 @@ export namespace Highlight {
         return new CellGroupHighlight([cell], oneByOne, color)
     }
 
-    export const main = (text) => `<span style="color: ${mainHighlightColor}">${text}</span>`
-    export const secondary = (text) => `<span style="color: ${secondaryHighlightColor}">${text}</span>`
+    export const main = colorBrush(mainHighlightColor)
+    export const secondary = colorBrush(secondaryHighlightColor)
 
     export class AreaHighlight {
 

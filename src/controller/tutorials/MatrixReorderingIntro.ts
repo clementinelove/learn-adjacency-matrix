@@ -9,6 +9,7 @@ import {andmap} from "../../utils/FPUtils";
 import {Highlight} from "../../data/Data";
 import {LayoutConstraint} from "../../UI/LayoutConstraint";
 import {HomeController} from "../HomeController";
+import {colorBrush} from "../../utils/Utils";
 import Axis = LayoutConstraint.Axis;
 
 const matrixExample1 = [
@@ -39,6 +40,14 @@ const matrixExample2 = [
     [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
 ];
+
+const connector0Color = '#ff3563'
+const connector1Color = '#e39832'
+const connector2Color = '#48d8ff'
+
+const connector0 = colorBrush(connector0Color)
+const connector1 = colorBrush(connector1Color)
+const connector2 = colorBrush(connector2Color)
 
 export class MatrixReorderingIntro extends ContentReader implements SlideProgressDelegate {
 
@@ -83,7 +92,12 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         () => ["In our example, we use the algorithm named <em>optimal leaf ordering</em> to reorder it automatically. Manually reorder the matrix is doable, and useful when you don't have a computer around.",
             "That said, when you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
         () => ["There you go. This matrix is now auto reordered using <i>optimal leaf ordering</i>. Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
-        () => ["We can now easily identify three node clusters in highlighted areas."],
+        () => [
+            `We can now easily identify three ${Highlight.main('node clusters')} along with some connectors.`,
+            `${connector0('Red connector')} connects top cluster to middle cluster;`,
+            `${connector1('Yellow connector')} connects top cluster to bottom cluster;`,
+            `${connector2('Teal connector')} connects middle cluster to bottom cluster.`
+        ],
     ]
 
 
@@ -225,7 +239,16 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             {
                 this.continueBtn.title = 'Back to Home'
                 this.adjacencyMatrix.autoReorderLabels(false)
+                // clusters
                 this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[0, 0], [7, 7]], [[9, 9], [12, 12]], [[13, 13], [17, 17]]]))
+                // connector 0
+                this.adjacencyMatrix.highlightCells(Highlight.cells([[0, 10], [10, 0]], false, connector0Color))
+                // connector 1
+                this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[13, 0], [17, 5]], [[0, 13], [5, 17]]],
+                                                                        true, true, false,
+                                                                        connector1Color))
+                // connector 2
+                this.adjacencyMatrix.highlightCells(Highlight.cells([[16, 11], [11, 16]], false, connector2Color))
             }
         }
 

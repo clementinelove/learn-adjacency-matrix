@@ -118,3 +118,9 @@ export function replaceUndefinedWithDefaultValues<T extends object>(obj: T, defa
     }
     return objWithDefault
 }
+
+export const colorBrush = (color: string) : ((string) => string) => {
+    return (html: string) => {
+        return `<span style="color: ${color}">${html}</span>`
+    }
+}

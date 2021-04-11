@@ -901,11 +901,12 @@ export class AdjacencyMatrix extends SVGComponent {
     highlightCells = (highlight: CellGroupHighlight) => {
         const cellsSet = new ObjectSet(CellPosition.group(...highlight.cells))
 
-        const cells = this.svg
-                          .selectAll<SVGRectElement, DrawingInstruction>('.cell')
+        const cells = this.cells
                           .filter((di) => {
                               return cellsSet.has(drawingInstructionToPositionedCell(di, this._orderedLabels).position)
                           })
+
+        console.log(cells)
 
         this.breathAnimation(cells, highlight.color)
     }
