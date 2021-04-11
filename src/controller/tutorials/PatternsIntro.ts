@@ -29,7 +29,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
     text = [
         () => ['To help us interpret an adjacency matrix, there are six common visual patterns to know.'],
         // Self Links
-        () => [`Diagonals are ${Highlight.main('Self Links')}, which as the name suggests, are links that connect a node to itself.`, `They could appear, for example, as self-citations in a citation network.`],
+        () => [`Diagonals are ${Highlight.main('Self Links')}, which as the name suggests, are links that connect a node to itself.`, `They could appear, for example, as self-citations in a citation network.`, `Some relationship simply doesn't have any self-links, e.g. marriage (after all you can't marry to yourself, or <a href="https://en.wikipedia.org/wiki/Sologamy" class="text-blue-400 underline" target="_blank">can you?</a>).`],
         // Node Cluster
         () => [`${Highlight.main('Node Cluster')} is a cluster of nodes where almost all the nodes in it are connected.`, 'Self links are not required.'],
         // Node Clique

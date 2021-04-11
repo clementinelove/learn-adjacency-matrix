@@ -185,6 +185,10 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             }
             if (i == 4)
             {
+                // I don't understand why I can't write i == 3 || i == 4, so strange
+                this.adjacencyMatrix.highlightLabel('1', false, '#2cbcff')
+                this.adjacencyMatrix.highlightLabel('2', false, '#ee228b')
+                this.adjacencyMatrix.highlightLabel('3', false, '#ecb11e')
                 this.adjacencyMatrix.setOrderedLabels(['3', '1', '2', '4', '5', '6'], true)
             }
             if (i == 5)
