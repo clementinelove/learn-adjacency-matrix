@@ -76,6 +76,7 @@ export class MatrixExplorer extends Component {
             hideLabel: false,
             toggleableCell: true,
             highlightColor: '#fc6b94',
+            allowDiagonals: false,
             hoverCellEffect: HoverCellEffect.HighlightSymmetric,
             hoverLabelEffect: HoverLabelEffect.HighlightSymmetric,
             hoverLabelCallback: (label) => {
@@ -96,7 +97,8 @@ export class MatrixExplorer extends Component {
                 }
                 else
                 {
-                    content = `Connection of Node ${rowLabel} to itself`
+                    content = `Connection of Node ${rowLabel} to itself<br/>` +
+                        `Also known as <strong>Self Link.</strong>`
                 }
                 this.nodeLinkDiagram.highlightLinkByVertex(rowLabel, columnLabel)
                 this.infoLabel.text = content

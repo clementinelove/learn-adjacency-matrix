@@ -19,7 +19,6 @@ import CellGroupHighlight = Highlight.CellGroupHighlight;
 import AreaHighlight = Highlight.AreaHighlight;
 
 
-
 export interface IndexedLabel {
     label: string
     index: number
@@ -38,6 +37,8 @@ export interface MatrixStyle {
     fillColor?: string
     highlightColor?: string
     showLabelsOnHover?: boolean
+
+    allowDiagonals?: boolean
 
     hoverLabelEffect?: AdjacencyMatrix.HoverLabelEffect
     hoverLabelCallback?: (label: string) => void
@@ -68,6 +69,7 @@ export class AdjacencyMatrix extends SVGComponent {
         toggleableCell: true,
         highlightColor: '#fc6b94',
         cellStrokeColor: 'lightgray',
+        allowDiagonals: true,
         reorderable: true,
         showLabelsOnHover: false,
         cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
@@ -533,8 +535,6 @@ export class AdjacencyMatrix extends SVGComponent {
 
                         if (this.style.hoverCellCallback)
                         {
-                            console.log('hoverCellCallback:')
-                            console.log(this.style.hoverCellCallback)
                             this.style.hoverCellCallback(targetData)
                         }
                     }
@@ -574,13 +574,27 @@ export class AdjacencyMatrix extends SVGComponent {
                               this.findLabelIndex(d.position.rowLabel) * this.cellSize)
                           .attr('x', (d: DrawingInstruction) =>
                               this.findLabelIndex(d.position.columnLabel) * this.cellSize)
-                          .style('fill', (d: DrawingInstruction) => d.filling !== false ?
-                              AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL)
-                          .style('cursor', this.style.toggleableCell ? 'pointer' : null)
+                          .style('fill', (d: DrawingInstruction) => {
+                              const {rowLabel, columnLabel} = d.position
+                              return d.filling !== false ?
+                                  AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL
+                          })
+                          .style('cursor', d => {
+                              return this.style.toggleableCell ? (d.position.columnLabel === d.position.rowLabel ? (this.style.allowDiagonals ? 'pointer' : 'default') : 'pointer') : 'default'
+                          })
                           .style('stroke', this.style.cellStrokeColor)
                           .style('stroke-width', "1px")
-                          .on('click', this.style.toggleableCell ? (event, targetData: DrawingInstruction) => {
-                              console.log('click')
+                          .on('click', this.style.toggleableCell ?
+                              (event, targetData: DrawingInstruction) => {
+
+                              if (targetData.position.rowLabel === targetData.position.columnLabel)
+                              {
+                                  if (!this.style.allowDiagonals)
+                                  {
+                                      return null
+                                  }
+                              }
+
                               let v1 = targetData.position.rowLabel
                               let v2 = targetData.position.columnLabel
                               if (targetData.filling === false)

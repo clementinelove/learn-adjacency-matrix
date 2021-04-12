@@ -31,6 +31,7 @@ const animationNetworkStyle = {
     textColor: 'black',
     nodeColor: 'white',
     nodeRadius: 12,
+    allowDiagonals: false,
     nodeStrokeColor: 'black',
     linkColor: '#aaa'
 }
@@ -94,6 +95,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             toggleableCell: false,
             reorderable: false,
             showLabelsOnHover: false,
+            allowDiagonals: false,
             hoverCellEffect: HoverCellEffect.HighlightSymmetric,
             hoverLabelEffect: HoverLabelEffect.HighlightSymmetric,
             hoverLabelCallback: (label) => {
