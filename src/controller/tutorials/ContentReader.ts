@@ -7,6 +7,7 @@ import {SlideProgressBar} from "../../components/SlideProgressBar";
 import {Label} from "../../UI/Label";
 import Alignment = StackView.Alignment;
 import Axis = LayoutConstraint.Axis;
+import interactive from "../../data/gifs/interactive.gif";
 
 export class ContentReader extends ViewController {
 
@@ -23,10 +24,14 @@ export class ContentReader extends ViewController {
 
     readerContainer: StackView;
     slideProgressBar: SlideProgressBar;
+    interactiveIcon: string
+
 
     constructor(title: string)
     {
         super('contentReader');
+
+        this.interactiveIcon = `<img src="${interactive}" alt="This is an interactive piece!" class="inline" width="50px"/>`
 
         this.title = this.allocate(new Label(''))
         this.tips = this.allocate(new Label(''))
@@ -40,6 +45,8 @@ export class ContentReader extends ViewController {
         this.buttonContainer.axis = Axis.Horizontal
         this.backBtn = this.allocate(new Button('← Back'))
         this.continueBtn = this.allocate(new Button('Continue'))
+        this.continueBtn.assignClass("my-4 select-none text-lg py-2 px-4 transition border border-black rounded-md hover:bg-gray-100")
+        this.backBtn.assignClass('mx-4 p-2 select-none text-blue-400 rounded-md transition hover:bg-gray-100')
         this.buttonContainer.addAll(this.continueBtn, this.backBtn)
 
         this.slideProgressBar = this.allocate(new SlideProgressBar())
@@ -54,8 +61,6 @@ export class ContentReader extends ViewController {
 
         this.messageBox.addAll(this.slideText)
         this.messageBox.assignClass('font-roboto font-light mt-4')
-        this.continueBtn.assignClass("my-4 select-none text-lg py-2 px-4 transition border border-black rounded-md hover:bg-gray-100")
-        this.backBtn.assignClass('mx-4 p-2 select-none text-blue-400 rounded-md transition hover:bg-gray-100')
 
         this.readerContainer.axis = Axis.Vertical
         this.readerContainer.alignment = Alignment.Leading

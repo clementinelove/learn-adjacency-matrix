@@ -97,18 +97,20 @@ export class MatrixExplorer extends Component {
                 }
                 else
                 {
-                    content = `Connection of Node ${rowLabel} to itself<br/>` +
-                        `Also known as <strong>Self Link.</strong>`
+                    content = `Connection of Node ${rowLabel} to itself<br/>`
                 }
                 this.nodeLinkDiagram.highlightLinkByVertex(rowLabel, columnLabel)
+                this.adjacencyMatrix.highlightLabel(rowLabel, false)
+                this.adjacencyMatrix.highlightLabel(columnLabel, false)
                 this.infoLabel.text = content
             },
             leaveCellCallback: () => {
+                this.adjacencyMatrix.restoreFromEffect()()
                 this.nodeLinkDiagram.restoreLink()
                 this.infoLabel.text = ''
             },
             cellStrokeColor: 'lightgray',
-            reorderable: true,
+            reorderable: false,
             showLabelsOnHover: false,
             cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
         }

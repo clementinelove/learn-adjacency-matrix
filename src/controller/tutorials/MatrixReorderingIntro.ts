@@ -57,7 +57,8 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         () => ["To see where to move a column / row to, simply compare each cell against <strong>every other</strong> column / row's cells one at a time, then you could move the column / row <strong>beside the one with highest 'similarity'</strong>."],
         () => ["In the example above, the most 'similar' node to node 2 is node 1, since node 2 is already beside node 1, there is no need to move it around.",
             "But for node 3, its most similar node is node 1, so we can move node 3 beside node 1."],
-        () => ["Notice that since the adjacency matrix is symmetric, when you move a column / row to another column / row's position, its corresponding row / column needs to be swapped, too."],
+        () => ["Notice that since the adjacency matrix is symmetric, when you move a column to another column position, its corresponding row needs to be swapped, too.",
+            "Same rule applies when you reorder a row: its corresponding column needs to move as the row moves."],
         () => ["Now, you can drag the labels to reorder the matrix by yourself! ", "There is no correct answer here, just to let you experiment how reordering works.", "Try it now and click 'Continue' when you think you've found the pattern you are looking for."],
         (self: MatrixReorderingIntro) => {
             if (self.userReorderedLabels.length === 0)
@@ -207,7 +208,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             }
             if (i == 5)
             {
-                this.tips.text = `Drag <strong>labels</strong> to reorder the matrix`
+                this.tips.text = `${this.interactiveIcon} Drag <strong>labels</strong> to reorder the matrix`
                 this.adjacencyMatrix.reorderable = true
                 this.adjacencyMatrix.setOrderedLabels(['3', '1', '2', '4', '5', '6'], false)
             }

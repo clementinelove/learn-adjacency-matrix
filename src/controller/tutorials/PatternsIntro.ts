@@ -254,7 +254,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         if (i >= 1 && i < patternsList.length + 1)
         {
             this.slideMedia.add(this.mediaContainer)
-            this.tips.text = "You can hover on cells to see their connections"
+            this.tips.text = `${this.interactiveIcon} You can hover on cells to see their connections`
 
             const pattern = patternsList[i - 1]
 

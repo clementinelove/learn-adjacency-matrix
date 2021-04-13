@@ -1,5 +1,5 @@
 import {Component} from "./Component";
-import {Rect} from "../utils/structures/Geometry";
+import {Dimension, Rect} from "../utils/structures/Geometry";
 
 export class SVGComponent extends Component {
 
@@ -15,8 +15,18 @@ export class SVGComponent extends Component {
         this.frame = frame
         const {x, y, width, height} = frame
         this.svg = this.view.append('svg')
-                     // .attr('viewBox', `${x} ${y} ${width} ${height}`)
-                     .attr('width', `${x + width}px`)
-                     .attr('height', `${y + height}px`);
+                       .attr('viewbox', `${x} ${y} ${width}, ${height}`)
+                       .attr('width', `${x + width}px`)
+                       .attr('height', `${y + height}px`);
+    }
+
+    set width(v: string)
+    {
+        this.svg.attr('width', v)
+    }
+
+    set height(v: string)
+    {
+        this.svg.attr('height', v)
     }
 }

@@ -67,6 +67,13 @@ export namespace Data {
             areaHighlights: [
                 Highlight.area([[0, 0], [7, 7]])
             ]
+            ,
+            labelHighlight: [
+                {
+                    indexes: [0,1,2,3,4,5,6,7],
+                    color: Highlight.mainHighlightColor
+                }
+            ]
         }
 
         export const selfLinks: MatrixPatternData = {

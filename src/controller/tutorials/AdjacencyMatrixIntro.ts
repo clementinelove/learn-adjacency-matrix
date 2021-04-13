@@ -39,8 +39,8 @@ const animationNetworkStyle = {
 export class AdjacencyMatrixIntro extends ContentReader implements SlideProgressDelegate {
 
     text: (() => string[])[] = [
-        () => ['This is a node-link diagram visualizes the friendship of a network.',
-            'For each person, we draw a node; for each connection (link) a line.', 'For a network not so complex, it works fine.'],
+        () => ['This is a node-link diagram visualises the friendship of a network.',
+            'For each person, we draw a node; for each connection (link), a line.', 'For a network not so complex, it works fine.'],
         () => ['But in many cases, we need to analyse a more complex network.',
             'And once the dataset gets bigger, occlusion and link crossings start to appear.'],
         () => ['This is where adjacency matrix can help.'],
@@ -49,7 +49,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             "Usually, we use a filled (in our case we use <strong>black</strong>) cell to show the connection exists.",
             "An unfilled cell means the connection doesn't exist."],
         () => [
-            "Now, you can freely explore the elements of the adjacency matrix.",
+            "Now, you can freely explore the relationship between a node-link diagram and its corresponding adjacency matrix.",
             "<strong>Hover</strong> your mouse on the node-link diagram or the matrix, see what these elements represent.",
             "<strong>Click</strong> a cell of the matrix will toggle the corresponding link from the node-link diagram."
             , "When you finished exploring, we will show you more about the common visual patterns of adjacency matrix, which allows you to get more insights from the matrix."
@@ -185,7 +185,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         if (i === 5)
         {
             this.slideMedia.add(this.matrixExplorer)
-            this.tips.text = "Hover on cells or links of the node-link diagram, or labels and cells of the matrix"
+            this.tips.text = `${this.interactiveIcon} Hover on cells or links of the node-link diagram, or labels and cells of the matrix`
             this.adjacencyMatrix.view
                 .style('opacity', 0)
                 .transition().duration(300)
