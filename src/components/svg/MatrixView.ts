@@ -5,9 +5,9 @@ import {SVGComponent} from "../../UI/SVGComponent";
 import * as d3 from "d3";
 import {ObjectSet} from "../../utils/structures/ObjectSet";
 import {Equatable} from "../../utils/Utils";
-import {Highlight} from "../../data/Data";
 import AreaHighlight = Highlight.AreaHighlight;
 import CellGroupHighlight = Highlight.CellGroupHighlight;
+import {Highlight} from "../../utils/Highlight";
 
 export interface PositionedCell {
     position: CellPosition
@@ -117,7 +117,7 @@ export class MatrixView extends SVGComponent {
                            )
                            .style('stroke', 'lightgray')
                            .style('stroke-width', 1)
-                           .style('fill', (pc) => pc.value === 1 ? this._style.fillColor : 'white')
+                           .style('fill', (pc) => pc.value === 1 ? this._style.fillColor as string : 'white')
                            .on('mouseover', this._style.toggleableCell === true ? (event, pc) => {
                                console.log('enter')
                                this.svg.selectAll<SVGRectElement, PositionedCell>('.cell')
@@ -158,7 +158,7 @@ export class MatrixView extends SVGComponent {
               .transition()
               .ease(d3.easeSinOut)
               .duration(1500)
-              .attr('fill', this._style.fillColor)
+              .style('fill', this._style.fillColor as string)
         }
         else
         {

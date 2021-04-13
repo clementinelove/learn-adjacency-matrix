@@ -1,6 +1,6 @@
 import {ContentReader} from "./ContentReader";
 import {AdjacencyMatrix, MatrixStyle} from "../../components/svg/AdjacencyMatrix";
-import {Data, Highlight} from "../../data/Data";
+import {Data} from "../../data/Data";
 import {GridView} from "../../UI/GridView";
 import {MatrixView} from "../../components/svg/MatrixView";
 import {Label} from "../../UI/Label";
@@ -14,6 +14,7 @@ import {MatrixReorderingIntro} from "./MatrixReorderingIntro";
 import Alignment = StackView.Alignment;
 import Axis = LayoutConstraint.Axis;
 import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
+import {Highlight} from "../../utils/Highlight";
 
 const patternsList = [
     Data.MatrixPatterns.selfLinks,

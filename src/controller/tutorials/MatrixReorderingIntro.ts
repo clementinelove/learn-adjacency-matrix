@@ -6,11 +6,11 @@ import {Video} from "../../UI/Video";
 import {UndirectedGraph} from "../../utils/structures/UndirectedGraph";
 import {OrderedLabels} from "../../utils/structures/OrderedLabels";
 import {andmap} from "../../utils/FPUtils";
-import {Highlight} from "../../data/Data";
 import {LayoutConstraint} from "../../UI/LayoutConstraint";
 import {HomeController} from "../HomeController";
 import {colorBrush} from "../../utils/Utils";
 import Axis = LayoutConstraint.Axis;
+import {Highlight} from "../../utils/Highlight";
 
 const matrixExample1 = [
     [1, 1, 1, 0, 1, 1],

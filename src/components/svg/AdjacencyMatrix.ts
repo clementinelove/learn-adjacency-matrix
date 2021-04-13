@@ -13,8 +13,8 @@ import {Vertex} from "../../data/animations/network/GenerateLabels";
 import {replaceUndefinedWithDefaultValues} from "../../utils/Utils";
 import {ObjectSet} from "../../utils/structures/ObjectSet";
 import {ormap} from "../../utils/FPUtils";
-import {Highlight} from "../../data/Data";
 import {CellPosition} from "./MatrixView";
+import {Highlight} from "../../utils/Highlight";
 import CellGroupHighlight = Highlight.CellGroupHighlight;
 import AreaHighlight = Highlight.AreaHighlight;
 
@@ -29,13 +29,16 @@ export interface MatrixStyle {
     fontName?: string
     spaceBetweenLabels?: number
     padding?: number
+    cellCornerRadius?: number | ((di: DrawingInstruction) => number)
     cellStrokeColor?: string
     cellSizeToFontSize?: (number: number) => number
     hideLabel?: boolean
     toggleableCell?: boolean
     reorderable?: boolean
-    fillColor?: string
+
+    fillColor?: string | ((di: DrawingInstruction) => number)
     highlightColor?: string
+
     showLabelsOnHover?: boolean
 
     allowDiagonals?: boolean
@@ -64,7 +67,9 @@ export class AdjacencyMatrix extends SVGComponent {
         },
         fontName: 'monospace',
         spaceBetweenLabels: 10,
+        cellCornerRadius: 0,
         padding: 36,
+        fillColor: 'black',
         hideLabel: false,
         toggleableCell: true,
         highlightColor: '#fc6b94',
@@ -75,7 +80,6 @@ export class AdjacencyMatrix extends SVGComponent {
         cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
     }
 
-    static CELL_FILLED_FILL = 'black'
     static CELL_EMPTY_FILL = 'white'
     static CSS_CLASS_LABEL = 'adjacency-matrix-label'
     static CSS_CLASS_V_LABEL = 'vertical-label'
@@ -155,7 +159,6 @@ export class AdjacencyMatrix extends SVGComponent {
     }
 
 
-
     constructor(style: MatrixStyle = AdjacencyMatrix.defaultStyle,
                 graph: UndirectedGraph = null,
                 transitionTime = 400)
@@ -174,7 +177,8 @@ export class AdjacencyMatrix extends SVGComponent {
         }
     }
 
-    addPatternStyle() {
+    addPatternStyle()
+    {
         this.svg.append('defs')
             .html('<pattern id="noneRelation" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse" patternTransform="translate(166.51 -16.39)"><rect fill="none" width="100" height="100"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="53.03" y1="-53.03" x2="-53.03" y2="53.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="58.03" y1="-48.03" x2="-48.03" y2="58.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="63.03" y1="-43.03" x2="-43.03" y2="63.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="68.03" y1="-38.03" x2="-38.03" y2="68.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="73.03" y1="-33.03" x2="-33.03" y2="73.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="78.03" y1="-28.03" x2="-28.03" y2="78.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="83.03" y1="-23.03" x2="-23.03" y2="83.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="88.03" y1="-18.03" x2="-18.03" y2="88.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="93.03" y1="-13.03" x2="-13.03" y2="93.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="98.03" y1="-8.03" x2="-8.03" y2="98.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="103.03" y1="-3.03" x2="-3.03" y2="103.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="108.03" y1="1.97" x2="1.97" y2="108.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="113.03" y1="6.97" x2="6.97" y2="113.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="118.03" y1="11.97" x2="11.97" y2="118.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="123.03" y1="16.97" x2="16.97" y2="123.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="128.03" y1="21.97" x2="21.97" y2="128.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="133.03" y1="26.97" x2="26.97" y2="133.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="138.03" y1="31.97" x2="31.97" y2="138.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="143.03" y1="36.97" x2="36.97" y2="143.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="148.03" y1="41.97" x2="41.97" y2="148.03"/><line style="stroke:#cb3f50;stroke-miterlimit:10;stroke-width:2.5px;fill:none;" x1="153.03" y1="46.97" x2="46.97" y2="153.03"/></pattern>')
     }
@@ -574,12 +578,22 @@ export class AdjacencyMatrix extends SVGComponent {
                               this.findLabelIndex(d.position.columnLabel) * this.cellSize)
                           .style('fill', (d: DrawingInstruction) => {
                               const {rowLabel, columnLabel} = d.position
-                              if (rowLabel === columnLabel && !this.style.allowDiagonals) {
-                                  return 'url(#noneRelation)'
-                              } else
+                              if (rowLabel === columnLabel && !this.style.allowDiagonals)
                               {
-                                  return d.filling !== false ?
-                                      AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL
+                                  return 'url(#noneRelation)'
+                              }
+                              else
+                              {
+                                  if (typeof this.style.fillColor === 'string')
+                                  {
+                                      return d.filling !== false ?
+                                          this.style.fillColor : AdjacencyMatrix.CELL_EMPTY_FILL
+                                  }
+                                  else
+                                  {
+                                      return this.style.fillColor(d)
+                                  }
+
                               }
                           })
                           .style('cursor', d => {
@@ -590,26 +604,26 @@ export class AdjacencyMatrix extends SVGComponent {
                           .on('click', this.style.toggleableCell ?
                               (event, targetData: DrawingInstruction) => {
 
-                              if (targetData.position.rowLabel === targetData.position.columnLabel)
-                              {
-                                  if (!this.style.allowDiagonals)
+                                  if (targetData.position.rowLabel === targetData.position.columnLabel)
                                   {
-                                      return null
+                                      if (!this.style.allowDiagonals)
+                                      {
+                                          return null
+                                      }
                                   }
-                              }
 
-                              let v1 = targetData.position.rowLabel
-                              let v2 = targetData.position.columnLabel
-                              if (targetData.filling === false)
-                              {
-                                  this._graph.addEdge(new Edge(v1, v2, null))
-                              }
-                              else
-                              {
-                                  this._graph.removeEdge(new Edge(v1, v2, null))
-                              }
-                              this.render()
-                          } : null)
+                                  let v1 = targetData.position.rowLabel
+                                  let v2 = targetData.position.columnLabel
+                                  if (targetData.filling === false)
+                                  {
+                                      this._graph.addEdge(new Edge(v1, v2, null))
+                                  }
+                                  else
+                                  {
+                                      this._graph.removeEdge(new Edge(v1, v2, null))
+                                  }
+                                  this.render()
+                              } : null)
                           .on('mouseover', hoverCellEffect(this.style.hoverCellEffect))
                           .on('mouseleave', restore)
             ,
@@ -621,9 +635,27 @@ export class AdjacencyMatrix extends SVGComponent {
                                                   .attr('x', (d: DrawingInstruction) =>
                                                       this.findLabelIndex(d.position.columnLabel) * this.cellSize)
                                                   .attr('stroke', this.style.cellStrokeColor)
-                                                  .style('fill',
-                                                         (d: DrawingInstruction) => d.filling !== false ?
-                                                             AdjacencyMatrix.CELL_FILLED_FILL : AdjacencyMatrix.CELL_EMPTY_FILL))
+                                                  .style('fill', (d: DrawingInstruction) => {
+                                                      const {rowLabel, columnLabel} = d.position
+                                                      if (rowLabel === columnLabel && !this.style.allowDiagonals)
+                                                      {
+                                                          return 'url(#noneRelation)'
+                                                      }
+                                                      else
+                                                      {
+                                                          if (typeof this.style.fillColor === 'string')
+                                                          {
+                                                              return d.filling !== false ?
+                                                                  this.style.fillColor : AdjacencyMatrix.CELL_EMPTY_FILL
+                                                          }
+                                                          else
+                                                          {
+                                                              return this.style.fillColor(d)
+                                                          }
+
+                                                      }
+                                                  })
+            )
         )
     }
 
