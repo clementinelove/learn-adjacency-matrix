@@ -85,12 +85,11 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
                 }
                 else
                 {
-                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using an <strong>algorithm</strong>.",
-                        'Which result would you prefer more?']
+                    return ["On the left is the matrix that reordered by you. The right one is the same network, auto-reordered using an <strong>algorithm</strong>."]
                 }
             }
         }, // todo:  compare user reordered and auto reordered
-        () => ["In our example, we use the algorithm named <em>optimal leaf ordering</em> to reorder it automatically. Manually reorder the matrix is doable, and useful when you don't have a computer around.",
+        () => [`The algorithm we used is <a href="https://hal.inria.fr/hal-01326759/document" title='You can learn more about this algorithm here.' class='underline text-blue-400' style='cursor: help' target="_blank"><em>optimal leaf ordering</em></a>. Manually reorder the matrix is doable, and useful when you don't have a computer around.`,
             "That said, when you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
         () => ["There you go. This matrix is now auto reordered using <i>optimal leaf ordering</i>. Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
         () => [
@@ -241,15 +240,15 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
                 this.continueBtn.title = 'Back to Home'
                 this.adjacencyMatrix.autoReorderLabels(false)
                 // clusters
-                this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[0, 0], [7, 7]], [[9, 9], [12, 12]], [[13, 13], [17, 17]]]))
+                this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[0, 0], [7, 7]], [[9, 9], [12, 12]], [[13, 13], [17, 17]]]), 2)
                 // connector 0
-                this.adjacencyMatrix.highlightCells(Highlight.cells([[0, 10], [10, 0]], false, connector0Color))
+                this.adjacencyMatrix.highlightCells(Highlight.cells([[0, 10], [10, 0]], false, connector0Color), 2)
                 // connector 1
                 this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[13, 0], [17, 5]], [[0, 13], [5, 17]]],
                                                                         true, true, false,
-                                                                        connector1Color))
+                                                                        connector1Color), 2)
                 // connector 2
-                this.adjacencyMatrix.highlightCells(Highlight.cells([[16, 11], [11, 16]], false, connector2Color))
+                this.adjacencyMatrix.highlightCells(Highlight.cells([[16, 11], [11, 16]], false, connector2Color), 2)
             }
         }
 

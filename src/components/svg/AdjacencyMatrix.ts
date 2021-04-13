@@ -947,7 +947,7 @@ export class AdjacencyMatrix extends SVGComponent {
 //         }
     }
 
-    highlightCells = (highlight: CellGroupHighlight) => {
+    highlightCells = (highlight: CellGroupHighlight, count: number | "loop" = "loop") => {
         const cellsSet = new ObjectSet(CellPosition.group(...highlight.cells))
 
         const cells = this.cells
@@ -957,10 +957,10 @@ export class AdjacencyMatrix extends SVGComponent {
 
         console.log(cells)
 
-        this.breathAnimation(cells, highlight.color)
+        this.breathAnimation(cells, highlight.color, count)
     }
 
-    highlightRectAreas = (highlight: AreaHighlight) => {
+    highlightRectAreas = (highlight: AreaHighlight, count: number | "loop" = "loop") => {
         let predicates: ((di: DrawingInstruction) => boolean)[] = []
         for (const area of highlight.areas)
         {
@@ -993,12 +993,7 @@ export class AdjacencyMatrix extends SVGComponent {
             {
                 const cells = this.cells
                                   .filter((di) => isInArea(di))
-                this.breathAnimation(cells,
-                                     highlight.color,
-                                     highlight.isOneByOne,
-                                     highlight.isReverse,
-                                     highlight.duration,
-                                     highlight.delay)
+                this.breathAnimation(cells, highlight.color, count, highlight.isOneByOne, highlight.isReverse, highlight.duration, highlight.delay)
             }
         }
 
@@ -1010,21 +1005,18 @@ export class AdjacencyMatrix extends SVGComponent {
                                   return ormap((predicate) => predicate(di), predicates)
                               })
 
-            this.breathAnimation(cells,
-                                 highlight.color,
-                                 highlight.isOneByOne,
-                                 highlight.isReverse,
-                                 highlight.duration,
-                                 highlight.delay)
+            this.breathAnimation(cells, highlight.color, count, highlight.isOneByOne, highlight.isReverse, highlight.duration, highlight.delay)
         }
     }
 
     breathAnimation = (cells: d3.Selection<SVGRectElement, DrawingInstruction, any, any>,
                        color: string,
+                       count: number | "loop" = "loop",
                        oneByOne: boolean = false,
                        reverse = false,
                        duration: number = 500,
                        delay: number = 50) => {
+
         const filled = "black"    //this.style.fillColor
         const unfilled = "white"
         cells
@@ -1044,10 +1036,27 @@ export class AdjacencyMatrix extends SVGComponent {
             .style('fill', (di) => di.filling === false ? unfilled : filled)
             .end()
             .then(() => {
-                this.breathAnimation(cells, color, oneByOne, reverse, duration, delay)
+                if (count === "loop")
+                {
+                    this.breathAnimation(cells, color, count, oneByOne, reverse, duration, delay)
+                }
+                else if (count !== 1)
+                {
+                    const newCount = count - 1
+                    console.log(count)
+                    this.breathAnimation(cells, color, newCount, oneByOne, reverse, duration, delay)
+                }
+                else
+                {
+                    cells
+                        .transition()
+                        .ease(d3.easeQuadOut)
+                        .duration(duration)
+                        .style('fill', color)
+                }
             })
             .catch((e) => {
-                console.error(e)
+                // console.error(e)
             })
     }
 
