@@ -24,13 +24,10 @@ import {Vertex} from "../../data/animations/network/GenerateLabels";
 
 export class NodeLinkDiagram extends SVGComponent {
 
-    private simNodesMap: Map<string, NetworkSimulationNode>
     private graph: UndirectedGraph
     private linkGroup: d3.Selection<SVGGElement, any, any, any>
     private nodeGroup: d3.Selection<SVGGElement, any, any, any>
     private simulation: Simulation
-    private _simNodes: any = null
-    private _simLinks: any = null
     private style: NetworkDiagramStyle
 
     get nodes(): d3.Selection<SVGLineElement, NetworkSimulationNode, SVGGElement, any>
@@ -45,18 +42,12 @@ export class NodeLinkDiagram extends SVGComponent {
 
     get simNodes(): NetworkSimulationNode[]
     {
-        return Array.from(this.simNodesMap.values())
+        return Array.from(this.simulation.simNodes.values())
     }
 
     get simLinks(): NetworkSimulationLink[]
     {
-        return this.graph.edges.map((edge) => {
-            return {
-                source: this.simNodesMap.get(edge.vertex0),
-                target: this.simNodesMap.get(edge.vertex1),
-                value: 2,
-            }
-        })
+        return this.simulation.simLinks
     }
 
     static defaultStyle: NetworkDiagramStyle = {
@@ -80,10 +71,6 @@ export class NodeLinkDiagram extends SVGComponent {
                 style: NetworkDiagramStyle)
     {
         super(null, style.frame)
-        this.simNodesMap = new Map<string, NetworkSimulationNode>()
-        graph.vertices.forEach((vertex) => {
-            this.simNodesMap.set(vertex, {vertex: vertex, group: 1})
-        })
         this.graph = graph;
         this.graph.addEventListener(UndirectedGraph.Event.edgeAdded, (e: CustomEvent<Edge>) => {
             console.log('edge added')
@@ -94,10 +81,8 @@ export class NodeLinkDiagram extends SVGComponent {
             this.removeLink(e.detail.vertex0, e.detail.vertex1)
         })
         this.style = replaceUndefinedWithDefaultValues(style, NodeLinkDiagram.defaultStyle)
-
-
         let {width, height} = this.style.frame
-        this.simulation = this.createSimulation(this.simNodes, this.simLinks)
+        this.simulation = this.createSimulation(graph)
 
         // initialize ui
 
@@ -111,17 +96,9 @@ export class NodeLinkDiagram extends SVGComponent {
         this.render()
     }
 
-    createSimulation = (nodes, links) => {
+    createSimulation = (graph: UndirectedGraph) => {
         const {width, height} = this.style.frame
-        return new Simulation({width: width, height: height}, nodes, links)
-        // return d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(nodes)
-        //          .force("charge", d3.forceManyBody())
-        //          .force("link", d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(links)
-        //                           .id((d) => d.vertex)
-        //                           .distance((d) => {
-        //                               return 80
-        //                           }))
-        //          .force("center", d3.forceCenter(width / 2, height / 2))
+        return new Simulation(graph, {width: width, height: height})
     }
 
     static drag = (simulation) => {
@@ -206,7 +183,7 @@ export class NodeLinkDiagram extends SVGComponent {
         // todo make them non-selectable
 
         let node = this.nodes
-                       .data(this.simNodes)
+                       .data(this.simulation.simNodes)
                        .join("g")
                        .attr('class', 'node')
                        .call(NodeLinkDiagram.drag(this.simulation.instance))

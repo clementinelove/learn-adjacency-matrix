@@ -9,7 +9,7 @@ export class SlideText extends Component {
     {
         super();
         this.view.style('hyphens', 'auto')
-        this.toggleClass("text-lg justify-self-start row-start-1", true)
+        this.toggleClass("text-lg space-y-1", true)
     }
 
     addLine(str: string)

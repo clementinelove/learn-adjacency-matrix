@@ -117,9 +117,12 @@ export class MatrixExplorer extends Component {
 
 
         this.nodeLinkDiagram = new NodeLinkDiagram(this.graph, nodeLinkDiagramStyle)
-        this.nodeLinkDiagram.assignClass('mr-8 border-gray-200')
         this.adjacencyMatrix = new AdjacencyMatrix(adjacencyMatrixStyle, this.graph)
+
+        this.nodeLinkDiagram.assignClass('mr-8 border-gray-200 w-80 lg:w-96')
+        this.adjacencyMatrix.assignClass('w-80 lg:w-96')
         this.infoLabel = new Label('')
+        this.infoLabel.assignClass('mt-4')
         this.infoLabel.view.style('min-height','60px')
         this.graphContainer.addAll(this.nodeLinkDiagram, this.adjacencyMatrix)
         this.addAll(this.graphContainer, this.infoLabel)

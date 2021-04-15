@@ -13,6 +13,11 @@ module.exports = {
                 merriweather: 'Merriweather, serif',
                 merriweathersans: 'Merriweather Sans, sans-serif',
                 opensans: 'Open Sans, sans-serif'
+            },
+            width: {
+                '128': '32rem',
+                '144': '36rem',
+                '288': '72rem'
             }
         },
     },
@@ -20,7 +25,7 @@ module.exports = {
         extend: {
             backgroundColor: ['active'],
             borderColor: ['active'],
-            textColor: ['active']
+            textColor: ['active'],
         },
     },
     plugins: [],

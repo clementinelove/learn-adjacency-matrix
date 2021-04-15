@@ -48,7 +48,8 @@ const coverMatrixStyle: MatrixStyle = {
 
 export class HomeController extends ViewController {
 
-    coverMatrix = new Component('coverMatrix')
+    coverMatrix: AdjacencyMatrix;
+    coverMatrixContainer = new Component('coverMatrix')
     startLearningBtnContainer = new Component('startLearningBtnContainer')
     startLearningBtn: Button
     nodeLinkBtn: d3.Selection<any, any, HTMLElement, any>
@@ -64,7 +65,9 @@ export class HomeController extends ViewController {
         this.matrixSortingBtn = this.find('matrixSortingBtn')
         this.chapterLinksContainer = new Component('chapterLinks')
 
-        this.coverMatrix.add(this.allocate(new AdjacencyMatrix(coverMatrixStyle, coverGraph)))
+        this.coverMatrix = this.allocate(new AdjacencyMatrix(coverMatrixStyle, coverGraph))
+        this.coverMatrix.assignClass('w-52 lg:w-96')
+        this.coverMatrixContainer.add(this.coverMatrix)
 
         this.startLearningBtn = this.allocate(new Button('Start Learning'))
         this.startLearningBtn.on('click', this.moveToReaderController)

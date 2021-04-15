@@ -5,14 +5,15 @@ export class Icon extends Component {
 
     readonly icon: d3.Selection<HTMLSpanElement, any, any, any>
 
-    constructor(cssClass: string)
+    private constructor(name: string)
     {
         super();
         this.icon = this.view.append('span')
-            .classed(`${cssClass}`, true)
+            .classed('material-icons', true)
+            .text(name)
     }
 
-    static fromCSSClass(cssClass: string) {
-
+    static named(name: string) {
+        return new Icon(name)
     }
 }

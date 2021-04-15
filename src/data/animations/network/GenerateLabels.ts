@@ -90,7 +90,7 @@ export class GenerateLabels extends NetworkAnimation {
         this.context = context
         const currentTick = this.ticker.tick
 
-        this.simLinks.forEach((link) => {
+        this.simulation.simLinks.forEach((link) => {
             const source = link.source.vertex
             const target = link.target.vertex
             const sourceNode = this.diagonalNodeMap.get(source)

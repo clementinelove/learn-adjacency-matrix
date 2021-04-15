@@ -5,7 +5,7 @@ import {NodeTrixAnimation} from "../../data/animations/network/NodeTrixAnimation
 import {GenerateLabels} from "../../data/animations/network/GenerateLabels";
 import {MergeNodes} from "../../data/animations/network/MergeNodes";
 import {ExampleGraphs} from "../../data/ExampleGraphs";
-import {ContentReader} from "./ContentReader";
+import {ContentReader} from "../ContentReader";
 import {AdjacencyMatrix, MatrixStyle} from "../../components/svg/AdjacencyMatrix";
 import {SlidePlayer} from "../../utils/SlidePlayer";
 import {Label} from "../../UI/Label";
@@ -18,6 +18,7 @@ import {PatternsIntro} from "./PatternsIntro";
 import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
 import Axis = LayoutConstraint.Axis;
 import HoverLabelEffect = AdjacencyMatrix.HoverLabelEffect;
+import {Button} from "../../UI/Button";
 
 const animationNetworkStyle = {
     frame: {
@@ -57,12 +58,13 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
     ]
 
 
-    slidePlayer: SlidePlayer
+
     canvasPlayer: CanvasAnimationPlayer
     adjacencyMatrix: AdjacencyMatrix
     infoLabel: Label
     interactiveMatrixContainer: StackView
     matrixExplorer: MatrixExplorer
+    replayAnimationButton: Button;
 
     constructor()
     {
@@ -70,7 +72,6 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         this.slideProgressBar.delegate = this
         this.slideProgressBar.render()
 
-        this.slidePlayer = new SlidePlayer()
         const network1 = this.initializeAnimationData(2)
         const network2 = this.initializeAnimationData(3)
         this.canvasPlayer = this.allocate(new CanvasAnimationPlayer(
@@ -82,6 +83,10 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             new GenerateLabels(network2, 100),
             new MergeNodes(network2, 100)
         ))
+        this.replayAnimationButton = this.allocate(new Button('Replay', '', 'replay'))
+        this.replayAnimationButton.on('click', () => {
+            this.canvasPlayer.play(this.slideProgressBar.currentSlideIndex)
+        })
         this.matrixExplorer = this.allocate(new MatrixExplorer())
         this.infoLabel = this.allocate(new Label(''))
         const matrixStyle: MatrixStyle = {
@@ -180,6 +185,9 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
         if (i < 5)
         {
             this.slideMedia.add(this.canvasPlayer)
+            if (i >= 2) {
+                this.slideMedia.add(this.replayAnimationButton)
+            }
             this.canvasPlayer.play(i)
         }
         if (i === 5)

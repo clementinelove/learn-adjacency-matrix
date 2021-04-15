@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Learn Adjacency Matrix</title>
   <link rel="icon" type="image/png" href="/favicon.png" sizes="16x16">
   <link rel="icon" type="image/png" href="/favicon2x.png" sizes="32x32">
   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre&family=Kufam&family=Lexend:wght@500&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre&family=Kufam&family=Lexend:wght@500&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
 </head>
 <body class="font-roboto font-light">
 
@@ -18,38 +21,38 @@
   </div>
 
   <div id="app py-10">
-    <div id="homePage" class="pt-10 hidden flex flex-col items-center">
+    <div id="homePage" class="p-12 hidden flex flex-col items-center">
 
-      <h1 class="text-5xl font-kufam">
-        <span class="text-3xl italic font-roboto">Learn</span><br/>
+      <h1 class="text-2xl lg:text-5xl font-kufam">
+        <span class="text-lg lg:text-3xl italic font-roboto">Learn</span><br/>
         Adjacency Matrix</h1>
       <div id="coverMatrix" class="mt-4">
         <!-- Cover adjacency matrix here -->
       </div>
 
       <div class="flex flex-col items-center content-center">
-        <p class="text-2xl mt-4 mx-4">A <em class="font-semibold italic">visualisation technique</em>
+        <p class="text-base 2xl:text-2xl mt-4 mx-4">A <em class="font-semibold italic">visualisation technique</em>
           to help you learn more about relationships.</p>
 
 
-        <div id="startLearningBtnContainer" class="my-4 p-4 text-2xl border border-black cursor-pointer rounded-md hover:bg-gray-100">
+        <div id="startLearningBtnContainer" class="my-4 p-2 text-lg border border-black cursor-pointer rounded-md hover:bg-gray-100 lg:text-2xl lg:p-4">
 
         </div>
 
         <h2 class="mt-4 text-lg uppercase font-cantarell tracking-widest text-gray-400">Chapters</h2>
-        <div id="chapterLinks" class="mt-2 mx-4 flex flex-row items-center space-x-4 text-lg">
+        <div id="chapterLinks" class="mt-2 mx-4 flex flex-col items-start lg:flex-row lg:space-x-4 lg:items-center  text-lg">
         </div>
       </div>
 
     </div>
 
-<!--    <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>-->
+    <!--    <p class="mt-8 text-gray-300 font-opensans">2020-2021 Dissertation Project</p>-->
   </div>
 
   <div id="contentReader" class="hidden h-full mx-auto p-16">
   </div>
 
-  <div id="patternViewer" class="p-16 hidden flex flex-col items-start">
+  <div id="patternViewer" class="p-12 hidden flex flex-col items-start">
     <h1 class="text-5xl text-gray-400 font-thin leading-snug mb-4">Pattern Viewer</h1>
     <p class="my-4 text-2xl text-gray-400 font-opensans">Hover on cells to see their connections.</p>
     <div id="matrixInfoContainer" class="flex flex-row items-end">

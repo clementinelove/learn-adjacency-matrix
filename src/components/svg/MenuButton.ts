@@ -17,6 +17,8 @@ export class MenuButton extends SVGComponent {
     })
     {
         super(null, frame);
+        this.svg.attr('width', frame.width)
+            .attr('height', frame.height)
         this.showCloseIcon = showCloseIcon
         const {width, height} = frame
         const centerY = height / 2
@@ -44,7 +46,7 @@ export class MenuButton extends SVGComponent {
 
         const line0 = this.line0Data[state]
         const line1 = this.line1Data[state]
-        const strokeWidth = this.showCloseIcon ?  this.closeStrokeWidth : this.normalStrokeWidth
+        const strokeWidth = this.showCloseIcon ? this.closeStrokeWidth : this.normalStrokeWidth
 
         this.svg.append('line')
             .attr('id', 'line0')
@@ -94,11 +96,12 @@ export class MenuButton extends SVGComponent {
         }
     }
 
-    update(newState) {
+    update(newState)
+    {
 
         this.showCloseIcon = newState
 
-        const state = this.showCloseIcon ?  "close" : "normal"
+        const state = this.showCloseIcon ? "close" : "normal"
 
         const line0 = this.line0Data[state]
         const line1 = this.line1Data[state]

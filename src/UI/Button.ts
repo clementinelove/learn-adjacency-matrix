@@ -11,7 +11,7 @@ export class Button extends Component {
     selectorPrefix = 'Button'
 
     private _title: string
-    subtitle: string
+    private _subtitle: string
 
     get title(): string
     {
@@ -27,7 +27,7 @@ export class Button extends Component {
     private imageAndTitlesContainer: StackView;
     private titleContainer: StackView;
 
-    private _image: Icon
+    private _icon: Icon
     private _titleLabel: Label
     private _subtitleLabel: Label
 
@@ -42,23 +42,26 @@ export class Button extends Component {
         return this._subtitleLabel;
     }
 
-    constructor(title?: string, subtitle?: string, icon?: string)
+    constructor(title: string = null, subtitle: string = null, icon: string = '')
     {
         super();
         this.view.classed('cursor-pointer', true)
         this.imageAndTitlesContainer = new StackView()
         this.imageAndTitlesContainer.axis = Axis.Horizontal
-        this.imageAndTitlesContainer.alignment = Alignment.Center
+        this.imageAndTitlesContainer.alignment = Alignment.Leading
         this.titleContainer = new StackView()
         this.titleContainer.axis = Axis.Vertical
         this.titleContainer.alignment = Alignment.Leading
 
-        this._image = new Icon(icon)
+        this._icon = Icon.named(icon)
+        if (icon && icon !== '') {
+         this.imageAndTitlesContainer.assignClass('space-x-2')
+        }
         this._titleLabel = new Label(title)
         this._subtitleLabel = new Label(subtitle)
 
         this.titleContainer.addAll(this._titleLabel, this._subtitleLabel)
-        this.imageAndTitlesContainer.addAll(this._image, this.titleContainer)
+        this.imageAndTitlesContainer.addAll(this._icon, this.titleContainer)
 
         this.add(this.imageAndTitlesContainer)
     }

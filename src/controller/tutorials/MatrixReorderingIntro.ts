@@ -1,5 +1,5 @@
 import {AdjacencyMatrix, MatrixStyle} from "../../components/svg/AdjacencyMatrix";
-import {ContentReader} from "./ContentReader";
+import {ContentReader} from "../ContentReader";
 import {SlideProgressDelegate} from "../../components/SlideProgressBar";
 import compareColumn from "../../data/video/compareColumn.mp4";
 import {Video} from "../../UI/Video";
@@ -54,7 +54,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
     text: ((self) => string[])[] = [
         () => ['Sometimes, the pattern or the insights you are looking for just won’t show up right away.'],
         () => ['What we can do is to <em>reorder</em> them.', 'There are several ways of reordering, the one we will use in this tutorial is based on <em>similarity</em>.'],
-        () => ["To see where to move a column / row to, simply compare each cell against <strong>every other</strong> column / row's cells one at a time, then you could move the column / row <strong>beside the one with highest 'similarity'</strong>."],
+        () => ["To see where to move a node to, simply compare each cell against <strong>every other</strong> columns' cells one at a time, then you could move the column <strong>beside the one with highest 'similarity'</strong>."],
         () => ["In the example above, the most 'similar' node to node 2 is node 1, since node 2 is already beside node 1, there is no need to move it around.",
             "But for node 3, its most similar node is node 1, so we can move node 3 beside node 1."],
         () => ["Notice that since the adjacency matrix is symmetric, when you move a column to another column position, its corresponding row needs to be swapped, too.",
@@ -91,7 +91,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         }, // todo:  compare user reordered and auto reordered
         () => [`The algorithm we used is <a href="https://hal.inria.fr/hal-01326759/document" title='You can learn more about this algorithm here.' class='underline text-blue-400' style='cursor: help' target="_blank"><em>optimal leaf ordering</em></a>. Manually reorder the matrix is doable, and useful when you don't have a computer around.`,
             "That said, when you have a huge matrix, you can ask computers to reorder the matrix for you to help you see the patterns."],
-        () => ["There you go. This matrix is now auto reordered using <i>optimal leaf ordering</i>. Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
+        () => ["There you go. This matrix is now auto reordered using <i>optimal leaf ordering</i>.", "Computer can be fast but pay attention that it might not always get the pattern you wanted. You can still manually reorder a matrix by yourself."],
         () => [
             `We can now easily identify three ${Highlight.main('node clusters')} along with some connectors.`,
             `${connector0('Red connector')} connects top cluster to middle cluster;`,
@@ -132,6 +132,9 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
         super('Reordering')
         this.adjacencyMatrix = this.allocate(new AdjacencyMatrix(this.matrixStyle, UndirectedGraph.fromMatrix(matrixExample1, OrderedLabels.numeric)))
         this.matrixForComparision = this.allocate(new AdjacencyMatrix(this.matrixStyle, UndirectedGraph.fromMatrix(matrixExample1, OrderedLabels.numeric)))
+
+        this.adjacencyMatrix.assignClass(MatrixReorderingIntro.MAIN_MEDIA_CSS_STYLE)
+        this.matrixForComparision.assignClass(MatrixReorderingIntro.MAIN_MEDIA_CSS_STYLE)
         this.compareColumnVideo = this.allocate(new Video(compareColumn, true, {width: 720, height: 405}))
         this.slideProgressBar.delegate = this
         this.slideProgressBar.render()
@@ -207,7 +210,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             }
             if (i == 5)
             {
-                this.tips.text = `${this.interactiveIcon} Drag <strong>labels</strong> to reorder the matrix`
+                this.tips.text = `${this.interactiveIcon} Drag <strong>labels on top and left of the matrix</strong> to reorder them`
                 this.adjacencyMatrix.reorderable = true
                 this.adjacencyMatrix.setOrderedLabels(['3', '1', '2', '4', '5', '6'], false)
             }

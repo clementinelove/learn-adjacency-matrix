@@ -1,4 +1,4 @@
-import {ContentReader} from "./ContentReader";
+import {ContentReader} from "../ContentReader";
 import {SlideProgressDelegate} from "../../components/SlideProgressBar";
 import {ViewController} from "../../UI/ViewController";
 import {AdjacencyMatrix} from "../../components/svg/AdjacencyMatrix";

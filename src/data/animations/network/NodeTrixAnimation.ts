@@ -20,17 +20,27 @@ export class NodeTrixAnimation extends NetworkAnimation {
 
     prepare(): void
     {
+        if (this.sharedData.layoutRequired)
+        {
+            // this.sharedData.nodeSnapshot = this.simulation.simNodes.map((n) => Object.assign({}, n))
+            this.simulation.layout(this.sharedData.nodeSnapshot.map((n) => Object.assign({}, n)))
+        } else {
+            this.sharedData.nodeSnapshot = this.simulation.simNodes.map((n) => Object.assign({}, n))
+        }
+        this.sharedData.layoutRequired = true
+        console.log('layout now required: ' + this.sharedData.layoutRequired)
+
         this.simNodesToTransitionScales = new Map<string, PointTransitionScale>()
         const {padding, spaceBetweenLabels} = this.matrixStyle
         const nodeRadius = this.networkDiagramStyle.nodeRadius
         const nodeDiameter = nodeRadius * 2
         const [offsetX, offsetY] = this.centerOffset
 
-        this.simNodes.forEach((node) => {
+        this.simulation.simNodes.forEach((node) => {
             const {vertex, x, y} = node
             const nodeIndex = this.graph.vertices.indexOf(vertex)
             const destCenterX = offsetX + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
-            const destCenterY = offsetY + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter  + nodeRadius
+            const destCenterY = offsetY + padding + nodeDiameter + spaceBetweenLabels + nodeIndex * nodeDiameter + nodeRadius
             this.simNodesToTransitionScales.set(vertex, new PointTransitionScale(x, y, destCenterX, destCenterY, this.duration))
         })
         this.ticker.reset()
@@ -43,14 +53,15 @@ export class NodeTrixAnimation extends NetworkAnimation {
         const {fontName, fontSize, nodeRadius, nodeColor, linkWidth} = this.networkDiagramStyle
         const font = `${fontSize}px ${fontName}`
         const currentTick = this.ticker.tick
-        const edgesCount = this.simLinks.length
+        const edgesCount = this.simulation.simLinks.length
 
-        this.simLinks.forEach((link, i) => {
+        const nodeTrixTick = currentTick
+        this.simulation.simLinks.forEach((link, i) => {
             const {source, target} = link
             const sourcePointScaler = this.simNodesToTransitionScales.get(source.vertex)
             const targetPointScaler = this.simNodesToTransitionScales.get(target.vertex)
-            const sourcePoint = sourcePointScaler.point(currentTick)
-            const targetPoint = targetPointScaler.point(currentTick)
+            const sourcePoint = sourcePointScaler.point(nodeTrixTick)
+            const targetPoint = targetPointScaler.point(nodeTrixTick)
             const linkColor = this.linkColor(source.vertex, target.vertex, d3.interpolateTurbo)
 
             this.drawArc(sourcePoint, targetPoint,
@@ -61,18 +72,19 @@ export class NodeTrixAnimation extends NetworkAnimation {
                                  new PointTransitionScale(mid.x, mid.y,
                                                           maxControlPoint.x, maxControlPoint.y,
                                                           this.duration)
-                             return controlPointTransitionScaler.point(currentTick);
+                             return controlPointTransitionScaler.point(nodeTrixTick);
                          },
                          (sourcePoint, mid, targetPoint, currentControlPoint) => {
                              let radiusFinder = d3.scaleLinear()
                                                   .domain([0, this.duration])
                                                   .range([distance(mid, targetPoint) / distance(mid, currentControlPoint) * distance(targetPoint, currentControlPoint), 0])
-                             return radiusFinder(currentTick)
+                             return radiusFinder(nodeTrixTick)
                          },
                          linkColor);
         })
 
-        this.moveNodes(this.simNodes, this.simNodesToTransitionScales, currentTick)
+
+        this.moveNodes(this.simulation.simNodes, this.simNodesToTransitionScales, currentTick)
     }
 
     finish(): void

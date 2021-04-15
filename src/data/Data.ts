@@ -42,10 +42,10 @@ export namespace Data {
             shape: "Cluster",
             description: "Set of nodes where almost all nodes are connected. If all links would be present, the cluster would be a clique.",
             typicalExample: [
-                [0, 1, 0, 1, 0],
-                [1, 1, 1, 1, 1],
-                [0, 1, 0, 1, 0],
-                [1, 1, 1, 1, 1],
+                [0, 1, 1, 1, 0],
+                [1, 0, 1, 1, 1],
+                [1, 1, 0, 1, 0],
+                [1, 1, 1, 0, 1],
                 [0, 1, 0, 1, 0]
             ],
             instances: [

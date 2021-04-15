@@ -163,7 +163,7 @@ export class AdjacencyMatrix extends SVGComponent {
                 graph: UndirectedGraph = null,
                 transitionTime = 400)
     {
-        super(null, style.matrixFrame)
+        super(null, {x:0, y:0, width:style.matrixFrame.width, height: style.matrixFrame.height})
         this.addPatternStyle()
         this.style = replaceUndefinedWithDefaultValues(style, AdjacencyMatrix.defaultStyle)
         this._reorderable = this.style.reorderable

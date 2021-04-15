@@ -2,19 +2,42 @@ import * as d3 from "d3";
 import {NetworkSimulationLink, NetworkSimulationNode} from "./animations/network/NetworkAnimationData";
 import {Dimension} from "../utils/structures/Geometry";
 import {Vertex} from "./animations/network/GenerateLabels";
+import {UndirectedGraph} from "../utils/structures/UndirectedGraph";
 
 export class Simulation {
 
     instance: d3.Simulation<NetworkSimulationNode, NetworkSimulationLink>
-    _simNodes: NetworkSimulationNode[]
-    _simLinks: NetworkSimulationLink[]
+    graph: UndirectedGraph
+    simNodes: NetworkSimulationNode[]
+    simLinks: NetworkSimulationLink[]
+    dimension: Dimension
 
-    constructor(dimension: Dimension, simNodes: NetworkSimulationNode[], simLinks: NetworkSimulationLink[])
+    constructor(graph: UndirectedGraph, dimension: Dimension)
     {
-        this._simNodes = simNodes
-        this._simLinks = simLinks
+        this.graph = graph
+        this.dimension = dimension
+        this.freshSimulation()
+    }
 
-        const {width, height} = dimension
+    freshSimulation()
+    {
+        const simNodesMap = new Map<string, NetworkSimulationNode>()
+        this.graph.vertices.forEach((vertex) => {
+            simNodesMap.set(vertex, {vertex: vertex, group: 1})
+        })
+        const simNodes = Array.from(simNodesMap.values())
+        const simLinks = this.graph.edges.map((edge) => {
+            return {
+                source: simNodesMap.get(edge.vertex0),
+                target: simNodesMap.get(edge.vertex1),
+                value: 2,
+            }
+        })
+        this.simNodes = simNodes
+        this.simLinks = simLinks
+
+
+        const {width, height} = this.dimension
 
         this.instance = d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(simNodes)
                           .force("charge", d3.forceManyBody())
@@ -27,32 +50,70 @@ export class Simulation {
                           )
                           .force("center", d3.forceCenter(width / 2, height / 2))
 
+        return [simNodes, simLinks]
     }
 
-    get simNodes()
+    layout(snapshot: NetworkSimulationNode[] = null)
     {
-        return this._simNodes
-    }
+        // console.log('manual layout executed!')
+        // this.instance.force("link",
+        //                     d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this._simLinks)
+        //                       .id((d) => d.vertex)
+        //                       .distance((d) => {
+        //                           return 80
+        //                       })
+        // )
+        // this.instance.alpha(1).restart()
 
-    get simLinks()
-    {
-        return this._simLinks
+        if (snapshot) {
+            this.simNodes = snapshot
+
+            const simNodesMap = new Map<string, NetworkSimulationNode>()
+            this.simNodes.forEach((n) => {
+                simNodesMap.set(n.vertex, n)
+            })
+            const simLinks = this.graph.edges.map((edge) => {
+                return {
+                    source: simNodesMap.get(edge.vertex0),
+                    target: simNodesMap.get(edge.vertex1),
+                    value: 2,
+                }
+            })
+            this.simLinks = simLinks
+
+
+            const {width, height} = this.dimension
+
+            this.instance = d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(this.simNodes)
+                              .force("charge", d3.forceManyBody())
+                              .force("link",
+                                     d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this.simLinks)
+                                       .id((d) => d.vertex)
+                                       .distance((d) => {
+                                           return 80
+                                       })
+                              )
+                              .force("center", d3.forceCenter(width / 2, height / 2))
+
+        } else {
+            this.freshSimulation()
+        }
     }
 
     addNode(vertex: string, group = 0)
     {
-        this._simNodes.push({vertex: vertex, group: group})
-        this.instance.nodes(this._simNodes)
+        this.simNodes.push({vertex: vertex, group: group})
+        this.instance.nodes(this.simNodes)
         this.instance.alpha(1).restart()
     }
 
     addLink([source, target]: [Vertex, Vertex], value: number = 0)
     {
-        const sourceNode = this._simNodes.find((n) => n.vertex === source)
-        const targetNode = this._simNodes.find((n) => n.vertex === target)
-        this._simLinks.push({source: sourceNode, target: targetNode, value: value})
+        const sourceNode = this.simNodes.find((n) => n.vertex === source)
+        const targetNode = this.simNodes.find((n) => n.vertex === target)
+        this.simLinks.push({source: sourceNode, target: targetNode, value: value})
         this.instance.force("link",
-                            d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this._simLinks)
+                            d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this.simLinks)
                               .id((d) => d.vertex)
                               .distance((d) => {
                                   return 80
@@ -63,14 +124,14 @@ export class Simulation {
 
     removeLink([source, target]: [Vertex, Vertex])
     {
-        const sourceNode = this._simNodes.find((n) => n.vertex === source)
-        const targetNode = this._simNodes.find((n) => n.vertex === target)
-        this._simLinks = this._simLinks.filter((link) => {
+        const sourceNode = this.simNodes.find((n) => n.vertex === source)
+        const targetNode = this.simNodes.find((n) => n.vertex === target)
+        this.simLinks = this.simLinks.filter((link) => {
             return !((link.source === sourceNode && link.target === targetNode) ||
                 (link.target === sourceNode && link.source === targetNode))
         })
         this.instance.force("link",
-                            d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this._simLinks)
+                            d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(this.simLinks)
                               .id((d) => d.vertex)
                               .distance((d) => {
                                   return 80

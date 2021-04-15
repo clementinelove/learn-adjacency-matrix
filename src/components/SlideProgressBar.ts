@@ -1,6 +1,5 @@
 import {Component} from "../UI/Component";
 import {Label} from "../UI/Label";
-import {SlidePlayer} from "../utils/SlidePlayer";
 
 export class SlideProgressBar extends Component {
 
@@ -38,9 +37,14 @@ export class SlideProgressBar extends Component {
         this.progressLabel.assignClass('tracking-widest font-roboto font-light')
         this.progressLabel.color = this.mainTone
         this.add(this.progressLabel)
+        const [width, height] = [
+            this.totalSlideCount * (this.buttonSideLength + this.borderWidth) + (this.totalSlideCount - 1) * this.buttonSpacing,
+            this.buttonSideLength + 2 * this.borderWidth
+        ]
         this.slideSelectionControl = this.view.append('svg')
-                                         .attr('width', this.totalSlideCount * (this.buttonSideLength + this.borderWidth) + (this.totalSlideCount - 1) * this.buttonSpacing)
-                                         .attr('height', this.buttonSideLength + 2 * this.borderWidth)
+                                         .attr('viewBox', `0 0 ${width} ${height}`)
+                                         .style('width', width)
+
         this.joinButtons()
 
         this.updateCurrentSelection(this.currentSlideIndex)

@@ -40,7 +40,6 @@ export class MergeNodes extends NetworkAnimation {
 
         const duration = this.duration
         const [emptyCells, diagonals, filledCells] = timelineSlices([0.4, 0.6])
-        console.log(timelineSlices([0.3, 0.4]))
 
         this.diagonalNodeTextTransparencyScale = animationScale(diagonals, duration, [1, 0])
         this.diagonalNodeRoundedPercentageScale = animationScale(diagonals, duration, [1, 0])
@@ -71,7 +70,7 @@ export class MergeNodes extends NetworkAnimation {
         }
 
         // draw links
-        this.simLinks.forEach((link) => {
+        this.simulation.simLinks.forEach((link) => {
             const source = link.source.vertex
             const target = link.target.vertex
             const radius = 0

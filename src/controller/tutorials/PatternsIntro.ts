@@ -1,4 +1,4 @@
-import {ContentReader} from "./ContentReader";
+import {ContentReader} from "../ContentReader";
 import {AdjacencyMatrix, MatrixStyle} from "../../components/svg/AdjacencyMatrix";
 import {Data} from "../../data/Data";
 import {GridView} from "../../UI/GridView";
@@ -26,6 +26,8 @@ const patternsList = [
 ]
 
 export class PatternsIntro extends ContentReader implements SlideProgressDelegate {
+
+    PATTERN_ICON_RESPONSIVE_CSS_STYLE = 'w-16 lg:w-20 xl:w-24 2xl:w-28'
 
     text = [
         () => ['To help us interpret an adjacency matrix, there are six common visual patterns to know.'],
@@ -93,7 +95,8 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         const patternsContainer = this.allocate(new GridView(2, 3))
         Data.MatrixPatterns.allPatterns.forEach((ptrn, i) => {
             const matrix = new PatternMenuItem(ptrn, this.menuButtonSize)
-            matrix.assignClass('m-4')
+            matrix.assignClass(`m-4`)
+            matrix.matrixView.assignClass(this.PATTERN_ICON_RESPONSIVE_CSS_STYLE)
             patternsContainer.add(matrix)
         })
         patternsContainer.assignClass('my-16')
@@ -117,11 +120,13 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
     patternsMenu = (() => {
         const menu = this.allocate(new StackView())
+        menu.assignClass('space-x-4')
         menu.alignment = Alignment.Leading
         menu.axis = Axis.Horizontal
         patternsList.forEach((pattern, i) => {
             const btn = new PatternMenuItem(pattern, this.menuButtonSize, false)
-            btn.assignClass('patternMenuItem opacity-30 mr-4 cursor-pointer hover:opacity-100')
+            btn.assignClass(`patternMenuItem opacity-30 cursor-pointer hover:opacity-100`)
+            btn.matrixView.assignClass(this.PATTERN_ICON_RESPONSIVE_CSS_STYLE)
             btn.on('click', () => {
                 const newSlideIndex = 1 + i
                 this.slideProgressBar.updateCurrentSelection(newSlideIndex)
@@ -145,7 +150,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         const patternMatrix = this.allocate(
             new AdjacencyMatrix(PatternsIntro.xlPatternStyle)
         )
-        patternMatrix.assignClass('my-8')
+        patternMatrix.assignClass('m-8 w-96')
         return patternMatrix
     })()
 
@@ -202,7 +207,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
     mediaContainer: StackView = (() => {
         const container = this.allocate(new StackView())
         container.axis = Axis.Vertical
-        container.alignment = Alignment.Leading
+        container.alignment = Alignment.Center
         container.addAll(this.showcaseContainer, this.patternsMenu)
         return container
     })()

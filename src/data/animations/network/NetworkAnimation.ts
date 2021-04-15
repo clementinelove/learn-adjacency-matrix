@@ -17,17 +17,18 @@ export const customInterpolate = (() =>{
 })()
 export abstract class NetworkAnimation implements CanvasAnimation {
     protected context: CanvasRenderingContext2D;
-    simNodes: NetworkSimulationNode[]
-    simLinks: NetworkSimulationLink[]
+    originalSimNodes: NetworkSimulationNode[]
+    originalSimLinks: NetworkSimulationLink[]
     networkDiagramStyle: NetworkDiagramStyle
     matrixStyle: MatrixStyle
     graph: UndirectedGraph
     started: boolean;
     center: Point
-
     ticker: Ticker
     duration: number
     simulation: Simulation;
+    sharedData: NetworkData
+
 
     get currentTick() : number
     {
@@ -49,17 +50,16 @@ export abstract class NetworkAnimation implements CanvasAnimation {
         return this.centerOffset[0] + padding + spaceBetweenLabels + nodeDiameter + nodeRadius + nodeDiameter * i
     }
 
-    protected constructor(data: NetworkData, duration = 0)
+    protected constructor(sharedData: NetworkData, duration = 0)
     {
-        this.loadData(data)
+        this.loadData(sharedData)
         this.ticker = new Ticker(0)
         this.duration = duration
     }
 
     private loadData = (d: NetworkData) => {
-        const {simNodes, simLinks, networkDiagramStyle, graph, matrixStyle, simulation} = d
-        this.simNodes = simNodes
-        this.simLinks = simLinks
+        this.sharedData = d
+        const {networkDiagramStyle, graph, matrixStyle, simulation} = d
         this.networkDiagramStyle = networkDiagramStyle
         this.matrixStyle = matrixStyle
         this.graph = graph
@@ -78,7 +78,7 @@ export abstract class NetworkAnimation implements CanvasAnimation {
         const {padding, spaceBetweenLabels} = this.matrixStyle
         const nodeDiameter = nodeRadius * 2
 
-        const matrixSideLength = nodeDiameter * (this.simNodes.length + 1) // (nodes + label)
+        const matrixSideLength = nodeDiameter * (this.simulation.simNodes.length + 1) // (nodes + label)
         return [this.center.x - matrixSideLength / 2 - padding - spaceBetweenLabels,
             this.center.y - matrixSideLength / 2 - padding - spaceBetweenLabels]
     }
