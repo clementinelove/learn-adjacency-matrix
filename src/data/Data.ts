@@ -1,8 +1,12 @@
 import {Component} from "../UI/Component";
 import {Highlight} from "../utils/Highlight";
+import {Edge} from "../utils/structures/UndirectedGraph";
 
 export namespace Data {
     export namespace MatrixPatterns {
+
+        const clusterColor = '#ffd690'
+        const linkColor = '#9cd4ff'
 
         import secondaryHighlightColor = Highlight.secondaryHighlightColor;
         export const clique: MatrixPatternData = {
@@ -34,6 +38,20 @@ export namespace Data {
             ],
             areaHighlights: [
                 Highlight.areas([[[0, 0], [3, 3]], [[4, 4], [8, 8]], [[9, 9], [11, 11]]])
+            ],
+            nodeHighlight: [
+                {
+                    vertices: ["1", "2", "3", "4"],
+                    color: '#9cd4ff'
+                },
+                {
+                    vertices: ["5", "6", "7", "8", "9"],
+                    color: '#fce5ab'
+                },
+                {
+                    vertices: ["10", "11", "12"],
+                    color: '#fda8b9'
+                }
             ]
         }
 
@@ -70,8 +88,20 @@ export namespace Data {
             ,
             labelHighlight: [
                 {
-                    indexes: [0,1,2,3,4,5,6,7],
+                    indexes: [0, 1, 2, 3, 4, 5, 6, 7],
                     color: Highlight.mainHighlightColor
+                }
+            ],
+            nodeHighlight: [
+                {
+                    vertices: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                    color: linkColor
+                }
+            ],
+            nodeLinkHighlight: [
+                {
+                    vertices: ['1', '2', '3', '4', '5', '6', '7', '8'],
+                    color: linkColor
                 }
             ]
         }
@@ -105,6 +135,12 @@ export namespace Data {
             ],
             cellGroupHighlights: [
                 Highlight.cells([[3, 3], [4, 4], [5, 5], [7, 7], [8, 8], [9, 9]])
+            ],
+            edgeHighlight: [
+                {
+                    edges: Edge.tuples(["4", "4"], ["5", "5"], ["6", "6"], ["8", "8"], ["9", "9"], ["10", "10"]),
+                    color: linkColor
+                }
             ]
         }
 
@@ -147,6 +183,24 @@ export namespace Data {
                 {
                     indexes: [5, 9],
                     color: Highlight.secondaryHighlightColor
+                }
+            ],
+            edgeHighlight: [
+                {
+                    edges: Edge.tuples(
+                        ['1','5'],
+                        ['2','5'],
+                        ['2','6'],
+                        ['3','6'],
+                        ['3','7'],
+                        ['4','7'],
+                        ['4','8'],
+                        ['5','8'],
+                        ['5','9'],
+                        ['6','9'],
+                        ['6','10'],
+                    ),
+                    color: linkColor
                 }
             ]
         }
@@ -196,6 +250,18 @@ export namespace Data {
                     indexes: [1, 3, 10, 11],
                     color: Highlight.mainHighlightColor
                 },
+            ],
+            nodeHighlight: [
+                {
+                    vertices: ["2", "3", "4", "5", "10", "11", "12"],
+                    color: clusterColor
+                }
+            ],
+            edgeHighlight: [
+                {
+                    edges: Edge.tuples(["4", "11"], ["2", "12"]),
+                    color: linkColor
+                }
             ]
         }
 
@@ -241,6 +307,18 @@ export namespace Data {
                     indexes: [0, 4],
                     color: Highlight.mainHighlightColor
                 }
+            ],
+            nodeHighlight: [
+                {
+                    vertices: ["1", "5"],
+                    color: linkColor
+                }
+            ],
+            nodeLinkHighlight: [
+                {
+                    vertices: ['1', '5'],
+                    color: linkColor
+                }
             ]
         }
 
@@ -273,7 +351,10 @@ export interface MatrixPatternData {
     instances: number[][][]
     cellGroupHighlights?: Highlight.CellGroupHighlight[]
     areaHighlights?: Highlight.AreaHighlight[]
-    labelHighlight?: Highlight.LabelHighlight[]
+    labelHighlight?: Highlight.LabelHighlight[],
+    nodeHighlight?: Highlight.NodeHighlight[],
+    nodeLinkHighlight?: Highlight.NodeLinkHighlight[],
+    edgeHighlight?: Highlight.LinkHighlight[]
 }
 
 

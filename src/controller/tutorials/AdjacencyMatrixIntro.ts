@@ -28,7 +28,7 @@ const animationNetworkStyle = {
         height: 400
     },
     fontName: 'sans-serif',
-    fontSize: 12,
+    fontSize: "12px",
     textColor: 'black',
     nodeColor: 'white',
     nodeRadius: 12,

@@ -5,12 +5,12 @@ import {MatrixStyle} from "../../../components/svg/AdjacencyMatrix";
 import {Vertex} from "./GenerateLabels";
 import {
     NetworkData,
-    NetworkDiagramStyle,
     NetworkSimulationLink,
     NetworkSimulationNode,
     PositionedNode
 } from "./NetworkAnimationData";
 import {Simulation} from "../../Simulation";
+import {NetworkDiagramStyle} from "../../../components/svg/NodeLinkDiagram";
 
 export const customInterpolate = (() =>{
 

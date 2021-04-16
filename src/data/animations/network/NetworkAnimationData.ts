@@ -1,9 +1,9 @@
 import * as d3 from "d3";
 import {UndirectedGraph} from "../../../utils/structures/UndirectedGraph";
 import {MatrixStyle} from "../../../components/svg/AdjacencyMatrix";
-import {Rect} from "../../../utils/structures/Geometry";
 import {LightWeightNode, Vertex} from "./GenerateLabels";
 import {Simulation} from "../../Simulation";
+import {NetworkDiagramStyle} from "../../../components/svg/NodeLinkDiagram";
 
 export interface NetworkSimulationNode extends d3.SimulationNodeDatum {
     vertex: Vertex
@@ -17,25 +17,6 @@ export interface NetworkSimulationLink extends d3.SimulationLinkDatum<NetworkSim
 }
 
 export type PositionedNode = LightWeightNode | NetworkSimulationNode
-
-export interface NetworkDiagramStyle {
-    frame: Rect
-    fontName?: string
-    fontSize?: number
-    textColor?: string
-    nodeRadius?: number
-    nodeColor?: string
-    nodeStrokeColor?: string
-    linkColor?: string
-    linkWidth?: number
-    highlightNodeOnHover?: boolean
-    highlightLinkOnHover?: boolean
-    highlightColor?: string
-    hoverNodeCallback?: (node: NetworkSimulationNode) => void
-    leaveNodeCallback?: (node: NetworkSimulationNode) => void
-    hoverLinkCallback?: (link: NetworkSimulationLink) => void
-    leaveLinkCallback?: (link: NetworkSimulationLink) => void
-}
 
 export const initNetworkAnimationData = (graph: UndirectedGraph, networkStyle: NetworkDiagramStyle, matrixStyle: MatrixStyle): NetworkData => {
 

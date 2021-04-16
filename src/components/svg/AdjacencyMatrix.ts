@@ -87,10 +87,10 @@ export class AdjacencyMatrix extends SVGComponent {
     static CSS_CLASS_CELL = 'cell'
 
     private cellSize: number
-    private fontSize: number
+    private fontSize: string
 
     private _graph: UndirectedGraph;
-    private style: MatrixStyle
+    style: MatrixStyle
     transitionTime: number;
 
     private _orderedLabels: string[]
@@ -246,7 +246,7 @@ export class AdjacencyMatrix extends SVGComponent {
 
         const labelCount = this._orderedLabels.length
         const cellSize = (width - x) / labelCount
-        const fontSize = this.style.cellSizeToFontSize(cellSize)
+        const fontSize = `${this.style.cellSizeToFontSize(cellSize)}px`
         this.cellSize = cellSize
         this.fontSize = fontSize
         // endregion

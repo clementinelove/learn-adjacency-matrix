@@ -1,14 +1,31 @@
 import {colorBrush} from "./Utils";
+import {Edge} from "./structures/UndirectedGraph";
+import {Vertex} from "../data/animations/network/GenerateLabels";
 
 type Cell = [number, number]
 type Area = [Cell, Cell]
 export namespace Highlight {
 
-    export const mainHighlightColor = "#00b391"
+    export const mainHighlightColor = '#6ebbff'
     export const secondaryHighlightColor = '#e29905'
 
     export interface LabelHighlight {
         indexes: number[]
+        color?: string
+    }
+
+    export interface NodeHighlight {
+        vertices: Vertex[]
+        color?: string
+    }
+
+    export interface NodeLinkHighlight {
+        vertices: Vertex[]
+        color?: string
+    }
+
+    export interface LinkHighlight {
+        edges: Edge[]
         color?: string
     }
 

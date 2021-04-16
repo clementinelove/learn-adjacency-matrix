@@ -27,12 +27,12 @@ export class StackView extends Component {
         this.assignClass(v)
     }
 
-    constructor()
+    constructor(axis: Axis = Axis.Vertical, alignment: StackView.Alignment = StackView.Alignment.Center)
     {
         super()
         this.assignClass('flex')
-        this.axis = Axis.Vertical
-        this.alignment = StackView.Alignment.Center
+        this.axis = axis
+        this.alignment = alignment
     }
 
 }

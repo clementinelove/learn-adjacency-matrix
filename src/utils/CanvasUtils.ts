@@ -16,13 +16,13 @@ export namespace CanvasRuler {
     let context: CanvasRenderingContext2D =
         document.createElement('canvas').getContext('2d')
 
-    export function getTextMetrics(text: string, fontName: string, fontSizeInPX: number)
+    export function getTextMetrics(text: string, fontName: string, fontSize: string)
     {
-        context.font = `${fontSizeInPX}px ${fontName}`
+        context.font = `${fontSize} ${fontName}`
         return context.measureText(text)
     }
 
-    export function TextBoundingBoxMetrics(text: string, fontName: string, fontSize: number)
+    export function TextBoundingBoxMetrics(text: string, fontName: string, fontSize: string)
     {
         const metrics = getTextMetrics(text, fontName, fontSize)
         const width = Math.abs(metrics.actualBoundingBoxLeft) + Math.abs(metrics.actualBoundingBoxRight)

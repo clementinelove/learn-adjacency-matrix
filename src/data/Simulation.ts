@@ -40,7 +40,6 @@ export class Simulation {
         const {width, height} = this.dimension
 
         this.instance = d3.forceSimulation<NetworkSimulationNode, NetworkSimulationLink>(simNodes)
-                          .force("charge", d3.forceManyBody())
                           .force("link",
                                  d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(simLinks)
                                    .id((d) => d.vertex)
@@ -48,7 +47,8 @@ export class Simulation {
                                        return 80
                                    })
                           )
-                          .force("center", d3.forceCenter(width / 2, height / 2))
+                          .force("charge", d3.forceManyBody())
+                          .force("center", d3.forceCenter(width / 2, height/2 ))
 
         return [simNodes, simLinks]
     }

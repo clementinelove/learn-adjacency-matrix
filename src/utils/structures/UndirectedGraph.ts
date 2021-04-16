@@ -17,6 +17,10 @@ export class Edge implements Equatable<Edge> {
         this.weight = weight;
     }
 
+    static tuples(...tuples: [v0: Vertex, v1: Vertex][]) {
+        return tuples.map((tuple) => new Edge(tuple[0], tuple[1]))
+    }
+
     equals = (anotherValue: Edge): boolean => {
         return this.weight === anotherValue.weight
             && ((this.vertex0 === anotherValue.vertex0 && this.vertex1 === anotherValue.vertex1) ||
@@ -27,6 +31,10 @@ export class Edge implements Equatable<Edge> {
     isConnected = (vertex0: Vertex, vertex1: Vertex): boolean => {
         return (vertex0 === this.vertex0 && vertex1 === this.vertex1 ||
             vertex1 === this.vertex0 && vertex0 === this.vertex1)
+    }
+
+    get isReflexive(): boolean {
+        return this.vertex0 === this.vertex1
     }
 }
 

@@ -11,10 +11,11 @@ import {UndirectedGraph} from "../../utils/structures/UndirectedGraph";
 import {OrderedLabels} from "../../utils/structures/OrderedLabels";
 import {SlideProgressDelegate} from "../../components/SlideProgressBar";
 import {MatrixReorderingIntro} from "./MatrixReorderingIntro";
-import Alignment = StackView.Alignment;
-import Axis = LayoutConstraint.Axis;
-import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
 import {Highlight} from "../../utils/Highlight";
+import {NodeLinkDiagram} from "../../components/svg/NodeLinkDiagram";
+import HoverCellEffect = AdjacencyMatrix.HoverCellEffect;
+import Axis = LayoutConstraint.Axis;
+import Alignment = StackView.Alignment;
 
 const patternsList = [
     Data.MatrixPatterns.selfLinks,
@@ -146,7 +147,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         return menu
     })()
 
-    showcaseMatrix: AdjacencyMatrix = (() => {
+    showcaseAdjacencyMatrix: AdjacencyMatrix = (() => {
         const patternMatrix = this.allocate(
             new AdjacencyMatrix(PatternsIntro.xlPatternStyle)
         )
@@ -173,6 +174,16 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         return label
     })()
 
+    showcaseNodeLinkDiagram: NodeLinkDiagram = (() => {
+        let nodeLinkDiagram = this.allocate(new NodeLinkDiagram({
+                                                                    frame: {x: 0, y: 0, width: 448, height: 252},
+                                                                    fontSize: "0.8rem"
+                                                                }))
+
+        nodeLinkDiagram.assignClass('w-full border border-gray-300 my-2 rounded-md')
+        return nodeLinkDiagram
+    })()
+
     showcaseIdentityMatrix = (() => {
         const patternMatrix = this.allocate(
             new MatrixView(PatternsIntro.smPatternStyle)
@@ -190,16 +201,27 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         labelContainer.alignment = Alignment.Leading
         labelContainer.addAll(this.showcaseShapeLabel, this.showcaseNameLabel, this.showcaseDescriptionLabel)
 
+        labelContainer.assignClass('mt-8')
         infoContainer.addAll(labelContainer)
-        infoContainer.assignClass('mt-8')
-        return infoContainer
+        return labelContainer
+    })()
+
+    showcaseDetail: StackView = (() => {
+        const showcaseDetail = this.allocate(new StackView(Axis.Vertical, Alignment.Leading))
+        const nodeLinkDiagramTitleLabel = this.allocate(new Label('Corresponding Node-Link Diagram'))
+        nodeLinkDiagramTitleLabel.assignClass('uppercase text-gray-400')
+        const showcaseNodeLinkDiagramContainer = this.allocate(new StackView(Axis.Vertical, Alignment.Leading))
+        showcaseNodeLinkDiagramContainer.addAll(this.showcaseNodeLinkDiagram, nodeLinkDiagramTitleLabel)
+        showcaseNodeLinkDiagramContainer.assignClass('my-4')
+
+        showcaseDetail.addAll(this.showcaseMatrixInfoContainer, showcaseNodeLinkDiagramContainer)
+        showcaseDetail.assignClass('justify-between')
+        return showcaseDetail
     })()
 
     showcaseContainer: StackView = (() => {
-        const container = this.allocate(new StackView())
-        container.axis = Axis.Horizontal
-        container.alignment = Alignment.Leading
-        container.addAll(this.showcaseMatrix, this.showcaseMatrixInfoContainer)
+        const container = this.allocate(new StackView(Axis.Horizontal, Alignment.Fill))
+        container.addAll(this.showcaseAdjacencyMatrix, this.showcaseDetail)
         container.assignClass('my-2')
         return container
     })()
@@ -215,6 +237,18 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
     constructor()
     {
         super('Patterns');
+
+        // this.showcaseAdjacencyMatrix.style.hoverCellCallback = (di) => {
+        //     const {rowLabel, columnLabel} = di.position
+        //     if (di.filling !== false)
+        //     {
+        //         this.showcaseNodeLinkDiagram.highlightLinkByVertex(rowLabel, columnLabel)
+        //     }
+        // }
+        //
+        // this.showcaseAdjacencyMatrix.style.leaveCellCallback = () => {
+        //     this.showcaseNodeLinkDiagram.restoreLink()
+        // }
 
         this.slideMedia.add(this.allPatternsShowcaseMatrixContainer)
         this.slideProgressBar.delegate = this
@@ -249,7 +283,6 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
         this.slideText.loadLines(this.text[i](), true)
         this.tips.text = ''
 
-
         this.backBtn.hide(i === 0)
 
         if (i === 0)
@@ -265,19 +298,23 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
             this.selectedMatrixIndex = i - 1
 
-            this.showcaseMatrix.graph = UndirectedGraph.fromMatrix(pattern.instances[0], OrderedLabels.numeric)
+            const graph = UndirectedGraph.fromMatrix(pattern.instances[0], OrderedLabels.numeric)
+            this.showcaseAdjacencyMatrix.graph = graph
+            this.showcaseAdjacencyMatrix.stopAnimation()
+            this.showcaseNodeLinkDiagram.graph = graph
+            this.showcaseNodeLinkDiagram.restoreLink()
+            this.showcaseNodeLinkDiagram.restoreNode()
 
-            this.showcaseMatrix.stopAnimation()
 
             if (pattern.areaHighlights !== undefined)
             {
-                pattern.areaHighlights.forEach((hl) => this.showcaseMatrix.highlightRectAreas(hl))
+                pattern.areaHighlights.forEach((hl) => this.showcaseAdjacencyMatrix.highlightRectAreas(hl))
             }
 
             if (pattern.cellGroupHighlights !== undefined)
             {
                 pattern.cellGroupHighlights.forEach((hl) => {
-                    this.showcaseMatrix.highlightCells(hl)
+                    this.showcaseAdjacencyMatrix.highlightCells(hl)
                 })
             }
 
@@ -285,7 +322,34 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
             {
                 pattern.labelHighlight.forEach(({indexes, color}) => {
                     indexes.forEach(i => {
-                        this.showcaseMatrix.highlightLabel(this.showcaseMatrix.orderedLabels[i], false, color)
+                        this.showcaseAdjacencyMatrix.highlightLabel(this.showcaseAdjacencyMatrix.orderedLabels[i], false, color)
+                    })
+                })
+            }
+
+            if (pattern.edgeHighlight !== undefined)
+            {
+                pattern.edgeHighlight.forEach((highlight) => {
+                    highlight.edges.forEach((edge) => {
+                        this.showcaseNodeLinkDiagram.highlightLinkByVertex(edge.vertex0, edge.vertex1, highlight.color)
+                    })
+                })
+            }
+
+            if (pattern.nodeHighlight !== undefined)
+            {
+                pattern.nodeHighlight.forEach((v) => {
+                    v.vertices.forEach((vertex) => {
+                        this.showcaseNodeLinkDiagram.highlightNodeByVertex(vertex, NodeLinkDiagram.defaultStyle.nodeStrokeColor, v.color)
+                    })
+                })
+            }
+
+            if (pattern.nodeLinkHighlight !== undefined)
+            {
+                pattern.nodeLinkHighlight.forEach((highlight) => {
+                    highlight.vertices.forEach((vertex) => {
+                        this.showcaseNodeLinkDiagram.highlightLinksOfNodeByVertex(vertex, highlight.color)
                     })
                 })
             }
@@ -302,7 +366,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
         if (i === this.text.length - 1)
         {
-            this.continueBtn.title= 'Learn more about Matrix Reordering'
+            this.continueBtn.title = 'Learn more about Matrix Reordering'
         }
         else
         {

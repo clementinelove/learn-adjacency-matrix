@@ -1,9 +1,12 @@
-import {NodeLinkDiagram} from "./svg/NodeLinkDiagram";
+import {NetworkDiagramStyle, NodeLinkDiagram} from "./svg/NodeLinkDiagram";
 import {UndirectedGraph} from "../utils/structures/UndirectedGraph";
 import {ExampleGraphs} from "../data/ExampleGraphs";
 import {AdjacencyMatrix} from "./svg/AdjacencyMatrix";
 import {Component} from "../UI/Component";
-import {NetworkSimulationLink, NetworkSimulationNode} from "../data/animations/network/NetworkAnimationData";
+import {
+    NetworkSimulationLink,
+    NetworkSimulationNode
+} from "../data/animations/network/NetworkAnimationData";
 import {Label} from "../UI/Label";
 import {StackView} from "../UI/StackView";
 import {LayoutConstraint} from "../UI/LayoutConstraint";
@@ -29,7 +32,7 @@ export class MatrixExplorer extends Component {
         this.graphContainer.alignment = Alignment.Center
         this.graph = ExampleGraphs.getExample(3)
 
-        const nodeLinkDiagramStyle = {
+        const nodeLinkDiagramStyle: NetworkDiagramStyle = {
             frame: {
                 x: 0,
                 y: 0,
@@ -40,6 +43,7 @@ export class MatrixExplorer extends Component {
             highlightNodeOnHover: true,
             highlightLinkOnHover: true,
             hoverNodeCallback: (node: NetworkSimulationNode) => {
+                console.log('callback called')
                 const vertex = node.vertex
                 this.adjacencyMatrix.highlightAllRelationshipOfNode(vertex)
                 this.infoLabel.text = `Node ${vertex}</br>` +
@@ -59,7 +63,7 @@ export class MatrixExplorer extends Component {
                 this.infoLabel.text = ''
             },
             fontName: 'sans-serif',
-            fontSize: 8,
+            fontSize: "8px",
             nodeRadius: 12
         }
 
@@ -76,7 +80,7 @@ export class MatrixExplorer extends Component {
             hideLabel: false,
             toggleableCell: true,
             highlightColor: '#fc6b94',
-            allowDiagonals: false,
+            allowDiagonals: true,
             hoverCellEffect: HoverCellEffect.HighlightSymmetric,
             hoverLabelEffect: HoverLabelEffect.HighlightSymmetric,
             hoverLabelCallback: (label) => {
@@ -116,7 +120,7 @@ export class MatrixExplorer extends Component {
         }
 
 
-        this.nodeLinkDiagram = new NodeLinkDiagram(this.graph, nodeLinkDiagramStyle)
+        this.nodeLinkDiagram = new NodeLinkDiagram(nodeLinkDiagramStyle, this.graph)
         this.adjacencyMatrix = new AdjacencyMatrix(adjacencyMatrixStyle, this.graph)
 
         this.nodeLinkDiagram.assignClass('mr-8 border-gray-200 w-80 lg:w-96')
