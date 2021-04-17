@@ -366,7 +366,7 @@ export class PatternsIntro extends ContentReader implements SlideProgressDelegat
 
         if (i === this.text.length - 1)
         {
-            this.continueBtn.title = 'Learn more about Matrix Reordering'
+            this.continueBtn.title = 'What is reordering?'
         }
         else
         {

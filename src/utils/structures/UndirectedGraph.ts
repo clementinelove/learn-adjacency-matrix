@@ -4,6 +4,7 @@ import {ObjectSet} from "./ObjectSet";
 import {Vertex} from "../../data/animations/network/GenerateLabels";
 import {OrderedLabels} from "./OrderedLabels";
 import {CellPosition, PositionedCell} from "../../components/svg/MatrixView";
+import {Order} from "reorder.js";
 
 export class Edge implements Equatable<Edge> {
     readonly vertex0: Vertex
@@ -151,15 +152,10 @@ export class UndirectedGraph extends EventTarget {
         return new UndirectedGraph(orderedVertex, ...edges)
     }
 
-    static fromTuples(vertices: Vertex[], ...edges: VertexTuple[]): UndirectedGraph
+    static fromTuples(vertices: Vertex[], edges: [Vertex, Vertex, number][]): UndirectedGraph
     {
-        const undirectedEdges = edges.map((edgeTuple) => new Edge(edgeTuple[0], edgeTuple[1]))
+        const undirectedEdges = edges.map((edgeTuple) => new Edge(edgeTuple[0], edgeTuple[1], edgeTuple[2]))
         return new UndirectedGraph(vertices, ...undirectedEdges)
-    }
-
-    static fromEdges(vertices: Vertex[], ...edges: Edge[]): UndirectedGraph
-    {
-        return new UndirectedGraph(vertices, ...edges)
     }
 
     /**

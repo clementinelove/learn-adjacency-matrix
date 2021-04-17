@@ -36,12 +36,12 @@ export interface MatrixStyle {
     toggleableCell?: boolean
     reorderable?: boolean
 
-    fillColor?: string | ((di: DrawingInstruction) => number)
+    fillColor?: string | ((di: DrawingInstruction) => string)
     highlightColor?: string
 
     showLabelsOnHover?: boolean
 
-    allowDiagonals?: boolean
+    allowSelfLinks?: boolean
 
     hoverLabelEffect?: AdjacencyMatrix.HoverLabelEffect
     hoverLabelCallback?: (label: string) => void
@@ -74,7 +74,7 @@ export class AdjacencyMatrix extends SVGComponent {
         toggleableCell: true,
         highlightColor: '#fc6b94',
         cellStrokeColor: 'lightgray',
-        allowDiagonals: true,
+        allowSelfLinks: true,
         reorderable: true,
         showLabelsOnHover: false,
         cellSizeToFontSize: (cellSize) => 0.001 * cellSize * cellSize + 0.17 * cellSize + 4.3
@@ -245,7 +245,7 @@ export class AdjacencyMatrix extends SVGComponent {
         console.log(`cell size: ${this.cellSize}px, font size: ${this.fontSize}`)
 
         const labelCount = this._orderedLabels.length
-        const cellSize = (width - x) / labelCount
+        const cellSize = (width - x - this.style.padding * 2) / labelCount
         const fontSize = `${this.style.cellSizeToFontSize(cellSize)}px`
         this.cellSize = cellSize
         this.fontSize = fontSize
@@ -258,8 +258,8 @@ export class AdjacencyMatrix extends SVGComponent {
         this.vLabelGroup = this.svg
                                .append('g')
                                .attr('transform',
-                                     `translate(${this.style.matrixFrame.x - this.style.spaceBetweenLabels}, 
-                  ${this.style.matrixFrame.y})`)
+                                     `translate(${this.style.padding + this.style.matrixFrame.x - this.style.spaceBetweenLabels}, 
+                  ${this.style.padding + this.style.matrixFrame.y})`)
         //endregion
 
         // region Initialize horizontal labels and setup their dragging actions
@@ -267,8 +267,8 @@ export class AdjacencyMatrix extends SVGComponent {
         this.hLabelGroup = this.svg
                                .append('g')
                                .attr('transform',
-                                     `translate(${this.style.matrixFrame.x},
-                  ${this.style.matrixFrame.y - this.style.spaceBetweenLabels})`)
+                                     `translate(${this.style.padding + this.style.matrixFrame.x},
+                  ${this.style.padding + this.style.matrixFrame.y - this.style.spaceBetweenLabels})`)
         //endregion
 
         // region Initialize cells
@@ -276,8 +276,8 @@ export class AdjacencyMatrix extends SVGComponent {
                               .append('g')
                               .attr('transform',
                                     `translate(
-                      ${this.style.matrixFrame.x}, 
-                      ${this.style.matrixFrame.y})`)      // y
+                      ${this.style.padding + this.style.matrixFrame.x}, 
+                      ${this.style.padding + this.style.matrixFrame.y})`)      // y
         // endregion
     }
 
@@ -578,7 +578,7 @@ export class AdjacencyMatrix extends SVGComponent {
                               this.findLabelIndex(d.position.columnLabel) * this.cellSize)
                           .style('fill', (d: DrawingInstruction) => {
                               const {rowLabel, columnLabel} = d.position
-                              if (rowLabel === columnLabel && !this.style.allowDiagonals)
+                              if (rowLabel === columnLabel && !this.style.allowSelfLinks)
                               {
                                   return 'url(#noneRelation)'
                               }
@@ -597,7 +597,7 @@ export class AdjacencyMatrix extends SVGComponent {
                               }
                           })
                           .style('cursor', d => {
-                              return this.style.toggleableCell ? (d.position.columnLabel === d.position.rowLabel ? (this.style.allowDiagonals ? 'pointer' : 'default') : 'pointer') : 'default'
+                              return this.style.toggleableCell ? (d.position.columnLabel === d.position.rowLabel ? (this.style.allowSelfLinks ? 'pointer' : 'default') : 'pointer') : 'default'
                           })
                           .style('stroke', this.style.cellStrokeColor)
                           .style('stroke-width', "1px")
@@ -606,7 +606,7 @@ export class AdjacencyMatrix extends SVGComponent {
 
                                   if (targetData.position.rowLabel === targetData.position.columnLabel)
                                   {
-                                      if (!this.style.allowDiagonals)
+                                      if (!this.style.allowSelfLinks)
                                       {
                                           return null
                                       }
@@ -637,7 +637,7 @@ export class AdjacencyMatrix extends SVGComponent {
                                                   .attr('stroke', this.style.cellStrokeColor)
                                                   .style('fill', (d: DrawingInstruction) => {
                                                       const {rowLabel, columnLabel} = d.position
-                                                      if (rowLabel === columnLabel && !this.style.allowDiagonals)
+                                                      if (rowLabel === columnLabel && !this.style.allowSelfLinks)
                                                       {
                                                           return 'url(#noneRelation)'
                                                       }

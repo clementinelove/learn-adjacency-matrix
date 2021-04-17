@@ -100,7 +100,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             toggleableCell: false,
             reorderable: false,
             showLabelsOnHover: false,
-            allowDiagonals: false,
+            allowSelfLinks: false,
             hoverCellEffect: HoverCellEffect.HighlightSymmetric,
             hoverLabelEffect: HoverLabelEffect.HighlightSymmetric,
             hoverLabelCallback: (label) => {
@@ -175,7 +175,7 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
 
         if (i === this.text.length - 1)
         {
-            this.continueBtn.title = 'Learn more about Patterns'
+            this.continueBtn.title = "I got this. What's next?"
         }
         else
         {

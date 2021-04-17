@@ -11,6 +11,7 @@ import {HomeController} from "../HomeController";
 import {colorBrush} from "../../utils/Utils";
 import Axis = LayoutConstraint.Axis;
 import {Highlight} from "../../utils/Highlight";
+import {FreePlayController} from "../FreePlayController";
 
 const matrixExample1 = [
     [1, 1, 1, 0, 1, 1],
@@ -151,7 +152,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             const currentSlideIndex = this.slideProgressBar.currentSlideIndex
             if (currentSlideIndex === this.text.length - 1)
             {
-                this.navigation.navigateTo(new HomeController(), true)
+                this.navigation.navigateTo(new FreePlayController(), true)
             }
             else
             {
@@ -240,7 +241,7 @@ export class MatrixReorderingIntro extends ContentReader implements SlideProgres
             }
             if (i == 9)
             {
-                this.continueBtn.title = 'Back to Home'
+                this.continueBtn.title = 'Do you have any real-world examples?'
                 this.adjacencyMatrix.autoReorderLabels(false)
                 // clusters
                 this.adjacencyMatrix.highlightRectAreas(Highlight.areas([[[0, 0], [7, 7]], [[9, 9], [12, 12]], [[13, 13], [17, 17]]]), 2)

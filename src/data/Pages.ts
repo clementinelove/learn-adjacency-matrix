@@ -5,6 +5,7 @@ import {PatternViewer} from "../controller/PatternViewer";
 import {MatrixReorderingIntro} from "../controller/tutorials/MatrixReorderingIntro";
 import {PatternsIntro} from "../controller/tutorials/PatternsIntro";
 import {MatrixSorting} from "../controller/MatrixSorting";
+import {FreePlayController} from "../controller/FreePlayController";
 
 export interface Page {
     name: string,
@@ -31,6 +32,12 @@ export const pagesData : Page[] = [
         name: "Reordering",
         description: "Reordering Matrix to find patterns",
         targetController: () => new MatrixReorderingIntro()
+    }
+    ,
+    {
+        name: "Free Play",
+        description: "Explore Adjacency Matrix with Real-life Examples",
+        targetController: () => new FreePlayController()
     }
     // ,
     // {

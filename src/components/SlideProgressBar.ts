@@ -3,10 +3,10 @@ import {Label} from "../UI/Label";
 
 export class SlideProgressBar extends Component {
 
-    buttonSideLength: number = 10
+    buttonSideLength: number = 8
     borderWidth: number = 1
-    borderRadius: number = 5
-    buttonSpacing: number = 10
+    borderRadius: number = 2
+    buttonSpacing: number = 12
 
     currentSlideIndex: number
     totalSlideCount: number
@@ -15,7 +15,9 @@ export class SlideProgressBar extends Component {
     slideSelectionControl: d3.Selection<SVGElement, any, any, any>
     private _delegate: SlideProgressDelegate
 
-    private mainTone = '#9CA3AF'
+    private mainTone = '#7B7B80'
+    private secondaryTone = '#C3C3C7'
+    private
 
     set delegate(value: SlideProgressDelegate)
     {
@@ -72,7 +74,6 @@ export class SlideProgressBar extends Component {
                            .attr('y', this.borderWidth)
                            .attr('rx', this.borderRadius)
                            .style('fill', (d) => d === this.currentSlideIndex ? this.mainTone : 'white')
-                           .style('stroke', this.mainTone)
                            .style('stroke-width', this.borderWidth)
                            .style('cursor', 'pointer')
                            .on('click', (event, slideIndex) => {
@@ -82,7 +83,7 @@ export class SlideProgressBar extends Component {
                            }),
                   (update) =>
                       update
-                          .style('fill', (d) => d === this.currentSlideIndex ? this.mainTone : 'white')
+                          .style('fill', (d) => d === this.currentSlideIndex ? this.mainTone : this.secondaryTone)
             )
     }
 

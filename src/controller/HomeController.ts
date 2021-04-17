@@ -70,6 +70,7 @@ export class HomeController extends ViewController {
         this.coverMatrixContainer.add(this.coverMatrix)
 
         this.startLearningBtn = this.allocate(new Button('Start Learning'))
+        this.startLearningBtn.assignClass('bg-blue-500 text-gray-50 rounded-md px-10 py-1.5 hover:bg-blue-400 transition text-lg lg:text-2xl')
         this.startLearningBtn.on('click', this.moveToReaderController)
         this.startLearningBtnContainer.add(this.startLearningBtn)
 
