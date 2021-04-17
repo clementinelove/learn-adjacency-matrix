@@ -60,6 +60,9 @@ export class Button extends Component {
         this._titleLabel = new Label(title)
         this._subtitleLabel = new Label(subtitle)
 
+        this._titleLabel.assignClass('select-none')
+        this._subtitleLabel.assignClass('select-none')
+
         this.titleContainer.addAll(this._titleLabel, this._subtitleLabel)
         this.imageAndTitlesContainer.addAll(this._icon, this.titleContainer)
 

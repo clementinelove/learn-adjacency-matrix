@@ -22,14 +22,14 @@ export const initNetworkAnimationData = (graph: UndirectedGraph, networkStyle: N
 
     const {width, height} = networkStyle.frame
 
-    const simulation = new Simulation(graph, {width: width, height: height})
+    const simulation = new Simulation(graph, {width: width, height: height}, 160)
     return {
         simulation: simulation,
         networkDiagramStyle: networkStyle,
         matrixStyle: matrixStyle,
         graph: graph,
         layoutRequired: false
-    }
+    } 
 }
 
 export interface NetworkData {

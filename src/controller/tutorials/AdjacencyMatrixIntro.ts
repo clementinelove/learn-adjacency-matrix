@@ -24,14 +24,14 @@ const animationNetworkStyle = {
     frame: {
         x: 0,
         y: 0,
-        width: 400,
-        height: 400
+        width: 500,
+        height: 500
     },
-    fontName: 'sans-serif',
-    fontSize: "12px",
+    fontName: 'Roboto',
+    fontSize: "16px",
     textColor: 'black',
     nodeColor: 'white',
-    nodeRadius: 12,
+    nodeRadius: 16,
     allowDiagonals: false,
     nodeStrokeColor: 'black',
     linkColor: '#aaa'
@@ -79,11 +79,12 @@ export class AdjacencyMatrixIntro extends ContentReader implements SlideProgress
             new ForceDirectedAnimation(network1),
             new ForceDirectedAnimation(network2),
             // new AddMoreNodes(networkData),
-            new NodeTrixAnimation(network2, 100),
+            new NodeTrixAnimation(network2, 400),
             new GenerateLabels(network2, 100),
             new MergeNodes(network2, 100)
         ))
         this.replayAnimationButton = this.allocate(new Button('Replay', '', 'replay'))
+        this.replayAnimationButton.assignClass('text-gray-400 hover:text-black')
         this.replayAnimationButton.on('click', () => {
             this.canvasPlayer.play(this.slideProgressBar.currentSlideIndex)
         })

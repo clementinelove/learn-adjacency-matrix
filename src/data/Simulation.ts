@@ -11,11 +11,13 @@ export class Simulation {
     simNodes: NetworkSimulationNode[]
     simLinks: NetworkSimulationLink[]
     dimension: Dimension
+    linkLength: number
 
-    constructor(graph: UndirectedGraph, dimension: Dimension)
+    constructor(graph: UndirectedGraph, dimension: Dimension, linkLength: number = 80)
     {
         this.graph = graph
         this.dimension = dimension
+        this.linkLength = linkLength
         this.freshSimulation()
     }
 
@@ -44,7 +46,7 @@ export class Simulation {
                                  d3.forceLink<NetworkSimulationNode, NetworkSimulationLink>(simLinks)
                                    .id((d) => d.vertex)
                                    .distance((d) => {
-                                       return 80
+                                       return this.linkLength
                                    })
                           )
                           .force("charge", d3.forceManyBody())

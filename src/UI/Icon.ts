@@ -9,7 +9,7 @@ export class Icon extends Component {
     {
         super();
         this.icon = this.view.append('span')
-            .classed('material-icons', true)
+            .classed('material-icons select-none', true)
             .text(name)
     }
 

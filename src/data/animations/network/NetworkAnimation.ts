@@ -161,7 +161,7 @@ export abstract class NetworkAnimation implements CanvasAnimation {
                     fill: string = null) => {
         this.context.beginPath()
         const {fontName, fontSize, nodeRadius, textColor} = this.networkDiagramStyle
-        const font = `${fontSize}px ${fontName}`
+        const font = `${fontSize} ${fontName}`
         this.context.moveTo(cx + nodeRadius, cy)
         this.context.font = font
         const nodeText = text
